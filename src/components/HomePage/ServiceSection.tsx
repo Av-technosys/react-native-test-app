@@ -35,12 +35,19 @@ const data = {
 };
 
 export default function ServicesBlock() {
+
+  const labels = {
+    popular: "Popular In Town",
+    under499: "Within $499",
+    under999: "Within $999",
+  };
+
   return (
     <View className="mt-6 px-4">
 
       {/* SECTION 1 */}
       <Text className="text-lg font-semibold text-gray-900 mb-3">
-        Popular In Town
+        {labels.popular}
       </Text>
       {data.popular.map((item, index) => (
         <ServiceCard key={index} item={item} />
@@ -48,7 +55,7 @@ export default function ServicesBlock() {
 
       {/* SECTION 2 */}
       <Text className="text-lg font-semibold text-gray-900 mb-3 mt-6">
-        Within $499
+        {labels.under499}
       </Text>
       {data.under499.map((item, index) => (
         <ServiceCard key={index} item={item} />
@@ -56,7 +63,7 @@ export default function ServicesBlock() {
 
       {/* SECTION 3 */}
       <Text className="text-lg font-semibold text-gray-900 mb-3 mt-6">
-        Within $999
+        {labels.under999}
       </Text>
       {data.under999.map((item, index) => (
         <ServiceCard key={index} item={item} />

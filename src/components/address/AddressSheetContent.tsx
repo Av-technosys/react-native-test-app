@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   View,
   Text,
@@ -16,14 +17,11 @@ import {
 } from 'lucide-react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import Geolocation from 'react-native-geolocation-service';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 export default function AddressSheetContent() {
   const [currentAddress, setCurrentAddress] = useState<any>(null);
 
-  useEffect(() => {
-    console.log('addess', currentAddress);
-  }, [currentAddress]);
 
   const requestLocationPermission = async () => {
     if (Platform.OS === 'android') {

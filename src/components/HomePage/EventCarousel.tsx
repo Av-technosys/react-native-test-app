@@ -5,25 +5,25 @@ const eventData = [
     id: 1,
     price: 2934,
     image: require('../../assets/images/event1.png'),
-    name: 'videography'
+    name: 'videography',
   },
   {
     id: 2,
     price: 2934,
     image: require('../../assets/images/event2.png'),
-    name: 'Photography'
+    name: 'Photography',
   },
   {
     id: 3,
     price: 2934,
     image: require('../../assets/images/event1.png'),
-    name: 'Catering'
+    name: 'Catering',
   },
   {
     id: 4,
     price: 2934,
     image: require('../../assets/images/event2.png'),
-    name: 'Decoration'
+    name: 'Decoration',
   },
 ];
 
@@ -33,7 +33,7 @@ export default function EventCarousel() {
       <FlatList
         horizontal
         data={eventData}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={item => item.id.toString()}
         showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => (
           <View className="mr-4">
@@ -45,16 +45,12 @@ export default function EventCarousel() {
             />
 
             {/* PRICE WITH ICON */}
-         <View className="mt-2 flex-row gap-2 items-baseline justify-center">
-  <Text className="text-md  text-black">
-    Starting
-     </Text>
-    <Text className="text-[16px] font-semibold text-orange-600">
-      {`$${item.price}`} 
-    </Text>
- 
-</View>
-
+            <View className="mt-2 flex-row gap-2 items-baseline justify-center">
+              <Text className="text-md  text-black">Starting</Text>
+              <Text className="text-[16px] font-semibold text-orange-600">
+                {`$${item.price}`}
+              </Text>
+            </View>
           </View>
         )}
       />
