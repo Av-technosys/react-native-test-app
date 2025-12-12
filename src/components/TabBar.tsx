@@ -26,7 +26,7 @@ export default function MyTabBar({ state, navigation }: BottomTabBarProps) {
           start={{ x: 0, y: 0.5 }}
           end={{ x: 1, y: 0.5 }}
           className="flex-row h-24 items-center p-2"
-          style={{ borderRadius: 40 }} 
+          style={{ borderRadius: 40 }}
         >
           {state.routes.map((route, index) => {
             const isFocused = state.index === index;
@@ -66,28 +66,33 @@ export default function MyTabBar({ state, navigation }: BottomTabBarProps) {
                     justifyContent: 'center',
                   }}
                 >
-        {isFocused ? (
-  <Animated.View
-    style={{
-      position: 'absolute',
-      top: -16, 
-      height: 60,
-      width: 60,
-      borderRadius: 40,
-      backgroundColor: 'white',
-      alignItems: 'center',
-      justifyContent: 'center',
-      elevation: 10,
-      shadowColor: '#000',
-      shadowOpacity: 0.15,
-      shadowRadius: 4,
-      shadowOffset: { width: 0, height: 4 },
-      paddingTop: 8,
-    }}
-  >
-    <Feather name={iconName} size={22} style={{marginTop: -8}} color="orange" />
+                  {isFocused ? (
+                    <Animated.View
+                      style={{
+                        position: 'absolute',
+                        top: -16,
+                        height: 60,
+                        width: 60,
+                        borderRadius: 40,
+                        backgroundColor: 'white',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        elevation: 10,
+                        shadowColor: '#000',
+                        shadowOpacity: 0.15,
+                        shadowRadius: 4,
+                        shadowOffset: { width: 0, height: 4 },
+                        paddingTop: 8,
+                      }}
+                    >
+                      <Feather
+                        name={iconName}
+                        size={22}
+                        style={{ marginTop: -8 }}
+                        color="orange"
+                      />
 
-    {/* <Text
+                      {/* <Text
       style={{
         marginTop: 3,
         fontSize: 9,
@@ -97,33 +102,28 @@ export default function MyTabBar({ state, navigation }: BottomTabBarProps) {
     >
       {route.name}
     </Text> */}
-  </Animated.View>
-) : (
-  <Animated.View
-    style={{
-      alignItems: 'center',
-      justifyContent: 'center',
-    }}
-  >
-    <Feather
-      name={iconName}
-      size={24}
-      color={'#11182799'}
-    />
+                    </Animated.View>
+                  ) : (
+                    <Animated.View
+                      style={{
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Feather name={iconName} size={24} color={'#11182799'} />
 
-    <Text
-      style={{
-        marginTop: 4,
-        fontSize: 12,
-        fontWeight: '600',
-        color: '#111827',
-      }}
-    >
-      {route.name}
-    </Text>
-  </Animated.View>
-)}
-
+                      <Text
+                        style={{
+                          marginTop: 4,
+                          fontSize: 12,
+                          fontWeight: '600',
+                          color: '#111827',
+                        }}
+                      >
+                        {route.name}
+                      </Text>
+                    </Animated.View>
+                  )}
                 </Animated.View>
               </Pressable>
             );
