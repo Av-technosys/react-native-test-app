@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import './global.css';
 
 import { NavigationContainer } from '@react-navigation/native';
