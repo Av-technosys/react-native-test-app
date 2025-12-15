@@ -12,6 +12,7 @@ import { useRef } from 'react';
 import BaseBottomSheet from '../components/common/BaseBottomSheet';
 import AddressSheetContent from '../components/address/AddressSheetContent';
 import BottomSheet from '@gorhom/bottom-sheet';
+import HowItWork from '../components/HomePage/HowItWork';
 
 export default function HomeScreen() {
   const bottomSheetRef = useRef<BottomSheet>(null);
@@ -50,6 +51,7 @@ export default function HomeScreen() {
 
         {/* Services Sections */}
         <ServicesBlock />
+        <HowItWork />
       </ScrollView>
       <BaseBottomSheet ref={bottomSheetRef}>
         <AddressSheetContent />

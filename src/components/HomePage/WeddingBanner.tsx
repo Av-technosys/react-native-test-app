@@ -1,31 +1,27 @@
 import { View, Image, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
+import SectionHeader from '../common/SectionHeader';
 
 export default function WeddingBanner() {
   return (
-    <View className="mt-2 ">
-<View className="flex-row items-center justify-between w-full px-2 mt-4">
+    <View className="mt-6">
+      <SectionHeader
+        left={
+          <Text className="text-2xl font-bold text-black">
+            Today Special Events 🎊
+          </Text>
+        }
+        right={<Icon name="chevron-right" size={22} color="#666" />}
+      />
 
-  {/* LEFT SIDE: Title + Emoji */}
-
-    <Text className="text-2xl ml-2 font-bold text-black">
-      Today Special Events 🎊
-    </Text>
-
-
-
-
-  {/* RIGHT SIDE: Feather Arrow */}
-  <Icon name="chevron-right" size={22} color="#666" />
-
+<View className="relative w-full -mt-8 z-10">
+  <Image
+    source={require('../../assets/images/weddingBanner.png')}
+    className="w-full h-66"
+    resizeMode="stretch"
+  />
 </View>
-      <View className="rounded-2xl  overflow-hidden">
-        <Image
-          source={require('../../assets/images/weddingBanner.png')}
-          className="w-full h-60"
-          resizeMode="cover"
-        />
-      </View>
+
     </View>
   );
 }
