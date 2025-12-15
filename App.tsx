@@ -2,7 +2,7 @@ import './global.css';
 
 import { NavigationContainer } from '@react-navigation/native';
 import Tabs from './src/navigation/Tabs';
-import { useColorScheme, StatusBar } from 'react-native';
+import { useColorScheme, StatusBar, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { applyGlobalFont } from './src/utils/GlobalFont';
 import { useEffect } from 'react';
@@ -25,6 +25,7 @@ function App() {
             barStyle={isDarkMode ? 'light-content' : 'dark-content'}
             backgroundColor="transparent"
           />
+
           <Tabs />
         </NavigationContainer>
       </SafeAreaProvider>

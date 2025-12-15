@@ -8,31 +8,29 @@ import ServicesBlock from '../components/HomePage/ServiceSection';
 import Showcase from '../components/HomePage/ShowcaseList';
 import EventCarousel from '../components/HomePage/EventCarousel';
 import WeadingBanner from '../components/HomePage/WeddingBanner';
-import { useRef } from "react";
-import BaseBottomSheet from "../components/common/BaseBottomSheet";
-import AddressSheetContent from "../components/address/AddressSheetContent";
+import { useRef } from 'react';
+import BaseBottomSheet from '../components/common/BaseBottomSheet';
+import AddressSheetContent from '../components/address/AddressSheetContent';
 import BottomSheet from '@gorhom/bottom-sheet';
 
-
 export default function HomeScreen() {
- const bottomSheetRef = useRef<BottomSheet>(null);
+  const bottomSheetRef = useRef<BottomSheet>(null);
 
   return (
     <SafeAreaView className="flex-1  bg-white">
-          <StatusBar 
+      <StatusBar
         translucent={false}
         backgroundColor="#FFFFFF"
         barStyle="dark-content"
       />
 
-      <ScrollView 
+      <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 60 }} 
-
+        contentContainerStyle={{ paddingBottom: 60 }}
       >
         {/* Header */}
-        <Header bottomSheetRef={bottomSheetRef}/>
+        <Header bottomSheetRef={bottomSheetRef} />
 
         {/* Banner Carousel */}
         <View className="">
@@ -41,19 +39,19 @@ export default function HomeScreen() {
 
         {/* Categories */}
         <HomeCategoriesSection />
- 
+
         <WeadingBanner />
 
-      {/* Event carousel overlapping wedding banner */}
-      <View style={{ marginTop: -50, zIndex: 10 }}>
-        <EventCarousel />
-      </View>
+        {/* Event carousel overlapping wedding banner */}
+        <View style={{ marginTop: -50, zIndex: 10 }}>
+          <EventCarousel />
+        </View>
         <Showcase />
 
         {/* Services Sections */}
         <ServicesBlock />
       </ScrollView>
-          <BaseBottomSheet ref={bottomSheetRef}>
+      <BaseBottomSheet ref={bottomSheetRef}>
         <AddressSheetContent />
       </BaseBottomSheet>
     </SafeAreaView>

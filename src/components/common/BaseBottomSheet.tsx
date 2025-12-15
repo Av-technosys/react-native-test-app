@@ -1,8 +1,8 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { forwardRef, useMemo } from "react";
-import { ViewStyle } from "react-native";
-import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
+import React, { forwardRef, useMemo } from 'react';
+import { ViewStyle } from 'react-native';
+import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 
 interface BaseBottomSheetProps {
   children: React.ReactNode;
@@ -13,7 +13,7 @@ interface BaseBottomSheetProps {
 
 const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(
   ({ children, snapPoints, backgroundStyle, scrollEnabled = true }, ref) => {
-    const defaultSnapPoints = useMemo(() => snapPoints || ["70%"], []);
+    const defaultSnapPoints = useMemo(() => snapPoints || ['70%'], []);
 
     return scrollEnabled ? (
       <BottomSheet
@@ -22,7 +22,7 @@ const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(
         snapPoints={defaultSnapPoints}
         enablePanDownToClose
         backgroundStyle={[
-          { borderRadius: 20, backgroundColor: "white" },
+          { borderRadius: 20, backgroundColor: 'white' },
           backgroundStyle,
         ]}
       >
@@ -37,14 +37,14 @@ const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(
         snapPoints={defaultSnapPoints}
         enablePanDownToClose
         backgroundStyle={[
-          { borderRadius: 20, backgroundColor: "white" },
+          { borderRadius: 20, backgroundColor: 'white' },
           backgroundStyle,
         ]}
       >
         {children}
       </BottomSheet>
     );
-  }
+  },
 );
 
 export default BaseBottomSheet;

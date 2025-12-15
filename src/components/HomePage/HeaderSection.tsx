@@ -4,14 +4,16 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { ChevronDown, MapPin, Bell, Search } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
-
-export default function HeaderSection({bottomSheetRef}: {bottomSheetRef: any}) {
-
+export default function HeaderSection({
+  bottomSheetRef,
+}: {
+  bottomSheetRef: any;
+}) {
   return (
     <View className="px-4 mt-4">
       <View className="flex-row justify-between items-center">
-        <View className="flex flex-col gap-2 my-2">
-          <Text className="text-2xl font-normal text-gray-900">
+        <View className="flex flex-col gap-1 my-2">
+          <Text className="text-xl font-semibold text-gray-900">
             Hi, Angelina 👋
           </Text>
           <Text className="text-3xl font-semibold text-black">
@@ -19,7 +21,7 @@ export default function HeaderSection({bottomSheetRef}: {bottomSheetRef: any}) {
           </Text>
         </View>
 
-        <View className="flex-row items-center gap-2">
+        <View className="flex-row items-center gap-3">
           <TouchableOpacity
             className="w-12 h-12 rounded-full bg-white items-center justify-center"
             style={{
@@ -94,8 +96,6 @@ export default function HeaderSection({bottomSheetRef}: {bottomSheetRef: any}) {
           <ChevronDown size={18} color="#F97316" />
         </TouchableOpacity>
       </LinearGradient>
-
-
     </View>
   );
 }
