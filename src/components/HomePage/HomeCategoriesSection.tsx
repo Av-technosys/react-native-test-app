@@ -17,7 +17,7 @@ const categories = [
   { id: '7', title: 'Lightning', iconName: 'zap' },
   { id: '8', title: 'Kids Activity', iconName: 'users' },
   { id: '9', title: 'Face Painting', iconName: 'smile' },
-  { id: '10', title: 'Magicians', iconName: 'wand-2' }
+  { id: '10', title: 'Magicians', iconName: 'wand-2' },
 ];
 
 export default function HomeCategoriesSection() {
@@ -30,7 +30,11 @@ export default function HomeCategoriesSection() {
           <Pressable
             key={item.id}
             className="w-[19%] mb-6 items-center "
-            onPress={() => navigation.navigate('Categories')}
+            onPress={() =>
+              navigation.navigate('Categories', {
+                screen: 'CategoryProducts',
+              })
+            }
           >
             <View className="w-20 h-20 rounded-full bg-orange-50 items-center justify-center">
               <Icon name={item.iconName} size={28} color="#ff6b35" />

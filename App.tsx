@@ -19,8 +19,8 @@ function App() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider>
-        <NavigationContainer>
+      <NavigationContainer>
+        <SafeAreaProvider>
           <StatusBar
             translucent={false}
             barStyle={isDarkMode ? 'light-content' : 'dark-content'}
@@ -28,8 +28,8 @@ function App() {
           />
 
           <Tabs />
-        </NavigationContainer>
-      </SafeAreaProvider>
+        </SafeAreaProvider>
+      </NavigationContainer>
     </GestureHandlerRootView>
   );
 }
