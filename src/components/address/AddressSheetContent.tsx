@@ -22,7 +22,6 @@ import { useState } from 'react';
 export default function AddressSheetContent() {
   const [currentAddress, setCurrentAddress] = useState<any>(null);
 
-
   const requestLocationPermission = async () => {
     if (Platform.OS === 'android') {
       const granted = await PermissionsAndroid.request(
@@ -70,7 +69,7 @@ export default function AddressSheetContent() {
         <Search size={18} color="#555" />
         <TextInput
           placeholder="Enter Your Location"
-          className="ml-2 flex-1 text-[15px]"
+          className="ml-2 flex-1 text-black "
           placeholderTextColor="#777"
         />
       </View>
@@ -90,9 +89,9 @@ export default function AddressSheetContent() {
         <Text className="ml-1.5 text-blue-500 text-base">Add New Address</Text>
       </TouchableOpacity>
 
-      <Text className="mt-5 mb-4 text-lg text-gray-500">Saved Addresses</Text>
+      <Text className="mt-5 mb-4 text-sm text-gray-500">Saved Addresses</Text>
 
-      <View className="flex flex-col gap-4  mt-4">
+      <View className="flex flex-col gap-4 ">
         {/* Home Address */}
         <View className="flex-row justify-between ">
           <View>
@@ -108,10 +107,10 @@ export default function AddressSheetContent() {
 
           <View className="flex-row items-center gap-4">
             <TouchableOpacity>
-              <Edit size={20} color="#f97316" />
+              <Edit size={18} color="#f97316" />
             </TouchableOpacity>
             <TouchableOpacity>
-              <Trash2 size={20} color="#f43f5e" />
+              <Trash2 size={18} color="#f43f5e" />
             </TouchableOpacity>
           </View>
         </View>
@@ -131,10 +130,10 @@ export default function AddressSheetContent() {
 
           <View className="flex-row items-center gap-4">
             <TouchableOpacity>
-              <Edit size={20} color="#f97316" />
+              <Edit size={18} color="#f97316" />
             </TouchableOpacity>
             <TouchableOpacity>
-              <Trash2 size={20} color="#f43f5e" />
+              <Trash2 size={18} color="#f43f5e" />
             </TouchableOpacity>
           </View>
         </View>

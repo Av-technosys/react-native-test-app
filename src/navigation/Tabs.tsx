@@ -7,16 +7,16 @@ import CategoriesScreen from '../screens/Categories';
 import EventScreen from '../screens/Event';
 import CartScreen from '../screens/Cart';
 import ProfileScreen from '../screens/Profile';
+import { View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator();
-
-
 
 export default function Tabs() {
   return (
     <Tab.Navigator
       screenOptions={{ headerShown: false }}
-      tabBar={(props) => <MyTabBar {...props} />}
+      tabBar={props => <MyTabBar {...props} />}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Categories" component={CategoriesScreen} />
@@ -26,5 +26,3 @@ export default function Tabs() {
     </Tab.Navigator>
   );
 }
-
-
