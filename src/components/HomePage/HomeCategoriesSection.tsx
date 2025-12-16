@@ -1,5 +1,17 @@
-import { View, Text, FlatList } from 'react-native';
+import { View, Text, FlatList, Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
+
+type TabParamList = {
+  Home: undefined;
+  Categories: {
+    screen: 'Categories' | 'CategoryProducts' | 'ProductDetails';
+    params?: any;
+  };
+  Event: undefined;
+  Cart: undefined;
+  Profile: undefined;
+};
 
 const categories = [
   { id: '1', title: 'Bar Tender', iconName: 'bar-chart-2' },
@@ -27,8 +39,18 @@ export default function HomeCategoriesSection() {
 }
 
 const EventItem = ({ item }: any) => {
+  const navigation = useNavigation<NavigationProp<TabParamList>>();
+
   return (
-    <View key={item.id} className="mb-6  w-[25%] px-2 py-1 items-center">
+    <Pressable
+      onPress={() =>
+        navigation.navigate('Categories', {
+          screen: 'CategoryProducts',
+        })
+      }
+      key={item.id}
+      className="mb-6  w-[25%] px-2 py-1 items-center"
+    >
       <View className=" w-full px-1">
         <View className="w-full aspect-square rounded-3xl shadow bg-orange-50 items-center justify-center">
           <Icon name={item.iconName} size={25} color="#ff6b35" />
@@ -38,6 +60,6 @@ const EventItem = ({ item }: any) => {
       <Text className="mt-2 text-xs text-center text-gray-700">
         {item.title}
       </Text>
-    </View>
+    </Pressable>
   );
 };
