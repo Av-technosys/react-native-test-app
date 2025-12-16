@@ -2,13 +2,14 @@
 import './global.css';
 
 import { NavigationContainer } from '@react-navigation/native';
-import Tabs from './src/navigation/Tabs';
 import { useColorScheme, StatusBar, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { applyGlobalFont } from './src/utils/GlobalFont';
 import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 //mport Geocoder from "react-native-geocoding";
+import RootStack from './src/navigation/rockStack';
+
 
 function App() {
   useEffect(() => {
@@ -27,7 +28,7 @@ function App() {
             backgroundColor="transparent"
           />
 
-          <Tabs />
+          <RootStack />
         </SafeAreaProvider>
       </NavigationContainer>
     </GestureHandlerRootView>
