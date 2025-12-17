@@ -51,15 +51,17 @@ export default function Details({
       </View>
 
       {/* PRICE */}
-      <Text className="mt-3 text-2xl font-bold text-orange-500">
-          <MaterialIcons
-            name="attach-money"
-            size={20}
-            color="#F97316"
-            style={{ marginTop: 8 }}
-          />
-         {price}
-      </Text>
+<View className="flex-row items-center mt-3">
+  <MaterialIcons
+    name="attach-money"
+    size={24}
+    color="#F97316"
+  />
+  <Text className="text-2xl font-bold text-orange-500 ">
+    {price}
+  </Text>
+</View>
+
 
       {/* CTA */}
       <Text className="mt-1 text-md text-gray-500">
