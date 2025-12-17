@@ -1,8 +1,7 @@
 import { View, Text, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import Carousel from '../../components/common/Carousel'
-
+import Carousel from '../../components/common/Carousel';
 
 type VendorHeaderCardProps = {
   name: string;
@@ -18,10 +17,8 @@ export default function VendorHeaderCard({
 }: VendorHeaderCardProps) {
   return (
     <View className=" mt-8">
-      
       {/* HEADER ROW */}
       <View className="flex-row mx-6 items-center justify-between rounded-2xl">
-        
         {/* LEFT SECTION */}
         <View className="flex-1">
           <Text className="text-3xl font-bold text-black">{name}</Text>
@@ -57,6 +54,9 @@ export default function VendorHeaderCard({
       {/* CAROUSEL — OUTSIDE ROW */}
       <View className="mt-4">
         <Carousel
+          fullWidth={false}
+          itemSpacing={0}
+          borderRadius={15}
           images={[
             require('../../assets/images/vendor-product.jpg'),
             require('../../assets/images/vendor-product.jpg'),
@@ -65,7 +65,6 @@ export default function VendorHeaderCard({
           ]}
         />
       </View>
-
     </View>
   );
 }

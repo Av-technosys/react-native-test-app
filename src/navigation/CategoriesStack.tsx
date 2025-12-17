@@ -1,11 +1,11 @@
+
 import {
   createStackNavigator,
   TransitionPresets,
 } from '@react-navigation/stack';
 import { Easing } from 'react-native';
 import CategoriesScreen from '../screens/Categories';
-import CategoryProducts from '../screens/CategoryProduts';
-import ProductDetails from '../screens/ProductDetails';
+
 
 const Stack = createStackNavigator();
 
@@ -39,9 +39,10 @@ export default function CategoriesStack() {
           TransitionPresets.SlideFromRightIOS.cardStyleInterpolator,
       }}
     >
-      <Stack.Screen name="Categories" component={CategoriesScreen} />
-      <Stack.Screen name="CategoryProducts" component={CategoryProducts} />
-      <Stack.Screen name="ProductDetails" component={ProductDetails} />
+ <Stack.Screen
+        name="Categories"
+        component={CategoriesScreen}
+      />
     </Stack.Navigator>
   );
 }

@@ -8,6 +8,7 @@ export default function BannerCarousel() {
     <View className="mt-5">
       {/* BANNER CAROUSEL */}
       <Carousel
+        fullWidth={true}
         images={[
           require('../../assets/images/banner.png'),
           require('../../assets/images/banner.png'),

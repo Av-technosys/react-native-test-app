@@ -3,19 +3,35 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import ScreenHeader from '../../src/components/common/ScreenHeader';
 import Icon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
-
+import BottomSheet from '@gorhom/bottom-sheet';
+import BaseBottomSheet from '../components/common/BaseBottomSheet';
 import VendorHeaderCard from '../components/ProductDetails/Header';
 import Details from '../components/ProductDetails/Details';
 import VendorDetailsCard from '../components/ProductDetails/VendorDetails';
 import ReviewSection from '../components/ProductDetails/CustomerReviewsSection';
 import RecommendationSection from '../components/ProductDetails/RecommendationSection';
+import { useEffect, useRef } from 'react';
+import AddToCartForm from '../components/common/AddToCartForm';
+import { useAppSelector } from '../store/hooks';
 
 export default function ProductDetails() {
   const disabled = false;
+  const bottomSheetRef = useRef<BottomSheet>(null);
 
-  // const handleAddToCart = () => {
-  //   console.log('Added to cart');
-  // };
+  const cartItems = useAppSelector(state => state.cart.items);
+
+  useEffect(() => {
+    console.log('CART STATE:', cartItems);
+  }, [cartItems]);
+
+  const productData = {
+    ProductId: '24',
+    title: 'Juice Junction',
+    vendorName: 'EVENTER’S',
+    vendorId: 'VXX455',
+    location: 'Mansarovar, Jaipur',
+    price: 949,
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -33,7 +49,7 @@ export default function ProductDetails() {
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 100 }}
+        contentContainerStyle={{ paddingBottom: 20 }}
       >
         <VendorHeaderCard
           name="EVENTER’S"
@@ -80,7 +96,13 @@ export default function ProductDetails() {
           resizeMode="cover"
         />
 
-        <Pressable disabled={disabled} className="w-full items-center">
+        <Pressable
+          disabled={disabled}
+          className="w-full items-center"
+          onPress={() => {
+            bottomSheetRef.current?.snapToIndex(0);
+          }}
+        >
           <View style={{ borderRadius: 18, overflow: 'hidden', width: '92%' }}>
             <LinearGradient
               colors={
@@ -94,13 +116,15 @@ export default function ProductDetails() {
                 justifyContent: 'center',
               }}
             >
-              <Text className="text-white text-lg font-semibold">
-                Add to Cart
-              </Text>
+              <Text className="text-white text-xl font-bold">Add to Cart</Text>
             </LinearGradient>
           </View>
         </Pressable>
       </ScrollView>
+
+      <BaseBottomSheet ref={bottomSheetRef} snapPoints={['90%']}>
+        <AddToCartForm product={productData} />
+      </BaseBottomSheet>
     </SafeAreaView>
   );
 }

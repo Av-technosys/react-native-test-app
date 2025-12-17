@@ -22,7 +22,7 @@ const products = Array.from({ length: 12 }).map((_, index) => ({
 
 export default function CategoryProducts() {
   return (
-    <SafeAreaView className="flex-1 bg-white mb-20">
+    <SafeAreaView className="flex-1 bg-white ">
       {/* HEADER */}
       <ScreenHeader
         title="Categories"

@@ -9,7 +9,9 @@ import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 //mport Geocoder from "react-native-geocoding";
 import RootStack from './src/navigation/rockStack';
-
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { store, persistor } from './src/store';
 
 function App() {
   useEffect(() => {
@@ -22,6 +24,9 @@ function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer>
         <SafeAreaProvider>
+          <Provider store={store}>
+           <PersistGate loading={null} persistor={persistor}>
+
           <StatusBar
             translucent={false}
             barStyle={isDarkMode ? 'light-content' : 'dark-content'}
@@ -29,6 +34,8 @@ function App() {
           />
 
           <RootStack />
+          </PersistGate>
+          </Provider>
         </SafeAreaProvider>
       </NavigationContainer>
     </GestureHandlerRootView>

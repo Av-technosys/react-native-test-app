@@ -1,67 +1,158 @@
+
 import React, { useRef, useState } from 'react';
 import { View, Image, FlatList, Dimensions } from 'react-native';
+import Carousel from 'react-native-reanimated-carousel';
 
-const { width } = Dimensions.get('window');
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 type BannerCarouselProps = {
   images: any[];
   height?: number;
   showDots?: boolean;
   fullWidth?: boolean; 
-
+  borderRadius?: number;
+  itemSpacing?: number; 
 };
 
 export default function BannerCarousel({
-  images,
+  images = [],
   height = 200,
   showDots = true,
+  fullWidth = true,
+  itemSpacing = 16,
+  borderRadius = 0
 }: BannerCarouselProps) {
+  
   const [activeIndex, setActiveIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
 
-  const onScroll = (event: any) => {
-    const scrollX = event.nativeEvent.contentOffset.x;
-    const index = Math.round(scrollX / width);
-    setActiveIndex(index);
-  };
+  // Guard AFTER hooks
+  if (images.length === 0) {
+    return <View style={{ height }} />;
+  }
 
+  /* FULL WIDTH VERSION  */
+
+if (fullWidth) {
   return (
-    <View className="mt-4">
+    <View
+      className="mt-4"
+      style={{ width: SCREEN_WIDTH, height, position: 'relative' }}
+    >
       <FlatList
         ref={flatListRef}
         data={images}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
-        onScroll={onScroll}
-        scrollEventThrottle={16}
         keyExtractor={(_, index) => index.toString()}
+        onScroll={e => {
+          const scrollX = e.nativeEvent.contentOffset.x;
+          const index = Math.round(scrollX / SCREEN_WIDTH);
+          setActiveIndex(index);
+        }}
+        scrollEventThrottle={16}
         renderItem={({ item }) => (
-          <View style={{ width }}>
+          <Image
+            source={item}
+            style={{ width: SCREEN_WIDTH, height }}
+            resizeMode="cover"
+          />
+        )}
+      />
+
+      {showDots && (
+        <View
+          style={{
+            position: 'absolute',
+            bottom: 12,
+            width: '100%',
+            alignItems: 'center',
+          }}
+        >
+          <Dots count={images.length} activeIndex={activeIndex} />
+        </View>
+      )}
+    </View>
+  );
+}
+
+  /* CARD / MARGIN VERSION (library-based) */
+const ITEM_WIDTH = SCREEN_WIDTH - itemSpacing * 2;
+
+return (
+  <View style={{ width: SCREEN_WIDTH, marginTop: 16  }}>
+    <View style={{ position: 'relative', width: SCREEN_WIDTH }}>
+      <Carousel
+        width={ITEM_WIDTH}
+        height={height}
+        data={images}
+        loop={false}
+        pagingEnabled
+        style={{ width: SCREEN_WIDTH }}
+        onProgressChange={(_, absoluteProgress) => {
+          const index = Math.round(absoluteProgress);
+          setActiveIndex(index);
+        }}
+        renderItem={({ item }) => (
+          <View
+            style={{
+              width: SCREEN_WIDTH,
+              alignItems: 'center',
+            }}
+          >
             <Image
               source={item}
-              style={{ width, height }}
+              style={{
+                width: ITEM_WIDTH,
+                height,
+                borderRadius,
+              }}
               resizeMode="cover"
             />
           </View>
         )}
       />
 
-      {/* DOT INDICATORS */}
       {showDots && (
-        <View className="absolute bottom-3 w-full flex-row justify-center">
-          {images.map((_, index) => (
-            <View
-              key={index}
-              className={`mx-1 h-2 w-2 rounded-full ${
-                activeIndex === index
-                  ? 'bg-orange-500'
-                  : 'bg-gray-300'
-              }`}
-            />
-          ))}
+        <View
+          style={{
+            position: 'absolute',
+            bottom: 12,
+            width: '100%',
+            alignItems: 'center',
+          }}
+        >
+          <Dots count={images.length} activeIndex={activeIndex} />
         </View>
       )}
     </View>
+  </View>
+);
+
+
+function Dots({
+  count,
+  activeIndex,
+}: {
+  count: number;
+  activeIndex: number;
+}) {
+  return (
+    <View style={{ flexDirection: 'row' }}>
+      {Array.from({ length: count }).map((_, index) => (
+        <View
+          key={index}
+          style={{
+            marginHorizontal: 4,
+            width: 8,
+            height: 8,
+            borderRadius: 4,
+            backgroundColor:
+              activeIndex === index ? '#F97316' : '#D1D5DB',
+          }}
+        />
+      ))}
+    </View>
   );
-}
+}}
