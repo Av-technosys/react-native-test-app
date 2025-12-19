@@ -1,5 +1,11 @@
 import { View, Text, Pressable } from 'react-native';
 import ReviewCard from '../common/cards/ReviewCard';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+
+type RootStackParamList = {
+  CategoryProducts: undefined;
+  ProductDetails: any;
+};
 
 const reviews = [
   {
@@ -31,6 +37,8 @@ const reviews = [
 ];
 
 export default function CustomerReviewsSection() {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
   return (
     <View className="mt-6 px-4">
       {/* HEADER */}
@@ -44,10 +52,14 @@ export default function CustomerReviewsSection() {
           </Text>
         </View>
 
-        <Pressable>
-          <Text className="text-lg text-gray-500">
-            See All
-          </Text>
+        <Pressable
+          onPress={() => {
+            navigation.getParent()?.navigate('FlowStack', {
+              screen: 'reviews',
+            });
+          }}
+        >
+          <Text className="text-lg text-gray-500">See All</Text>
         </Pressable>
       </View>
 

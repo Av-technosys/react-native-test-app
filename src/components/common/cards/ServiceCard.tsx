@@ -1,6 +1,6 @@
 import { View, Text, Image, Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 
 type RootStackParamList = {
   CategoryProducts: undefined;
@@ -9,11 +9,16 @@ type RootStackParamList = {
 
 export default function ServiceCard({ item }: any) {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  
+
   return (
-    <Pressable       onPress={() => navigation.navigate('ProductDetails')}
- className="w-[22rem] m-6 bg-white rounded-2xl shadow-lg border border-gray-200 mx-2 pb-4">
-      
+    <Pressable
+      onPress={() =>
+        navigation.getParent()?.navigate('FlowStack', {
+          screen: 'ProductDetails',
+        })
+      }
+      className="w-[22rem] m-6 bg-white rounded-2xl shadow-lg border border-gray-200 mx-2 pb-4"
+    >
       {/* Image */}
       <Image
         source={item.image}

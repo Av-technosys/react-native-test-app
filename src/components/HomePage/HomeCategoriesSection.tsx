@@ -44,7 +44,7 @@ const EventItem = ({ item }: any) => {
   return (
     <Pressable
       onPress={() =>
-        navigation.navigate('Categories', {
+        navigation.getParent()?.navigate('FlowStack', {
           screen: 'CategoryProducts',
         })
       }

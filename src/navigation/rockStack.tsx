@@ -1,7 +1,8 @@
+
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Tabs from './Tabs';
-// import CategoryProducts from '../screens/CategoryProduts';
-// import ProductDetails from '../screens/ProductDetails';
+import FlowStack from '../navigation/Screens/FlowStack';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -15,18 +16,15 @@ export default function RootStack() {
         gestureEnabled: true,
       }}
     >
+     {/* Auth Stack */}
+      {/* <Stack.Screen name="AuthStack" component={AuthStack} /> */}
+      
       {/* TAB APP */}
       <Stack.Screen name="MainTabs" component={Tabs} />
 
       {/* FULL SCREEN PAGES */}
-      {/* <Stack.Screen
-        name="CategoryProducts"
-        component={CategoryProducts}
-      />
-      <Stack.Screen
-        name="ProductDetails"
-        component={ProductDetails}
-      /> */}
+      <Stack.Screen name="FlowStack" component={FlowStack} />
+
     </Stack.Navigator>
   );
 }

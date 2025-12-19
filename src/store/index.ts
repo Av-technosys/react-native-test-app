@@ -1,6 +1,7 @@
 import { configureStore, combineReducers  } from '@reduxjs/toolkit';
 import userReducer from './slices/userSlice';
 import cartReducer from './slices/cartSlice';
+import eventReducer from './slices/eventSlice'; 
 import { persistReducer, persistStore } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -11,9 +12,15 @@ const cartPersistConfig = {
   storage: AsyncStorage,
 };
 
+const eventPersistConfig = {
+  key: 'event',
+  storage: AsyncStorage,
+};
+
 const rootReducer = combineReducers({
   user: userReducer,
   cart: persistReducer(cartPersistConfig, cartReducer),
+  event: persistReducer(eventPersistConfig, eventReducer),
 });
 
 export const store = configureStore({

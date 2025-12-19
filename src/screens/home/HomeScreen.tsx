@@ -1,18 +1,18 @@
 import { View, ScrollView, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import Header from '../components/HomePage/HeaderSection';
-import BannerCarousel from '../components/HomePage/BannerCarousel';
-import HomeCategoriesSection from '../components/HomePage/HomeCategoriesSection';
-import ServicesBlock from '../components/HomePage/ServiceSection';
-import Showcase from '../components/HomePage/ShowcaseList';
-import EventCarousel from '../components/HomePage/EventCarousel';
-import WeadingBanner from '../components/HomePage/WeddingBanner';
+import Header from '../../components/HomePage/HeaderSection';
+import BannerCarousel from '../../components/HomePage/BannerCarousel';
+import HomeCategoriesSection from '../../components/HomePage/HomeCategoriesSection';
+import ServicesBlock from '../../components/HomePage/ServiceSection';
+import Showcase from '../../components/HomePage/ShowcaseList';
+import EventCarousel from '../../components/HomePage/EventCarousel';
+import WeadingBanner from '../../components/HomePage/WeddingBanner';
 import { useRef } from 'react';
-import BaseBottomSheet from '../components/common/BaseBottomSheet';
-import AddressSheetContent from '../components/address/AddressSheetContent';
+import BaseBottomSheet from '../../components/common/BaseBottomSheet';
+import AddressSheetContent from '../../components/address/AddressSheetContent';
 import BottomSheet from '@gorhom/bottom-sheet';
-import HowItWork from '../components/HomePage/HowItWork';
+import HowItWork from '../../components/HomePage/HowItWork';
 
 export default function HomeScreen() {
   const bottomSheetRef = useRef<BottomSheet>(null);

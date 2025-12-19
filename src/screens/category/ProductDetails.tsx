@@ -1,18 +1,18 @@
 import { Pressable, View, ScrollView, Image, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import ScreenHeader from '../../src/components/common/ScreenHeader';
+import ScreenHeader from '../../../src/components/common/ScreenHeader';
 import Icon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
 import BottomSheet from '@gorhom/bottom-sheet';
-import BaseBottomSheet from '../components/common/BaseBottomSheet';
-import VendorHeaderCard from '../components/ProductDetails/Header';
-import Details from '../components/ProductDetails/Details';
-import VendorDetailsCard from '../components/ProductDetails/VendorDetails';
-import ReviewSection from '../components/ProductDetails/CustomerReviewsSection';
-import RecommendationSection from '../components/ProductDetails/RecommendationSection';
+import BaseBottomSheet from '../../components/common/BaseBottomSheet';
+import VendorHeaderCard from '../../components/ProductDetails/Header';
+import Details from '../../components/ProductDetails/Details';
+import VendorDetailsCard from '../../components/ProductDetails/VendorDetails';
+import ReviewSection from '../../components/ProductDetails/CustomerReviewsSection';
+import RecommendationSection from '../../components/ProductDetails/RecommendationSection';
 import { useEffect, useRef } from 'react';
-import AddToCartForm from '../components/common/AddToCartForm';
-import { useAppSelector } from '../store/hooks';
+import AddToCartForm from '../../components/common/AddToCartForm';
+import { useAppSelector } from '../../store/hooks';
 
 export default function ProductDetails() {
   const disabled = false;
@@ -55,7 +55,7 @@ export default function ProductDetails() {
           name="EVENTER’S"
           location="Jaipur"
           rating={4.5}
-          logo={require('../assets/images/vendor-logo.png')}
+          logo={require('../../assets/images/vendor-logo.png')}
         />
 
         <Details
@@ -91,7 +91,7 @@ export default function ProductDetails() {
         <RecommendationSection />
 
         <Image
-          source={require('../assets/images/location.png')}
+          source={require('../../assets/images/location.png')}
           className="m-6 w-[92%] h-44 rounded-xl self-center"
           resizeMode="cover"
         />

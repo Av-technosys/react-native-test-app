@@ -2,11 +2,11 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MyTabBar from '../components/TabBar';
 
-import HomeScreen from '../screens/HomeScreen';
-import CategoriesStack from '../navigation/CategoriesStack';
-import EventScreen from '../screens/Event';
-import CartScreen from '../screens/Cart';
-import ProfileScreen from '../screens/Profile';
+import HomeScreen from '../screens/home/HomeScreen';
+import Categories from '../screens/category/Categories';
+import EventScreen from '../screens/event/EventSelector';
+import CartScreen from '../screens/cart/Cart';
+import ProfileScreen from '../screens/profile/Profile';
 
 const Tab = createBottomTabNavigator();
 
@@ -17,7 +17,7 @@ export default function Tabs() {
       tabBar={props => <MyTabBar {...props} />}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Categories" component={CategoriesStack} />
+      <Tab.Screen name="Categories" component={Categories} />
       <Tab.Screen name="Event" component={EventScreen} />
       <Tab.Screen name="Cart" component={CartScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
