@@ -3,9 +3,11 @@ import {
   TransitionPresets,
 } from '@react-navigation/stack';
 import { Easing } from 'react-native';
-import CategoriesScreen from '../screens/Categories';
-import CategoryProducts from '../screens/CategoryProduts';
-import ProductDetails from '../screens/ProductDetails';
+import eventDetails from '../../screens/event/EventDetails';
+import CategoryProducts from '../../screens/category/CategoryProduts';
+import ProductDetails from '../../screens/category/ProductDetails';
+import eventProduct from '../../screens/event/EventProducts';
+import reviewScreen from '../../screens/event/Reviews'; 
 
 const Stack = createStackNavigator();
 
@@ -25,7 +27,7 @@ const closeConfig = {
   },
 };
 
-export default function CategoriesStack() {
+export default function FlowStack() {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -39,9 +41,18 @@ export default function CategoriesStack() {
           TransitionPresets.SlideFromRightIOS.cardStyleInterpolator,
       }}
     >
-      <Stack.Screen name="Categories" component={CategoriesScreen} />
+      {/* Categories Stack Screens */}
+        {/* Defined in Tab Navigation   <Stack.Screen name="Categories" component={CategoriesScreen} /> */}
       <Stack.Screen name="CategoryProducts" component={CategoryProducts} />
       <Stack.Screen name="ProductDetails" component={ProductDetails} />
+
+      {/* Event Stack Screens */}
+      <Stack.Screen name="eventDetails" component={eventDetails} />
+      <Stack.Screen name="eventProducts" component={eventProduct} />
+      <Stack.Screen name="reviews" component={reviewScreen} />
+      {/* Cart Stack Sreen */}
+
+      {/* Profile Stack Screens */}
     </Stack.Navigator>
   );
 }

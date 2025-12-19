@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { View, Text, FlatList, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import ScreenHeader from '../components/common/ScreenHeader';
+import ScreenHeader from '../../components/common/ScreenHeader';
 import Icon from 'react-native-vector-icons/Feather';
 import MaskedView from '@react-native-masked-view/masked-view';
 import LinearGradient from 'react-native-linear-gradient';
@@ -12,7 +12,7 @@ type RootStackParamList = {
 };
 
 export default function CategoriesScreen() {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>()
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const services = [
     { id: 1, title: 'Bartender', icon: 'coffee' },
     { id: 2, title: 'Decor', icon: 'flag' },
@@ -36,7 +36,6 @@ export default function CategoriesScreen() {
   ];
   return (
     <SafeAreaView className="flex-1  bg-white mb-16">
-   
       <ScreenHeader
         title="Categories"
         right={
@@ -56,10 +55,14 @@ export default function CategoriesScreen() {
         contentContainerStyle={{ padding: 16 }}
         columnWrapperStyle={{ justifyContent: 'space-between' }}
         renderItem={({ item }) => (
-        <Pressable
-          onPress={() => navigation.navigate('CategoryProducts')}
-          className="mb-4 w-[48%]"
-        >           
+          <Pressable
+            onPress={() =>
+              navigation.getParent()?.navigate('FlowStack', {
+                screen: 'CategoryProducts',
+              })
+            }
+            className="mb-4 w-[48%]"
+          >
             <View className="h-36 rounded-3xl border border-orange-400 bg-white items-center justify-center shadow shadow-slate-200">
               <View className="w-10 h-10 items-center justify-center">
                 <MaskedView
@@ -75,7 +78,6 @@ export default function CategoriesScreen() {
                 </MaskedView>
               </View>
 
-       
               <Text className="mt-2 text-lg font-medium text-gray-800">
                 {item.title}
               </Text>

@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { View, Text, FlatList, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import ScreenHeader from '../components/common/ScreenHeader';
+import ScreenHeader from '../../components/common/ScreenHeader';
 import Icon from 'react-native-vector-icons/Feather';
-import ProductCard from '../components/common/cards/ProductsCard';
+import ProductCard from '../../components/common/cards/ProductsCard';
 
 
 const products = Array.from({ length: 12 }).map((_, index) => ({
@@ -14,7 +14,7 @@ const products = Array.from({ length: 12 }).map((_, index) => ({
   rating: 5,
   reviews: '1.4k+',
   price: 999,
-  image: require('../assets/images/service2.png'),
+  image: require('../../assets/images/service2.png'),
 }));
 
 
@@ -22,7 +22,7 @@ const products = Array.from({ length: 12 }).map((_, index) => ({
 
 export default function CategoryProducts() {
   return (
-    <SafeAreaView className="flex-1 bg-white mb-20">
+    <SafeAreaView className="flex-1 bg-white ">
       {/* HEADER */}
       <ScreenHeader
         title="Categories"

@@ -31,7 +31,11 @@ export default function ProductCard({
 
   return (
     <Pressable
-      onPress={() => navigation.navigate('ProductDetails')}
+      onPress={() =>
+        navigation.getParent()?.navigate('FlowStack', {
+          screen: 'ProductDetails',
+        })
+      }
       className="flex-row bg-white border mx-1 border-gray-300 rounded-2xl px-4 py-3 shadow shadow-slate-200 h-40"
     >
       {/* LEFT CONTENT */}
