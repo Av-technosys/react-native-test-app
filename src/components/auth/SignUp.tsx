@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, Image } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
 
 export default function SignUpScreen() {
   const [secure, setSecure] = useState(true);
-
+  const navigation = useNavigation()
   return (
     <View className="flex-1 px-4 bg-white ">
       {/* LOGO */}
@@ -84,6 +85,14 @@ export default function SignUpScreen() {
       {/* SIGN UP BUTTON */}
 
       <Pressable
+            onPress={() =>
+        navigation.getParent()?.navigate('AuthStack', {
+          screen: 'OtpVerification',
+            params: {
+      signUp: true,
+    },
+        })
+      }
         className="mt-24 mb-4"
         style={{
           height: 56,

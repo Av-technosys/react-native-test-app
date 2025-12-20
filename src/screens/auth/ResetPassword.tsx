@@ -13,7 +13,7 @@ export default function resetPassword() {
                         backgroundColor="#FFFFFF"
                         translucent              />
                           <ScreenHeader
-                                        title="Enter Otp"
+                                        title="Reset Password"
                                         right={
                                           <View className="relative">
                                             <MaterialIcons name="more-vert" size={22} color="#000" />

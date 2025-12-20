@@ -68,7 +68,7 @@ export default function LoginScreen() {
           </View>
               <Pressable onPress={() =>
         navigation.getParent()?.navigate('AuthStack', {
-          screen: 'SendOtpScreen',
+          screen: 'SendOtp',
         })
       }   className="mt-4 self-end">
       <Text className="text-lg font-normal black ">
@@ -80,6 +80,11 @@ export default function LoginScreen() {
 
       {/* LOGIN BUTTON */}
       <Pressable
+            onPress={() =>
+        navigation.getParent()?.navigate('MainTabs', {
+          screen: 'Home',
+        })
+      }
         className="mt-24 mb-6"
         style={{ height: 56, borderRadius: 999, overflow: 'hidden' }}
       >

@@ -7,15 +7,24 @@ import {
   Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Feather from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { AuthStackParamList } from '../../navigation/Screens/AuthStack';
+
+type RouteProps = RouteProp<AuthStackParamList, 'OtpVerification'>;
+
 
 const OTP_LENGTH = 4;
 
 export default function OtpVerificationScreen() {
+
+  const route = useRoute<RouteProps>();
+const signUp = route.params?.signUp ?? false;
+
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
   const inputs = useRef<(TextInput | null)[]>([]);
-
+  const navigation = useNavigation()
   const handleChange = (value: string, index: number) => {
     if (!/^\d?$/.test(value)) return;
 
@@ -37,15 +46,9 @@ export default function OtpVerificationScreen() {
   return (
     <SafeAreaView className="flex-1 bg-white px-5">
 
-      {/* HEADER */}
-      <View className="flex-row items-center mt-2">
-        <Pressable>
-          <Feather name="arrow-left" size={22} color="#000" />
-        </Pressable>
-      </View>
 
       {/* LOGO */}
-      <View className="items-center mt-4">
+      <View className="items-center ">
         <Image
           source={require('../../assets/images/freeky-icon.png')}
           className="w-72 h-52"
@@ -65,7 +68,7 @@ export default function OtpVerificationScreen() {
       </View>
 
       {/* OTP INPUTS */}
-      <View className="flex-row justify-between mt-12 px-4">
+      <View className="flex-row justify-between mt-12 px-10">
         {otp.map((digit, index) => (
           <TextInput
             key={index}
@@ -96,6 +99,20 @@ export default function OtpVerificationScreen() {
 
       {/* CONFIRM BUTTON */}
       <Pressable
+onPress={() => {
+  const parent = navigation.getParent();
+
+  if (!signUp) {
+    parent?.navigate('AuthStack', {
+      screen: 'ResetPassword',
+    });
+  } else {
+    parent?.navigate('MainTabs', {
+      screen: 'Home',
+    });
+  }
+}}
+
         className="mt-16"
         style={{
           height: 56,

@@ -2,41 +2,64 @@ import React from 'react';
 import { View, Text, Pressable, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
 
 export default function PasswordSuccessScreen() {
+  const navigation = useNavigation()
   return (
     <SafeAreaView className="flex-1 bg-white px-6">
-        {/* LOGO */}
-        <View className="items-center mb-4">
-          <Image
-            source={require('../../assets/images/freeky-icon.png')}
-            resizeMode="contain"
-            className="w-48 h-20"
-          />
-        </View>
 
-      {/* MESSAGE */}
-      <View className="items-center mt-12 px-4">
-        <Text className="text-xl font-bold text-black text-center mb-3">
-          Congratulations Piyush
+      {/* CONTENT */}
+      <View className="flex-1 justify-center items-center">
+
+        {/* LOGO */}
+        <Image
+          source={require('../../assets/images/freeky-icon.png')}
+          resizeMode="contain"
+          className="w-72 h-44 mb-10"
+        />
+
+        {/* MESSAGE */}
+        <Text className="text-2xl font-semibold text-black text-center mb-3">
+          Congratulations, Piyush
         </Text>
 
-        <Text className="text-gray-500 text-center text-base leading-6">
-          Your Password Has Been Updated{'\n'}Successfully !!
+        <Text className="text-gray-500 text-center text-base leading-6 px-6">
+          Your password has been updated{'\n'}successfully.
         </Text>
       </View>
 
       {/* BUTTON */}
-      <Pressable className="mt-auto mb-10">
+      <Pressable
+      onPress={() =>
+        navigation.getParent()?.navigate('MainTabs', {
+          screen: 'Home',
+        })
+      }
+        className="mb-10"
+        style={{
+          height: 56,
+          borderRadius: 999,
+          overflow: 'hidden',
+        }}
+      >
         <LinearGradient
           colors={['#FACC15', '#F97316']}
-          className="h-14 rounded-full justify-center items-center"
+          start={{ x: 0, y: 0.5 }}
+          end={{ x: 1, y: 0.5 }}
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderRadius: 999,
+          }}
         >
-          <Text className="text-black text-lg font-bold">
+          <Text className="font-bold text-xl text-white">
             Continue
           </Text>
         </LinearGradient>
       </Pressable>
+
     </SafeAreaView>
   );
 }
