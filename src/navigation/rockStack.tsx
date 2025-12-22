@@ -2,7 +2,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Tabs from './Tabs';
 import FlowStack from '../navigation/Screens/FlowStack';
-
+import AuthStack from '../navigation/Screens/AuthStack';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,7 +17,7 @@ export default function RootStack() {
       }}
     >
      {/* Auth Stack */}
-      {/* <Stack.Screen name="AuthStack" component={AuthStack} /> */}
+      <Stack.Screen name="AuthStack" component={AuthStack} />
       
       {/* TAB APP */}
       <Stack.Screen name="MainTabs" component={Tabs} />

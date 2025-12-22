@@ -9,7 +9,11 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import BottomSheet from '@gorhom/bottom-sheet';
 import FilterBottomSheet from '../../common/forms/FilterForm';
-import { ScrollView } from 'react-native-gesture-handler';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { addProduct, removeProduct } from '../../../store/slices/eventSlice';
+
+
+
 const EVENT_PRODUCTS = [
   {
     id: '1',
@@ -139,14 +143,8 @@ export default function EventProductSection() {
 
   const [showServiceModal, setShowServiceModal] = useState(false);
 
-  const [selectedProductIds, setSelectedProductIds] = useState<
-    Record<StepKey, string[]>
-  >(() =>
-    ALL_STEP_KEYS.reduce((acc, key) => {
-      acc[key] = [];
-      return acc;
-    }, {} as Record<StepKey, string[]>),
-  );
+const dispatch = useAppDispatch();
+
 
   const [stepStatus, setStepStatus] = useState<Record<StepKey, StepStatus>>(
     () =>
@@ -158,25 +156,27 @@ export default function EventProductSection() {
 
   const activeIndex = STEPS.findIndex(s => s.key === activeStep);
   const isLastStep = activeIndex === STEPS.length - 1;
+  const selections = useAppSelector(state => state.event.selections);
 
   const handleContinue = () => {
-    const hasItems = selectedProductIds[activeStep].length > 0;
+    const hasItems = selections[activeStep].length > 0;
 
     setStepStatus(prev => ({
       ...prev,
       [activeStep]: hasItems ? 'green' : 'red',
     }));
 
-    if (isLastStep) {
-      console.log('FINAL SELECTION:', {
-        selectedProductIds,
-        stepStatus: {
-          ...stepStatus,
-          [activeStep]: hasItems ? 'green' : 'red',
-        },
-      });
-      return;
-    }
+if (isLastStep) {
+  console.log('FINAL SELECTION:', {
+    selections,
+    stepStatus: {
+      ...stepStatus,
+      [activeStep]: hasItems ? 'green' : 'red',
+    },
+  });
+  return;
+}
+
 
     const next = STEPS[activeIndex + 1];
     setActiveStep(next.key);
@@ -187,16 +187,6 @@ export default function EventProductSection() {
       [activeStep]: 'yellow',
     }));
 
-    if (isLastStep) {
-      console.log('FINAL SELECTION:', {
-        selectedProductIds,
-        stepStatus: {
-          ...stepStatus,
-          [activeStep]: 'yellow',
-        },
-      });
-      return;
-    }
 
     const next = STEPS[activeIndex + 1];
     setActiveStep(next.key);
@@ -273,21 +263,13 @@ export default function EventProductSection() {
             reviews={item.reviews}
             price={item.price}
             image={item.image}
-            added={selectedProductIds[activeStep].includes(item.id)}
+            added={selections[activeStep].includes(item.id)}
             disabled={false}
             onAdd={() =>
-              setSelectedProductIds(prev => ({
-                ...prev,
-                [activeStep]: prev[activeStep].includes(item.id)
-                  ? prev[activeStep]
-                  : [...prev[activeStep], item.id],
-              }))
+              dispatch(addProduct({ step: activeStep, productId: item.id }))
             }
             onRemove={() =>
-              setSelectedProductIds(prev => ({
-                ...prev,
-                [activeStep]: prev[activeStep].filter(id => id !== item.id),
-              }))
+              dispatch(removeProduct({ step: activeStep, productId: item.id }))
             }
           />
         )}
