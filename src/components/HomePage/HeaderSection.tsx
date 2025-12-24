@@ -3,12 +3,15 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { ChevronDown, MapPin, Bell, Search } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 
 export default function HeaderSection({
   bottomSheetRef,
 }: {
   bottomSheetRef: any;
 }) {
+  const navigation = useNavigation<NavigationProp<any>>();
+
   return (
     <View className="px-4 mt-4">
       <View className="flex-row justify-between items-center">
@@ -37,6 +40,11 @@ export default function HeaderSection({
 
           {/* Bell Button */}
           <TouchableOpacity
+            onPress={() => {
+              navigation.getParent()?.navigate('FlowStack', {
+                screen: "NotificationsScreen",
+              })
+            }}
             className="w-12 h-12 rounded-full bg-white items-center justify-center"
             style={{
               shadowColor: '#000',
