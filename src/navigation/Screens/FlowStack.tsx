@@ -7,7 +7,13 @@ import eventDetails from '../../screens/event/EventDetails';
 import CategoryProducts from '../../screens/category/CategoryProduts';
 import ProductDetails from '../../screens/category/ProductDetails';
 import eventProduct from '../../screens/event/EventProducts';
-import reviewScreen from '../../screens/event/Reviews'; 
+import reviewScreen from '../../screens/event/Reviews';
+import FAQScreen from '../../screens/profile/Faq';
+import ProfileEditScreen from '../../screens/profile/UserProfileUpdate';
+import OrdersScreen from '../../screens/profile/OrderScreen';
+import OrderDetailsScreen from '../../screens/profile/OrderDetailScreen';
+import PermissionScreen from '../../screens/profile/PermissionScreen';
+import NotificationsScreen from '../../screens/Common/Notification';
 
 const Stack = createStackNavigator();
 
@@ -41,8 +47,9 @@ export default function FlowStack() {
           TransitionPresets.SlideFromRightIOS.cardStyleInterpolator,
       }}
     >
+      <Stack.Screen name="NotificationsScreen" component={NotificationsScreen} />
       {/* Categories Stack Screens */}
-        {/* Defined in Tab Navigation   <Stack.Screen name="Categories" component={CategoriesScreen} /> */}
+      {/* Defined in Tab Navigation   <Stack.Screen name="Categories" component={CategoriesScreen} /> */}
       <Stack.Screen name="CategoryProducts" component={CategoryProducts} />
       <Stack.Screen name="ProductDetails" component={ProductDetails} />
 
@@ -53,6 +60,13 @@ export default function FlowStack() {
       {/* Cart Stack Sreen */}
 
       {/* Profile Stack Screens */}
+      <Stack.Screen name="FAQ" component={FAQScreen} />
+      <Stack.Screen name="ProfileEditScreen" component={ProfileEditScreen} />
+      <Stack.Screen name="OrdersScreen" component={OrdersScreen} />
+      <Stack.Screen name="OrderDetailsScreen" component={OrderDetailsScreen} />
+      <Stack.Screen name="PermissionScreen" component={PermissionScreen} />
+
+
     </Stack.Navigator>
   );
 }
