@@ -3,6 +3,7 @@ import { View, Text, Image, Pressable, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import {useNavigation} from '@react-navigation/native'
+import Button from '../common/Button';
 
 export default function AuthIntroScreen() {
 
@@ -61,27 +62,30 @@ export default function AuthIntroScreen() {
         </Text>
 
         {/* ACTIONS */}
-        <View className="mt-8 pb-6">
-          <Pressable       onPress={() =>
-        navigation.getParent()?.navigate('AuthStack', {
-          screen: 'SignUp',
-        })
-      } className="h-14 rounded-full bg-yellow-400 justify-center mb-4">
-            <Text className="text-center font-bold text-lg text-black">
-            Sign Up
-            </Text>
-          </Pressable>
+{/* ACTIONS */}
+<View className="mt-8 pb-6">
+  <Button
+    label="Sign Up"
+    variant="primary"
+    className="mb-4"
+    onPress={() =>
+      navigation.getParent()?.navigate('AuthStack', {
+        screen: 'SignUp',
+      })
+    }
+  />
 
-          <Pressable       onPress={() =>
-        navigation.getParent()?.navigate('AuthStack', {
-          screen: 'Login',
-        })
-      }  className="h-14 rounded-full border border-gray-300 justify-center">
-            <Text className="text-center font-semibold text-lg text-black">
-              Log In
-            </Text>
-          </Pressable>
-        </View>
+  <Button
+    label="Log In"
+    variant="outline"
+    onPress={() =>
+      navigation.getParent()?.navigate('AuthStack', {
+        screen: 'Login',
+      })
+    }
+  />
+</View>
+
       </View>
     </SafeAreaView>
   );

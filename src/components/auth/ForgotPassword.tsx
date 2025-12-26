@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Feather from 'react-native-vector-icons/Feather';
-import LinearGradient from 'react-native-linear-gradient';
+import Button from '../common/Button';
 
 export default function ForgotPasswordOtpScreen() {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
@@ -87,16 +87,12 @@ export default function ForgotPasswordOtpScreen() {
       </View>
 
       {/* CONFIRM BUTTON */}
-      <Pressable className="mt-auto mb-8">
-        <LinearGradient
-          colors={['#FACC15', '#F97316']}
-          className="h-14 rounded-full justify-center items-center"
-        >
-          <Text className="text-black text-lg font-bold">
-            Confirm
-          </Text>
-        </LinearGradient>
-      </Pressable>
+<Button
+  label="Confirm"
+  className="mt-auto mb-8"
+  onPress={()=> {}}
+/>
+
     </SafeAreaView>
   );
 }

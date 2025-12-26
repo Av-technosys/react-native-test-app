@@ -12,14 +12,8 @@ export default function otpVerification() {
                         barStyle={'dark-content'}
                         backgroundColor="#FFFFFF"
                         translucent              />
-                          <ScreenHeader
-                                        title="Enter Otp"
-                                        right={
-                                          <View className="relative">
-                                            <MaterialIcons name="more-vert" size={22} color="#000" />
-                                          </View>
-                                        }
-                                      />
+  <ScreenHeader title="Enter Otp" rightType="menu" />
+
     <OtpVerification />
     </SafeAreaView>
   );

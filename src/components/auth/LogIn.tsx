@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, Image, ScrollView } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
-import LinearGradient from 'react-native-linear-gradient';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
+import Button from '../common/Button';
 
 export default function LoginScreen() {
   const [secure, setSecure] = useState(true);
@@ -78,32 +78,16 @@ export default function LoginScreen() {
         </View>
       </View>
 
-      {/* LOGIN BUTTON */}
-      <Pressable
-            onPress={() =>
-        navigation.getParent()?.navigate('MainTabs', {
-          screen: 'Home',
-        })
-      }
-        className="mt-24 mb-6"
-        style={{ height: 56, borderRadius: 999, overflow: 'hidden' }}
-      >
-        <LinearGradient
-          colors={['#FACC15', '#F97316']}
-          start={{ x: 0, y: 0.5 }}
-          end={{ x: 1, y: 0.5 }}
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <Text className="font-bold text-2xl text-white">
-            Log In
-          </Text>
-        </LinearGradient>
-      </Pressable>
-
+ 
+<Button
+  label="Log In"
+  className="mt-24 mb-6"
+  onPress={() =>
+    navigation.getParent()?.navigate('MainTabs', {
+      screen: 'Home',
+    })
+  }
+/>
       {/* SOCIAL LOGIN */}
       <View className="space-y-4">
 

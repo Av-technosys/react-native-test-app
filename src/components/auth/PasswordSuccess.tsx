@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text, Pressable, Image } from 'react-native';
+import { View, Text, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
+import Button from '../common/Button';
 
 export default function PasswordSuccessScreen() {
   const navigation = useNavigation()
@@ -30,35 +30,16 @@ export default function PasswordSuccessScreen() {
       </View>
 
       {/* BUTTON */}
-      <Pressable
-      onPress={() =>
-        navigation.getParent()?.navigate('MainTabs', {
-          screen: 'Home',
-        })
-      }
-        className="mb-10"
-        style={{
-          height: 56,
-          borderRadius: 999,
-          overflow: 'hidden',
-        }}
-      >
-        <LinearGradient
-          colors={['#FACC15', '#F97316']}
-          start={{ x: 0, y: 0.5 }}
-          end={{ x: 1, y: 0.5 }}
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderRadius: 999,
-          }}
-        >
-          <Text className="font-bold text-xl text-white">
-            Continue
-          </Text>
-        </LinearGradient>
-      </Pressable>
+<Button
+  label="Continue"
+  className="mb-10"
+  onPress={() =>
+    navigation.getParent()?.navigate('MainTabs', {
+      screen: 'Home',
+    })
+  }
+/>
+
 
     </SafeAreaView>
   );

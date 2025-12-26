@@ -91,15 +91,8 @@ export default function Reviews() {
 
   return (
     <SafeAreaView className="flex-1 bg-white  ">
-      <ScreenHeader
-        title="Reviews"
-        right={
-          <View className="relative">
-            <Icon name="bell" size={22} color="#000" />
-            <View className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-red-500" />
-          </View>
-        }
-      />
+  <ScreenHeader title="reviews" rightType="notification" />
+
       <ScrollView
         className="flex-1 m-4"
         contentContainerStyle={{

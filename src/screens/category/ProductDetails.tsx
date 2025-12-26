@@ -35,15 +35,8 @@ export default function ProductDetails() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <ScreenHeader
-        title="Categories"
-        right={
-          <View className="relative">
-            <Icon name="bell" size={22} color="#000" />
-            <View className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-red-500" />
-          </View>
-        }
-      />
+  <ScreenHeader title="Categories" rightType="notification" />
+
 
       {/* CONTENT */}
       <ScrollView

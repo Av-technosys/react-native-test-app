@@ -14,6 +14,8 @@ import OrdersScreen from '../../screens/profile/OrderScreen';
 import OrderDetailsScreen from '../../screens/profile/OrderDetailScreen';
 import PermissionScreen from '../../screens/profile/PermissionScreen';
 import NotificationsScreen from '../../screens/Common/Notification';
+import ManageBookings from '../../screens/profile/ManageBookings';
+import CartProductDetail from '../../screens/cart/CartProductDetail';
 
 const Stack = createStackNavigator();
 
@@ -65,7 +67,10 @@ export default function FlowStack() {
       <Stack.Screen name="OrdersScreen" component={OrdersScreen} />
       <Stack.Screen name="OrderDetailsScreen" component={OrderDetailsScreen} />
       <Stack.Screen name="PermissionScreen" component={PermissionScreen} />
+      <Stack.Screen name="ManageBookings" component={ManageBookings} />
 
+       {/* Cart Stack Screens */}
+      <Stack.Screen name="CartProductDetail" component={CartProductDetail} />
 
     </Stack.Navigator>
   );

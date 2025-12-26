@@ -5,7 +5,7 @@ import {
     Modal,
     Pressable,
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import Button from '../../components/common/Button';
 
 export function PermissionDialog({
     visible,
@@ -73,19 +73,11 @@ export function PermissionDialog({
                     </View>
 
                     {/* Confirm */}
-                    <LinearGradient
-                        colors={['#F97316', '#FACC15']}
-                        className="rounded-xl mt-6"
-                    >
-                        <Pressable
-                            onPress={onClose}
-                            className="py-3 items-center"
-                        >
-                            <Text className="text-white font-semibold">
-                                Confirm
-                            </Text>
-                        </Pressable>
-                    </LinearGradient>
+   <Button
+  label="Confirm"
+  className="mt-4"
+  onPress={onClose}
+/>
                 </Pressable>
             </Pressable>
         </Modal>

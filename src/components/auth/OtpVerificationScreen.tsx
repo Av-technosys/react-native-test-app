@@ -7,10 +7,10 @@ import {
   Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { AuthStackParamList } from '../../navigation/Screens/AuthStack';
+import Button from '../common/Button';
 
 type RouteProps = RouteProp<AuthStackParamList, 'OtpVerification'>;
 
@@ -97,45 +97,19 @@ const signUp = route.params?.signUp ?? false;
         <Text className="text-gray-500">01:59</Text>
       </View>
 
-      {/* CONFIRM BUTTON */}
-      <Pressable
-onPress={() => {
-  const parent = navigation.getParent();
+     <Button
+  label="Confirm"
+  className="mt-16"
+  onPress={() => {
+    const parent = navigation.getParent();
 
-  if (!signUp) {
-    parent?.navigate('AuthStack', {
-      screen: 'ResetPassword',
-    });
-  } else {
-    parent?.navigate('MainTabs', {
-      screen: 'Home',
-    });
-  }
-}}
-
-        className="mt-16"
-        style={{
-          height: 56,
-          borderRadius: 999,
-          overflow: 'hidden',
-        }}
-      >
-        <LinearGradient
-          colors={['#FACC15', '#F97316']}
-          start={{ x: 0, y: 0.5 }}
-          end={{ x: 1, y: 0.5 }}
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderRadius: 999,
-          }}
-        >
-          <Text className="font-bold text-xl text-white">
-            Confirm
-          </Text>
-        </LinearGradient>
-      </Pressable>
+    if (!signUp) {
+      parent?.navigate('AuthStack', { screen: 'ResetPassword' });
+    } else {
+      parent?.navigate('MainTabs', { screen: 'Home' });
+    }
+  }}
+/>
 
       {/* FOOTER */}
       <View className="items-center mt-4">

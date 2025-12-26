@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, Image } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
-import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
+import Button from '../common/Button';
 
 export default function SignUpScreen() {
   const [secure, setSecure] = useState(true);
@@ -83,37 +83,19 @@ export default function SignUpScreen() {
       </View>
 
       {/* SIGN UP BUTTON */}
+<Button
+  label="Sign up"
+  className="mt-24 mb-4"
+  onPress={() =>
+    navigation.getParent()?.navigate('AuthStack', {
+      screen: 'OtpVerification',
+      params: {
+        signUp: true,
+      },
+    })
+  }
+/>
 
-      <Pressable
-            onPress={() =>
-        navigation.getParent()?.navigate('AuthStack', {
-          screen: 'OtpVerification',
-            params: {
-      signUp: true,
-    },
-        })
-      }
-        className="mt-24 mb-4"
-        style={{
-          height: 56,
-          borderRadius: 999,
-          overflow: 'hidden',
-        }}
-      >
-        <LinearGradient
-          colors={['#FACC15', '#F97316']}
-          start={{ x: 0, y: 0.5 }}
-          end={{ x: 1, y: 0.5 }}
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderRadius: 999,
-          }}
-        >
-          <Text className="font-bold text-2xl text-white">Sign up</Text>
-        </LinearGradient>
-      </Pressable>
     </View>
   );
 }

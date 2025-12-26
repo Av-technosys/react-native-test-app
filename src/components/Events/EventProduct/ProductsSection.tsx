@@ -11,6 +11,7 @@ import BottomSheet from '@gorhom/bottom-sheet';
 import FilterBottomSheet from '../../common/forms/FilterForm';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { addProduct, removeProduct } from '../../../store/slices/eventSlice';
+import { useNavigation } from '@react-navigation/native';
 
 
 
@@ -126,6 +127,7 @@ const ALL_STEPS: { key: StepKey; label: string }[] = [
 ];
 
 export default function EventProductSection() {
+  const navigation = useNavigation()
   const filterSheetRef = useRef<BottomSheet>(null);
   const [activeStep, setActiveStep] = useState<StepKey>('food');
   const insets = useSafeAreaInsets();
@@ -158,29 +160,42 @@ const dispatch = useAppDispatch();
   const isLastStep = activeIndex === STEPS.length - 1;
   const selections = useAppSelector(state => state.event.selections);
 
-  const handleContinue = () => {
-    const hasItems = selections[activeStep].length > 0;
+const handleContinue = () => {
+  const hasItems = selections[activeStep].length > 0;
 
-    setStepStatus(prev => ({
-      ...prev,
-      [activeStep]: hasItems ? 'green' : 'red',
-    }));
+  const updatedStatus = {
+    ...stepStatus,
+    [activeStep]: hasItems ? 'green' : 'red',
+  };
 
-if (isLastStep) {
-  console.log('FINAL SELECTION:', {
-    selections,
-    stepStatus: {
-      ...stepStatus,
-      [activeStep]: hasItems ? 'green' : 'red',
+  setStepStatus(updatedStatus);
+
+  // ✅ LAST STEP → FINAL ACTION
+  if (isLastStep) {
+    console.log('FINAL SELECTION:', {
+      selections,
+      stepStatus: updatedStatus,
+    });
+
+    navigation.getParent()?.navigate('FlowStack', {
+      screen: 'ProductDetails',
+    });
+
+    return;
+  }
+
+  const nextIndex = activeIndex + 1;
+  const nextStep = STEPS[nextIndex];
+
+  setActiveStep(nextStep.key);
+
+  navigation.getParent()?.navigate('FlowStack', {
+    screen: 'eventDetails',
+    params: {
+      step: nextStep.key,
     },
   });
-  return;
-}
-
-
-    const next = STEPS[activeIndex + 1];
-    setActiveStep(next.key);
-  };
+};
   const handleSkip = () => {
     setStepStatus(prev => ({
       ...prev,
