@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, Image, ScrollView } from 'react-native';
+import { View, Text, TextInput, Pressable, Image, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
 import Button from '../common/Button';
@@ -76,7 +76,16 @@ const handleLogin = async () => {
 
 
   return (
-    <ScrollView className="flex-1 bg-white px-4">
+        <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
+    >
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+        className='px-4'
+      >
       {/* LOGO */}
       <View className="items-center">
         <Image
@@ -171,5 +180,6 @@ const handleLogin = async () => {
         <Text className="text-blue-500 font-semibold">Sign Up</Text>
       </Pressable>
     </ScrollView>
+    </KeyboardAvoidingView>
   );
 }

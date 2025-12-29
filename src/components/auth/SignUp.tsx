@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, Image } from 'react-native';
+import { View, Text, TextInput, Pressable, Image ,KeyboardAvoidingView, ScrollView, Platform} from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
 import Button from '../common/Button';
@@ -96,6 +96,15 @@ export default function SignUpScreen() {
   };
 
   return (
+        <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
+    >
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+      >
     <View className="flex-1 px-4 bg-white">
       {/* LOGO */}
       <View className="items-center mt-6">
@@ -186,5 +195,7 @@ export default function SignUpScreen() {
         onPress={handleSignup}
       />
     </View>
+    </ScrollView>
+    </KeyboardAvoidingView>
   );
 }

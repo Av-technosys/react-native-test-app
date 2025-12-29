@@ -1,4 +1,4 @@
-import { View, Text, TextInput, Image, Pressable } from 'react-native';
+import { View, Text, TextInput, Image, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Feather from 'react-native-vector-icons/Feather';
 import Toast from 'react-native-toast-message';
@@ -49,6 +49,12 @@ export default function ForgotPasswordScreen() {
   };
 
  return (
+          <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
+      >
+        
     <SafeAreaView className="flex-1 bg-white px-5">
       {/* HEADER */}
       <View className="flex-row items-center mt-2">
@@ -102,6 +108,8 @@ export default function ForgotPasswordScreen() {
         disabled={loading}
       />
     </SafeAreaView>
+  
+    </KeyboardAvoidingView>
   );
 }
 

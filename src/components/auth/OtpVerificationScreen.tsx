@@ -6,6 +6,8 @@ import {
   Pressable,
   Image,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, RouteProp, useRoute } from '@react-navigation/native';
@@ -162,6 +164,15 @@ export default function OtpVerificationScreen() {
   };
 
   return (
+            <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
+        >
+          <ScrollView
+            contentContainerStyle={{ flexGrow: 1 }}
+            keyboardShouldPersistTaps="handled"
+          >
     <SafeAreaView className="flex-1 bg-white px-5">
       {/* LOGO */}
       <View className="items-center">
@@ -229,5 +240,7 @@ export default function OtpVerificationScreen() {
         disabled={loading}
       />
     </SafeAreaView>
+    </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
