@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Image, Pressable, StatusBar } from 'react-native';
+import { View, Text, Image, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import {useNavigation} from '@react-navigation/native'

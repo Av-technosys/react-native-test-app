@@ -1,18 +1,84 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, Image, ScrollView } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import Button from '../common/Button';
+import Toast from 'react-native-toast-message';
+import { login } from '../../api/auth';
+import { useDispatch } from 'react-redux';
+import { loginSuccess } from '../../store/slices/authSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { decodeIdToken } from '../../utils/decodeToken';
+
 
 export default function LoginScreen() {
   const [secure, setSecure] = useState(true);
-  const navigation = useNavigation()
-  return (
-    <ScrollView className="flex-1 mb-10 bg-white px-4">
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+
+
+const handleLogin = async () => {
+  if (!email || !password) {
+    Toast.show({
+      type: 'error',
+      text1: 'Missing fields',
+      text2: 'Email and password are required',
+    });
+    return;
+  }
+
+  const payload = {
+    username: email,
+    password,
+  };
+
+  console.log('LOGIN PAYLOAD 👉', payload);
+
+  try {
+    setLoading(true);
+
+    const data = await login(payload);
+
+    await AsyncStorage.setItem('accessToken', data.accessToken);
+    await AsyncStorage.setItem('refreshToken', data.refreshToken);
+
+    const user = decodeIdToken(data.idToken);
+
+    console.log('DECODED USER 👉', user);
+
+    dispatch(loginSuccess(user));
+
+    Toast.show({
+      type: 'success',
+      text1: 'Login successful',
+      text2: `Welcome back ${user.email}`,
+    });
+
+    navigation.getParent()?.navigate('MainTabs', {
+      screen: 'Home',
+    });
+  } catch (error: any) {
+    Toast.show({
+      type: 'error',
+      text1: 'Login failed',
+      text2: error?.response?.data?.message || 'Invalid credentials',
+    });
+
+    console.log('LOGIN ERROR ❌', error?.response || error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+  return (
+    <ScrollView className="flex-1 bg-white px-4">
       {/* LOGO */}
-      <View className="items-center ">
+      <View className="items-center">
         <Image
           source={require('../../assets/images/freeky-icon.png')}
           className="w-96 h-60"
@@ -24,20 +90,20 @@ export default function LoginScreen() {
       <Text className="text-center text-black font-semibold text-3xl mt-2">
         Get Started now
       </Text>
-
       <Text className="text-center text-gray-500 text-lg mt-2 px-6">
         Create an account or log in to explore our app
       </Text>
 
       {/* FORM */}
       <View className="mt-10 px-2 space-y-6">
-
         {/* EMAIL */}
         <View>
           <Text className="text-md font-medium text-gray-400 m-2">
             Email
           </Text>
           <TextInput
+            value={email}
+            onChangeText={setEmail}
             placeholder="Enter your email"
             placeholderTextColor="#6B7280"
             keyboardType="email-address"
@@ -53,6 +119,8 @@ export default function LoginScreen() {
           </Text>
           <View className="flex-row items-center h-16 border border-gray-500 rounded-2xl px-4">
             <TextInput
+              value={password}
+              onChangeText={setPassword}
               placeholder="********"
               placeholderTextColor="#6B7280"
               secureTextEntry={secure}
@@ -66,68 +134,42 @@ export default function LoginScreen() {
               />
             </Pressable>
           </View>
-              <Pressable onPress={() =>
-        navigation.getParent()?.navigate('AuthStack', {
-          screen: 'SendOtp',
-        })
-      }   className="mt-4 self-end">
-      <Text className="text-lg font-normal black ">
-        Forgot Password
-      </Text>
-    </Pressable>
+
+          <Pressable
+            onPress={() =>
+              navigation.getParent()?.navigate('AuthStack', {
+                screen: 'ForgotPassword',
+              })
+            }
+            className="mt-4 self-end"
+          >
+            <Text className="text-base text-blue-500">
+              Forgot Password?
+            </Text>
+          </Pressable>
         </View>
       </View>
 
- 
-<Button
-  label="Log In"
-  className="mt-24 mb-6"
-  onPress={() =>
-    navigation.getParent()?.navigate('MainTabs', {
-      screen: 'Home',
-    })
-  }
-/>
-      {/* SOCIAL LOGIN */}
-      <View className="space-y-4">
-
-        {/* GOOGLE */}
-        <Pressable className="border  border-yellow-400 rounded-full h-12 px-5 flex-row items-center justify-center">
-          <FontAwesome name="google" size={18} color="#DB4437" />
-          <Text className="text-black font-medium ml-3">
-            Continue with Google
-          </Text>
-        </Pressable>
-
-        {/* FACEBOOK */}
-        <Pressable className="border mt-4 border-yellow-400 rounded-full h-12 px-5 flex-row items-center justify-center">
-          <FontAwesome name="facebook" size={18} color="#1877F2" />
-          <Text className="text-black font-medium ml-3">
-            Continue with Facebook
-          </Text>
-        </Pressable>
-
-        {/* APPLE */}
-        <Pressable className="border mt-4 border-yellow-400 rounded-full h-12 px-5 flex-row items-center justify-center">
-          <FontAwesome name="apple" size={18} color="#000" />
-          <Text className="text-black font-medium ml-3">
-            Continue with Apple
-          </Text>
-        </Pressable>
-      </View>
+      {/* LOGIN BUTTON */}
+      <Button
+        label={loading ? 'Logging in...' : 'Log In'}
+        className="mt-24 mb-6"
+        onPress={handleLogin}
+        disabled={loading}
+      />
 
       {/* SIGN UP LINK */}
-      <Pressable  onPress={() =>
-        navigation.getParent()?.navigate('AuthStack', {
-          screen: 'SignUp',
-        })
-      } className="mt-6  flex flex-row justify-center items-center">
-        <Text> Dont have an account ? </Text>
-        <Text className="text-blue-500 font-semibold">
-          Sign Up
-        </Text>
+      <Pressable
+        onPress={() =>
+          navigation.getParent()?.navigate('AuthStack', {
+            screen: 'SignUp',
+          })
+        }
+        className="mt-6 flex-row justify-center"
+      >
+        <Text>Don’t have an account? </Text>
+        <Text className="text-blue-500 font-semibold">Sign Up</Text>
       </Pressable>
-
     </ScrollView>
   );
 }

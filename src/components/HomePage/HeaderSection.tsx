@@ -4,6 +4,8 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { ChevronDown, MapPin, Bell, Search } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { useAppSelector } from '../../store/hooks';
+
 
 export default function HeaderSection({
   bottomSheetRef,
@@ -11,14 +13,15 @@ export default function HeaderSection({
   bottomSheetRef: any;
 }) {
   const navigation = useNavigation<NavigationProp<any>>();
-
+const user = useAppSelector(state => state.auth.user);
+  console.log(user)
   return (
     <View className="px-4 mt-4">
       <View className="flex-row justify-between items-center">
         <View className="flex flex-col gap-1 my-2">
-          <Text className="text-xl font-semibold text-gray-900">
-            Hi, Angelina 👋
-          </Text>
+         <Text className="text-xl font-semibold text-gray-900">
+          Hi, {user?.email || 'Guest'} 👋
+        </Text> 
           <Text className="text-3xl font-semibold text-black">
             Welcome back
           </Text>

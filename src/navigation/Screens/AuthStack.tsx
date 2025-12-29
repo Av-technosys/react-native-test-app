@@ -11,14 +11,21 @@ import SendOtpScreen from '../../components/auth/SendOtpScreen';
 import OtpVerification from '../../screens/auth/OtpVerification';
 import ResetPasswordScreen from '../../screens/auth/ResetPassword';
 import PasswordSuccessScreen from '../../components/auth/PasswordSuccess';
-
+import ForgotPassword from '../../components/auth/ForgotPassword';  
+ 
 /* ✅ PARAM LIST */
 export type AuthStackParamList = {
   AuthIntro: undefined;
   SignUp: undefined;
   Login: undefined;
   SendOtp: { signUp?: boolean };
-  OtpVerification: { signUp?: boolean };
+  OtpVerification: {
+    signUp?: boolean;
+    email?: string;     
+    flow: 'signup' | 'forgotPassword';
+
+  };
+  ForgotPassword: undefined;
   ResetPassword: undefined;
   PasswordSuccess: undefined;
 };
@@ -59,6 +66,8 @@ export default function AuthStack() {
       <Stack.Screen name="SignUp" component={SignUp} />
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="SendOtp" component={SendOtpScreen} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+
       <Stack.Screen name="OtpVerification" component={OtpVerification} />
       <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
       <Stack.Screen name="PasswordSuccess" component={PasswordSuccessScreen} />

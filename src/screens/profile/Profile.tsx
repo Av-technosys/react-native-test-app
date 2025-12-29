@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { View, Text, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -6,6 +7,12 @@ import Feather from 'react-native-vector-icons/Feather';
 import ScreenHeader from '../../components/common/ScreenHeader';
 import { ProfileInfoCard } from '../../components/Profile/ProfileCard';
 import Button from '../../components/common/Button';
+import { useDispatch } from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { logout } from '../../store/slices/authSlice';
+import Toast from 'react-native-toast-message';
+
+
 
 type RootStackParamList = {
   FAQ: undefined;
@@ -13,6 +20,34 @@ type RootStackParamList = {
 
 export default function ProfileScreen() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
+
+  const dispatch = useDispatch();
+
+const handleLogout = async () => {
+  try {
+    // 🔐 Clear tokens
+    await AsyncStorage.multiRemove([
+      'accessToken',
+      'refreshToken',
+    ]);
+
+    // 🔥 Reset redux auth state
+    dispatch(logout());
+
+    Toast.show({
+      type: 'success',
+      text1: 'Logged out',
+      text2: 'You have been logged out successfully',
+    });
+  } catch (error) {
+    Toast.show({
+      type: 'error',
+      text1: 'Logout failed',
+      text2: 'Please try again',
+    });
+  }
+};
 
   const userProfileItems = [
     {
@@ -121,7 +156,7 @@ export default function ProfileScreen() {
    <Button
   label="Log Out"
   className="mt-10 w-[82%] self-center"
-  onPress={()=> {}}
+  onPress={handleLogout}
 />
 
     </ScrollView>
