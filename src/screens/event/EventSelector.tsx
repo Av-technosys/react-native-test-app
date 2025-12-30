@@ -3,6 +3,6 @@ import EventSelector from '../../components/Events/EventSelector/main';
 
 export default function EventScreen() {
   return (
-    <EventSelector />
+    <EventSelector/>
   );
 }

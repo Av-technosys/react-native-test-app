@@ -5,23 +5,106 @@ import {
   TextInput,
   Pressable,
   Image,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Feather from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import Toast from 'react-native-toast-message';
+import { confirmForgotPassword } from '../../api/auth';
 
+type RouteParams = {
+  ResetPassword: {
+    username: string;
+    code: string;
+  };
+};
 
 export default function ResetPasswordScreen() {
+  const navigation = useNavigation<any>();
+  const route = useRoute<RouteProp<RouteParams, 'ResetPassword'>>();
+  const { username, code } = route.params;
+
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [secure1, setSecure1] = useState(true);
   const [secure2, setSecure2] = useState(true);
-  const navigation = useNavigation()
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async () => {
+    if (!password || !confirmPassword) {
+      Toast.show({
+        type: 'error',
+        text1: 'Required',
+        text2: 'Please fill all fields',
+      });
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Toast.show({
+        type: 'error',
+        text1: 'Mismatch',
+        text2: 'Passwords do not match',
+      });
+      return;
+    }
+
+    if (password.length < 6) {
+      Toast.show({
+        type: 'error',
+        text1: 'Weak password',
+        text2: 'Password must be at least 6 characters',
+      });
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      await confirmForgotPassword({
+        username,
+        code,
+        newPassword: password,
+      });
+
+      Toast.show({
+        type: 'success',
+        text1: 'Password updated',
+        text2: 'You can now login',
+      });
+
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'PasswordSuccess' }],
+      });
+    } catch (error: any) {
+      Toast.show({
+        type: 'error',
+        text1: 'Failed',
+        text2:
+          error?.response?.data?.message ||
+          'Unable to reset password',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
+            <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
+        >
+          <ScrollView
+            contentContainerStyle={{ flexGrow: 1 }}
+            keyboardShouldPersistTaps="handled"
+          >
     <SafeAreaView className="flex-1 bg-white px-5">
-
       {/* LOGO */}
       <View className="items-center">
         <Image
@@ -43,17 +126,14 @@ export default function ResetPasswordScreen() {
 
       {/* FORM */}
       <View className="mt-10 space-y-6">
-
         {/* NEW PASSWORD */}
         <View>
           <Text className="text-md font-medium text-gray-400 mb-2">
             New Password
           </Text>
-
           <View className="flex-row items-center h-16 border border-gray-500 rounded-2xl px-4">
             <TextInput
               placeholder="Enter new password"
-              placeholderTextColor="#6B7280"
               secureTextEntry={secure1}
               value={password}
               onChangeText={setPassword}
@@ -74,11 +154,9 @@ export default function ResetPasswordScreen() {
           <Text className="text-md font-medium text-gray-400 mb-2">
             Confirm Password
           </Text>
-
           <View className="flex-row items-center h-16 border border-gray-500 rounded-2xl px-4">
             <TextInput
               placeholder="Confirm new password"
-              placeholderTextColor="#6B7280"
               secureTextEntry={secure2}
               value={confirmPassword}
               onChangeText={setConfirmPassword}
@@ -95,31 +173,12 @@ export default function ResetPasswordScreen() {
         </View>
       </View>
 
-      {/* PASSWORD RULES */}
-      <View className="mt-6 space-y-1 px-1">
-        <Text className="text-gray-500">• 6–20 characters</Text>
-        <Text className="text-gray-500">
-          • Includes numbers and lowercase letters
-        </Text>
-        <Text className="text-gray-500">• No spaces</Text>
-        <Text className="text-gray-500">
-          • Use special characters (@ # & % $)
-        </Text>
-      </View>
-
-      {/* SUBMIT BUTTON */}
+      {/* SUBMIT */}
       <Pressable
-      onPress={() =>
-        navigation.getParent()?.navigate('AuthStack', {
-          screen: 'PasswordSuccess',
-        })
-      }
+        onPress={handleSubmit}
+        disabled={loading}
         className="mt-16 mb-8"
-        style={{
-          height: 56,
-          borderRadius: 999,
-          overflow: 'hidden',
-        }}
+        style={{ height: 56, borderRadius: 999, overflow: 'hidden' }}
       >
         <LinearGradient
           colors={['#FACC15', '#F97316']}
@@ -129,7 +188,6 @@ export default function ResetPasswordScreen() {
             flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
-            borderRadius: 999,
           }}
         >
           <Text className="font-bold text-xl text-white">
@@ -137,7 +195,8 @@ export default function ResetPasswordScreen() {
           </Text>
         </LinearGradient>
       </Pressable>
-
     </SafeAreaView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }

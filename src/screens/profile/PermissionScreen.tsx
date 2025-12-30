@@ -3,11 +3,9 @@ import {
     View,
     Text,
     Pressable,
-    Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Feather from 'react-native-vector-icons/Feather';
-import LinearGradient from 'react-native-linear-gradient';
 import { PermissionDialog } from './PermissionDialogue';
 
 export default function PermissionScreen({ navigation }: any) {

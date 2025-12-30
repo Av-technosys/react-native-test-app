@@ -1,18 +1,115 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, Image } from 'react-native';
+import { View, Text, TextInput, Pressable, Image ,KeyboardAvoidingView, ScrollView, Platform} from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
-import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
+import Button from '../common/Button';
+import { Signup } from '../../api';
+import Toast from 'react-native-toast-message';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SignUpScreen() {
+  const navigation = useNavigation<any>();
+
   const [secure, setSecure] = useState(true);
-  const navigation = useNavigation()
+  const [loading, setLoading] = useState(false);
+
+  const [form, setForm] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    password: '',
+  });
+
+  const onChange = (key: keyof typeof form, value: string) => {
+    setForm(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleSignup = async () => {
+    await AsyncStorage.multiRemove(['accessToken', 'refreshToken']);
+
+    const { name, phone, email, password } = form;
+
+    if (!name || !phone || !email || !password) {
+      Toast.show({
+        type: 'error',
+        text1: 'Missing fields',
+        text2: 'All fields are required',
+      });
+      return;
+    }
+
+    if (password.length < 6) {
+      Toast.show({
+        type: 'error',
+        text1: 'Weak password',
+        text2: 'Password must be at least 6 characters',
+      });
+      return;
+    }
+
+    const payload = {
+      full_name: name,
+      email,
+      number: `+91${phone}`,
+      password,
+    };
+
+    try {
+      setLoading(true);
+
+      console.log('SIGNUP PAYLOAD 👉', payload);
+
+      const res = await Signup(payload);
+
+      console.log('SIGNUP RESPONSE ✅', res?.data);
+
+      Toast.show({
+        type: 'success',
+        text1: 'Signup successful',
+        text2: 'OTP sent to your phone',
+      });
+
+      navigation.getParent()?.navigate('AuthStack', {
+        screen: 'OtpVerification',
+        flow: 'signup',
+        params: {
+          signUp: true,
+          email: payload.email,
+        },
+      });
+    } catch (error: any) {
+      const apiErrorMessage = error?.response?.data?.error || '';
+
+      console.log('SIGNUP ERROR ❌', {
+        message: error?.message,
+        apiErrorMessage,
+      });
+      
+      Toast.show({
+        type: 'error',
+        text1: 'Signup failed',
+        text2: apiErrorMessage || 'Something went wrong',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <View className="flex-1 px-4 bg-white ">
+        <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
+    >
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+      >
+    <View className="flex-1 px-4 bg-white">
       {/* LOGO */}
       <View className="items-center mt-6">
         <Image
-          source={require('../../assets/images/freeky-icon.png')} // replace path
+          source={require('../../assets/images/freeky-icon.png')}
           className="w-96 h-60"
           resizeMode="contain"
         />
@@ -24,6 +121,8 @@ export default function SignUpScreen() {
         <View>
           <Text className="text-md font-medium text-gray-400 m-2">Name</Text>
           <TextInput
+            value={form.name}
+            onChangeText={v => onChange('name', v)}
             placeholder="Enter your name"
             placeholderTextColor="#6B7280"
             className="h-16 border border-gray-500 rounded-2xl px-5 text-base text-black"
@@ -39,6 +138,8 @@ export default function SignUpScreen() {
             <Text className="text-black mr-3 text-base">+44</Text>
             <View className="w-px h-6 bg-gray-600 mr-3" />
             <TextInput
+              value={form.phone}
+              onChangeText={v => onChange('phone', v)}
               placeholder="Phone number"
               placeholderTextColor="#6B7280"
               keyboardType="phone-pad"
@@ -51,6 +152,8 @@ export default function SignUpScreen() {
         <View>
           <Text className="text-md font-medium text-gray-400 m-2">Email</Text>
           <TextInput
+            value={form.email}
+            onChangeText={v => onChange('email', v)}
             placeholder="name@example.com"
             placeholderTextColor="#6B7280"
             keyboardType="email-address"
@@ -66,6 +169,8 @@ export default function SignUpScreen() {
           </Text>
           <View className="flex-row items-center h-16 border border-gray-500 rounded-2xl px-4">
             <TextInput
+              value={form.password}
+              onChangeText={v => onChange('password', v)}
               placeholder="********"
               placeholderTextColor="#6B7280"
               secureTextEntry={secure}
@@ -83,37 +188,14 @@ export default function SignUpScreen() {
       </View>
 
       {/* SIGN UP BUTTON */}
-
-      <Pressable
-            onPress={() =>
-        navigation.getParent()?.navigate('AuthStack', {
-          screen: 'OtpVerification',
-            params: {
-      signUp: true,
-    },
-        })
-      }
+      <Button
+        label={loading ? 'Signing up...' : 'Sign up'}
         className="mt-24 mb-4"
-        style={{
-          height: 56,
-          borderRadius: 999,
-          overflow: 'hidden',
-        }}
-      >
-        <LinearGradient
-          colors={['#FACC15', '#F97316']}
-          start={{ x: 0, y: 0.5 }}
-          end={{ x: 1, y: 0.5 }}
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderRadius: 999,
-          }}
-        >
-          <Text className="font-bold text-2xl text-white">Sign up</Text>
-        </LinearGradient>
-      </Pressable>
+        disabled={loading}
+        onPress={handleSignup}
+      />
     </View>
+    </ScrollView>
+    </KeyboardAvoidingView>
   );
 }

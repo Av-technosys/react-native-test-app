@@ -2,7 +2,6 @@ import React from 'react';
 import { View, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ScreenHeader from '../../common/ScreenHeader';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import BookingDetailsForm from '../../common/forms/EventDetails';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -29,14 +28,8 @@ export default function EventTypeSelector() {
 
   return (
     <SafeAreaView className="flex-1 bg-white  ">
-      <ScreenHeader
-        title="Events"
-        right={
-          <View className="relative">
-            <MaterialIcons name="more-vert" size={22} color="#000" />
-          </View>
-        }
-      />
+<ScreenHeader title="Events" rightType="menu" />
+
       <ScrollView
         className="flex-1 m-4 my-12"
         contentContainerStyle={{

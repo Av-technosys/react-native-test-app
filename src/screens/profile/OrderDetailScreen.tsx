@@ -1,152 +1,216 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from 'react';
-import {
-    View,
-    Text,
-    Pressable,
-    ScrollView,
-    Image,
-} from 'react-native';
+import { View, Text, Pressable, ScrollView, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Feather from 'react-native-vector-icons/Feather';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import ScreenHeader from '../../components/common/ScreenHeader';
+import Button from '../../components/common/Button';
 
-export default function OrderDetailsScreen({ navigation }: any) {
-    return (
-        <SafeAreaView className="flex-1 bg-white">
-            {/* Header */}
-            <View className="flex-row items-center justify-between px-4 py-3">
-                <View className="flex-row items-center gap-2">
-                    <Pressable onPress={() => navigation.goBack()}>
-                        <Feather name="arrow-left" size={22} />
-                    </Pressable>
-                    <Text className="text-lg font-semibold">Orders</Text>
-                </View>
+type OrderStackParamList = {
+  OrderDetailsScreen: {
+    status: string;
+  };
+};
 
-                <View className="relative">
-                    <Feather name="bell" size={22} />
-                    <View className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full" />
-                </View>
-            </View>
+type OrderDetailsRouteProp = RouteProp<
+  OrderStackParamList,
+  'OrderDetailsScreen'
+>;
 
-            <ScrollView
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
+const SERVICES = [
+  {
+    id: '1',
+    title: 'Food & Drink',
+    vendor: 'XYZ',
+    location: 'Malviya Nagar, Jaipur',
+    desc: '150 guests • Premium menu',
+    price: 150,
+  },
+  {
+    id: '2',
+    title: 'Decoration',
+    vendor: 'XYZ',
+    location: 'Malviya Nagar, Jaipur',
+    desc: 'Premium plan',
+    price: 150,
+  },
+  {
+    id: '3',
+    title: 'Venue',
+    vendor: 'XYZ',
+    location: 'Malviya Nagar, Jaipur',
+    desc: 'Hyatt Banquet Hall',
+    price: 150,
+  },
+];
+
+export default function OrderDetailsScreen() {
+  const route = useRoute<OrderDetailsRouteProp>();
+  const { status } = route.params;
+
+  return (
+    <SafeAreaView className="flex-1 bg-white">
+      <ScreenHeader title="Order Summary" rightType="notification" />
+
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ padding: 24, paddingBottom: 40 }}
+      >
+        {/* EVENT CARD (MATCHED) */}
+        <View className="flex-row rounded-2xl mb-6">
+          <View className="w-36 h-36 bg-orange-400 rounded-xl items-center justify-center">
+            <Feather name="gift" size={60} color="white" />
+          </View>
+
+          <View className="ml-4 flex-1">
+            <Text className="font-semibold text-2xl">Piyush’s Birthday</Text>
+            <Text className="text-md text-gray-500 mt-2">Jaipur</Text>
+            <Text className="text-md text-gray-500 mt-1">
+              Saturday, August 25, 2025
+            </Text>
+            <Text className="text-md text-gray-500 mt-1">
+              6:00 PM – 11:00 PM
+            </Text>
+          </View>
+        </View>
+        {/* ORDER ID + STATUS */}
+        <View className="flex-row justify-between items-center mb-8">
+          <Text className="text-sm text-gray-500">Order ID: #6598569</Text>
+
+          <Text
+            className={`px-3 py-1 rounded-full text-xs font-semibold ${
+              status === 'Paid'
+                ? 'bg-green-100 text-green-600'
+                : 'bg-red-100 text-red-600'
+            }`}
+          >
+            {status}
+          </Text>
+        </View>
+        {/* SERVICES (MATCHED STYLE) */}
+        <View className="gap-6 mb-8">
+          {SERVICES.map((item, index) => (
+            <View
+              key={index}
+              className="border border-gray-200 rounded-xl px-4 py-3"
             >
-                {/* Event Info */}
-                <View className="mb-4">
-                    <Text className="text-lg font-semibold">
-                        Piyush’s Birthday
-                    </Text>
-                    <Text className="text-sm text-gray-500 mt-1">
-                        Saturday, August 25, 2025
-                    </Text>
+              <View className="flex-row justify-between">
+                <View className="flex-row gap-3">
+                  <View className="w-12 h-12 bg-blue-100 rounded-lg items-center justify-center">
+                    <Feather name="coffee" size={24} color="#2563EB" />
+                  </View>
+
+                  <View>
+                    <Text className="font-semibold">{item.vendor}</Text>
                     <Text className="text-sm text-gray-500">
-                        6:00 PM – 11:00 PM
+                      {item.location}
                     </Text>
-                    <Text className="text-sm text-gray-500 mt-1">
-                        XYZ • Jaipur
-                    </Text>
+                  </View>
+                </View>
+              </View>
 
-                    <View className="flex-row justify-between items-center mt-3">
-                        <Text className="text-sm text-gray-500">
-                            Orders ID: #6598569
-                        </Text>
-                        <Text className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs font-semibold">
-                            Paid
-                        </Text>
-                    </View>
+              <View className="flex-row justify-between mt-4">
+                <View>
+                  <Text className="font-medium">{item.title}</Text>
+                  <Text className="text-sm text-gray-500">{item.desc}</Text>
                 </View>
 
-                {/* Services */}
-                <View className="gap-3 mb-6">
-                    {[
-                        { icon: 'coffee', title: 'Food & Drink', desc: '150 guests • Premium menu', price: '$4,500' },
-                        { icon: 'music', title: 'DJ & Sound System', desc: '5 hours • Premium equipment', price: '$1,200' },
-                        { icon: 'camera', title: 'Photography', desc: '8 hours • 2 photographers', price: '$2,800' },
-                        { icon: 'feather', title: 'Decoration', desc: 'Centerpieces & ceremony arch', price: '$1,800' },
-                    ].map((item, index) => (
-                        <View
-                            key={index}
-                            className="flex-row items-center justify-between border border-gray-200 rounded-xl px-4 py-3"
-                        >
-                            <View className="flex-row items-center gap-3">
-                                <View className="h-9 w-9 rounded-lg bg-gray-100 items-center justify-center">
-                                    <Feather name={item.icon as any} size={18} />
-                                </View>
-                                <View>
-                                    <Text className="font-medium">
-                                        {item.title}
-                                    </Text>
-                                    <Text className="text-xs text-gray-500">
-                                        {item.desc}
-                                    </Text>
-                                </View>
-                            </View>
-                            <Text className="font-semibold">
-                                {item.price}
-                            </Text>
-                        </View>
-                    ))}
-                </View>
+                <Text className="font-semibold text-lg text-orange-500">
+                  ₹{item.price}
+                </Text>
+              </View>
+            </View>
+          ))}
+        </View>
 
-                {/* Reviews */}
-                <View className="mb-6">
-                    <Text className="font-semibold mb-2">Reviews</Text>
+        <View className="mb-8">
+     
+          <Text className="font-semibold mb-3 text-gray-900">
+         
+            Reviews
+          </Text>
+  <View className="border border-gray-200 rounded-2xl px-4 py-4 bg-white">
+  {/* TOP ROW */}
+  <View className="flex-row items-center justify-between mb-3">
+    <View className="flex-row items-center gap-3">
+      <Image
+        source={{
+          uri: 'https://randomuser.me/api/portraits/women/44.jpg',
+        }}
+        className="w-10 h-10 rounded-full"
+      />
 
-                    <View className="border border-gray-200 rounded-xl p-4">
-                        <View className="flex-row items-center gap-3 mb-2">
-                            <Image
-                                source={{ uri: 'https://randomuser.me/api/portraits/women/44.jpg' }}
-                                className="h-9 w-9 rounded-full"
-                            />
-                            <View className="flex-1">
-                                <Text className="font-medium">Sarah Johnson</Text>
-                                <Text className="text-xs text-gray-500">2 days ago</Text>
-                            </View>
-                            <Text className="text-yellow-500 font-semibold">
-                                ★ 5.0
-                            </Text>
-                        </View>
+      <Text className="font-semibold text-base text-gray-900">
+        Sarah Johnson
+      </Text>
+    </View>
 
-                        <Text className="text-sm text-gray-600">
-                            Excellent service! Michael was punctual and did an amazing job
-                            cleaning our house. Highly recommend!
-                        </Text>
-                    </View>
-                </View>
+    {/* RATING */}
+    <View className="flex-row items-center gap-1">
+      <Text className="text-yellow-400 text-base">★</Text>
+      <Text className="font-semibold text-gray-900">5.0</Text>
+    </View>
+  </View>
 
-                {/* Pricing */}
-                <View className="mb-6">
-                    <Text className="font-semibold mb-3">
-                        Pricing Breakdown
-                    </Text>
+  {/* COMMENT */}
+  <Text className="text-sm text-gray-600 leading-6 mb-3">
+    Excellent service! Michael was punctual and did an amazing job
+    cleaning our house. Highly recommend!
+  </Text>
 
-                    {[
-                        { label: 'Subtotal', value: '$10,300' },
-                        { label: 'Service Fee (8%)', value: '$824' },
-                        { label: 'Tax (10%)', value: '$1,030' },
-                    ].map((row, idx) => (
-                        <View
-                            key={idx}
-                            className="flex-row justify-between py-1"
-                        >
-                            <Text className="text-gray-600">{row.label}</Text>
-                            <Text>{row.value}</Text>
-                        </View>
-                    ))}
+  {/* TIME */}
+  <Text className="text-xs text-gray-400">
+    2 days ago
+  </Text>
+</View>
 
-                    <View className="flex-row justify-between mt-3 pt-3 border-t border-gray-200">
-                        <Text className="font-semibold text-base">Total</Text>
-                        <Text className="font-semibold text-base">
-                            $12,154
-                        </Text>
-                    </View>
-                </View>
+        </View>
+        {/* PRICING (MATCHED SPACING) */}
+        <View className="mb-8">
+          <Text className="font-semibold text-lg mb-6">Pricing Breakdown</Text>
 
-                {/* Invoice */}
-                <Pressable className="border border-gray-400 rounded-xl py-3 items-center">
-                    <Text className="font-medium">Download Invoice</Text>
-                </Pressable>
-            </ScrollView>
-        </SafeAreaView>
-    );
+          <View className="gap-4">
+            <Row label="Subtotal" value="₹10,300" />
+            <Row label="Service Fee (8%)" value="₹824" />
+            <Row label="Tax (10%)" value="₹1,030" />
+          </View>
+
+          <View className="flex-row justify-between mt-4 pt-3 border-t border-gray-200">
+            <Text className="font-semibold text-base">Total</Text>
+            <Text className="font-semibold text-base text-orange-500">
+              ₹12,154
+            </Text>
+          </View>
+        </View>
+        {/* CTA (SINGLE SOURCE OF TRUTH) */}
+
+        {status === 'Paid' ? (
+          <Pressable className="border border-gray-400 rounded-2xl py-3 items-center">
+            <Text className="font-semibold text-gray-800">
+              Download Invoice
+            </Text>
+          </Pressable>
+        ) : (
+          <Button
+            label="Pay Now"
+            className="mt-4"
+            onPress={() => {
+              console.log('Pay Now');
+            }}
+          />
+        )}
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+/* --------- Helper Row --------- */
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <View className="flex-row justify-between">
+      <Text className="text-gray-600">{label}</Text>
+      <Text>{value}</Text>
+    </View>
+  );
 }

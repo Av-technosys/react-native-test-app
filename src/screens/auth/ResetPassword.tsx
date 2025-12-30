@@ -12,14 +12,8 @@ export default function resetPassword() {
                         barStyle={'dark-content'}
                         backgroundColor="#FFFFFF"
                         translucent              />
-                          <ScreenHeader
-                                        title="Reset Password"
-                                        right={
-                                          <View className="relative">
-                                            <MaterialIcons name="more-vert" size={22} color="#000" />
-                                          </View>
-                                        }
-                                      />
+<ScreenHeader title="Reset Password" rightType="menu" />
+
     <ResetPassword />
     </SafeAreaView>
   );

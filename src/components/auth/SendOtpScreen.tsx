@@ -8,8 +8,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Feather from 'react-native-vector-icons/Feather';
-import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
+import Button from '../common/Button';
 
 export default function SendOtpScreen() {
   const [value, setValue] = useState('');
@@ -61,36 +61,15 @@ export default function SendOtpScreen() {
       </View>
 
       {/* SEND OTP BUTTON */}
-      <Pressable
-        className="mt-16"
-        style={{
-          height: 56,
-          borderRadius: 999,
-          overflow: 'hidden',
-        }}
-         onPress={() =>
-        navigation.getParent()?.navigate('AuthStack', {
-          screen: 'OtpVerification',
-        })
-      }
-      >
-        <LinearGradient
-          colors={['#FACC15', '#F97316']}
-          start={{ x: 0, y: 0.5 }}
-          end={{ x: 1, y: 0.5 }}
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderRadius: 999,
-          }}
-        >
-          <Text className="font-bold text-xl text-white">
-            Send OTP
-          </Text>
-        </LinearGradient>
-      </Pressable>
-
+<Button
+  label="Send OTP"
+  className="mt-16"
+  onPress={() =>
+    navigation.getParent()?.navigate('AuthStack', {
+      screen: 'OtpVerification',
+    })
+  }
+/>
     </SafeAreaView>
   );
 }
