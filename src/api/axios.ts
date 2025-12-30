@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export const publicApi = axios.create({
-  baseURL: 'https://55c95d534467.ngrok-free.app/v1',
+  baseURL: 'https://751ue73p4j.execute-api.ap-south-1.amazonaws.com/v1',
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
@@ -20,7 +20,7 @@ publicApi.interceptors.request.use(config => {
 
 
 export const privateApi = axios.create({
-  baseURL: 'https://55c95d534467.ngrok-free.app/v1', // change later
+  baseURL: 'https://751ue73p4j.execute-api.ap-south-1.amazonaws.com/v1', // change later
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
@@ -89,7 +89,7 @@ privateApi.interceptors.response.use(
          // i will put this url in env
          
         const { data } = await axios.post(
-          'https://55c95d534467.ngrok-free.app/v1/auth/refresh_token',
+          'https://751ue73p4j.execute-api.ap-south-1.amazonaws.com/v1/auth/refresh_token',
           { refreshToken }
         );
 
