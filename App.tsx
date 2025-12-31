@@ -7,7 +7,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { applyGlobalFont } from './src/utils/GlobalFont';
 import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import Toast from 'react-native-toast-message';
+import FlashMessage from 'react-native-flash-message';
 
 import RootStack from './src/navigation/rockStack';
 import { Provider } from 'react-redux';
@@ -24,26 +24,25 @@ function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-               <Toast />
+        <FlashMessage
+          position="top"
+          statusBarHeight={StatusBar.currentHeight ?? 40}
+        />
+
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
             <NavigationContainer>
               {/* ✅ GLOBAL STATUS BAR */}
-       
+
               <StatusBar
                 barStyle={isDarkMode ? 'light-content' : 'dark-content'}
                 backgroundColor="#FFFFFF"
-                translucent              />
+                translucent
+              />
               <RootStack />
             </NavigationContainer>
-              
           </PersistGate>
         </Provider>
-<Toast
-  position="top"
-  topOffset={60}      // prevents status bar overlap
-  visibilityTime={3000}
-/>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

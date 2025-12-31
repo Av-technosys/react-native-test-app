@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, RouteProp, useRoute } from '@react-navigation/native';
-import Toast from 'react-native-toast-message';
 import Button from '../common/Button';
 import { confirmOtp, resendOtp } from '../../api/auth';
 import { AuthStackParamList } from '../../navigation/Screens/AuthStack';
@@ -20,6 +19,8 @@ import { loginSuccess } from '../../store/slices/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { decodeIdToken } from '../../utils/decodeToken';
 import { useEffect } from 'react';
+import ScreenHeader from '../common/ScreenHeader';
+import { showMessage } from 'react-native-flash-message';
 
 type RouteProps = RouteProp<AuthStackParamList, 'OtpVerification'>;
 
@@ -70,16 +71,16 @@ export default function OtpVerificationScreen() {
       console.log(username);
       const data = await resendOtp({ username });
       console.log(data);
-      Toast.show({
+      showMessage({
         type: 'success',
-        text1: 'OTP Sent',
-        text2: 'A new OTP has been sent',
+        message: 'OTP Sent',
+        description: 'A new OTP has been sent',
       });
     } catch (error: any) {
-      Toast.show({
-        type: 'error',
-        text1: 'Failed to resend OTP',
-        text2: error?.response?.data?.message || 'Please try again later',
+      showMessage({
+        type: 'danger',
+        message: 'Failed to resend OTP',
+        description: error?.response?.data?.message || 'Please try again later',
       });
 
       // allow retry if API failed
@@ -103,10 +104,10 @@ export default function OtpVerificationScreen() {
     const code = otp.join('');
 
     if (code.length !== OTP_LENGTH) {
-      Toast.show({
-        type: 'error',
-        text1: 'Invalid OTP',
-        text2: 'Please enter the complete OTP',
+      showMessage({
+        type: 'danger',
+        message: 'Invalid OTP',
+        description: 'Please enter the complete OTP',
       });
       return;
     }
@@ -119,9 +120,10 @@ export default function OtpVerificationScreen() {
         code,
       });
 
-      Toast.show({
+      showMessage({
         type: 'success',
-        text1: 'OTP Verified',
+        message: 'OTP Verified',
+        description: 'You may proceed'
       });
 
       // 🔴 FLOW 1: SIGNUP → LOGIN USER
@@ -153,10 +155,10 @@ export default function OtpVerificationScreen() {
         return;
       }
     } catch (error: any) {
-      Toast.show({
-        type: 'error',
-        text1: 'Verification failed',
-        text2: error?.response?.data?.message || 'Invalid or expired OTP',
+      showMessage({
+        type: 'danger',
+        message: 'Verification failed',
+        description: error?.response?.data?.message || 'Invalid or expired OTP',
       });
     } finally {
       setLoading(false);
@@ -173,6 +175,8 @@ export default function OtpVerificationScreen() {
             contentContainerStyle={{ flexGrow: 1 }}
             keyboardShouldPersistTaps="handled"
           >
+  <ScreenHeader title="Enter Otp" rightType="menu" />
+s
     <SafeAreaView className="flex-1 bg-white px-5">
       {/* LOGO */}
       <View className="items-center">

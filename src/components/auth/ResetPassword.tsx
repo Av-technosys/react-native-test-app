@@ -13,8 +13,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Feather from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import Toast from 'react-native-toast-message';
 import { confirmForgotPassword } from '../../api/auth';
+import { showMessage } from 'react-native-flash-message';
 
 type RouteParams = {
   ResetPassword: {
@@ -36,28 +36,37 @@ export default function ResetPasswordScreen() {
 
   const handleSubmit = async () => {
     if (!password || !confirmPassword) {
-      Toast.show({
-        type: 'error',
-        text1: 'Required',
-        text2: 'Please fill all fields',
+      showMessage({
+        type: 'danger',
+        message: 'Required',
+        description: 'Please fill all fields',
       });
       return;
     }
 
     if (password !== confirmPassword) {
-      Toast.show({
-        type: 'error',
-        text1: 'Mismatch',
-        text2: 'Passwords do not match',
+      showMessage({
+        type: 'danger',
+        message: 'Mismatch',
+        description: 'Passwords do not match',
       });
       return;
     }
 
     if (password.length < 6) {
-      Toast.show({
-        type: 'error',
-        text1: 'Weak password',
-        text2: 'Password must be at least 6 characters',
+      showMessage({
+        type: 'danger',
+        message: 'Weak password',
+        description: 'Password must be at least 6 characters',
+      });
+      return;
+    }
+
+    if (password.length < 6) {
+      showMessage({
+        type: 'danger',
+        message: 'Weak password',
+        description: 'Password must be at least 6 characters',
       });
       return;
     }
@@ -71,10 +80,10 @@ export default function ResetPasswordScreen() {
         newPassword: password,
       });
 
-      Toast.show({
+      showMessage({
         type: 'success',
-        text1: 'Password updated',
-        text2: 'You can now login',
+        message: 'Password updated',
+        description: 'You can now login',
       });
 
       navigation.reset({
@@ -82,10 +91,10 @@ export default function ResetPasswordScreen() {
         routes: [{ name: 'PasswordSuccess' }],
       });
     } catch (error: any) {
-      Toast.show({
-        type: 'error',
-        text1: 'Failed',
-        text2:
+      showMessage({
+        type: 'danger',
+        message: 'Failed',
+        description:
           error?.response?.data?.message ||
           'Unable to reset password',
       });

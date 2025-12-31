@@ -1,7 +1,6 @@
 /* eslint-disable react/self-closing-comp */
 import { StatusBar } from 'react-native';
 import ForgotPasswordOtpScreen from '../../components/auth/ForgotPassword';
-import ScreenHeader from '../../components/common/ScreenHeader';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ForgotPassword() {
@@ -11,7 +10,7 @@ export default function ForgotPassword() {
                         barStyle={'dark-content'}
                         backgroundColor="#FFFFFF"
                         translucent              />
- <ScreenHeader title="Log in" rightType="menu" />
+
 
     <ForgotPasswordOtpScreen />
     </SafeAreaView>

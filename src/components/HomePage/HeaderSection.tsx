@@ -4,7 +4,11 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { ChevronDown, MapPin, Bell, Search } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { useAppSelector } from '../../store/hooks';
+import { showMessage } from 'react-native-flash-message';
+import { userDetails } from '../../api/user';
+import { useEffect, useState } from 'react';
+import { fetchCurrentAddress } from '../../api/user';
+import { DeviceEventEmitter } from 'react-native';
 
 
 export default function HeaderSection({
@@ -13,15 +17,50 @@ export default function HeaderSection({
   bottomSheetRef: any;
 }) {
   const navigation = useNavigation<NavigationProp<any>>();
-const user = useAppSelector(state => state.auth.user);
-  console.log(user)
+  const [userData, setUserData] = useState<any>(null);
+  const [currentAddress, setCurrentAddress] = useState<any>(null);
+
+  const fetchUserDetails = async () => {
+    try {
+      const res = await userDetails();
+
+      setUserData(res.data);
+      const addressId = res.data.currentAddressId;
+
+      if (addressId) {
+        const addressRes = await fetchCurrentAddress(addressId);
+        setCurrentAddress(addressRes.data);
+      }
+    } catch (error) {
+      console.log(error);
+      showMessage({
+        type: 'danger',
+        message: 'Failed to fetch user details',
+      });
+    }
+  };
+
+useEffect(() => {
+  fetchUserDetails();
+
+  const subscription = DeviceEventEmitter.addListener(
+    'ADDRESS_UPDATED',
+    () => {
+      fetchUserDetails(); // 🔁 re-fetch user + current address
+      bottomSheetRef.current?.close(); // ⬇️ close bottom sheet
+    }
+  );
+
+  return () => subscription.remove();
+}, [bottomSheetRef])
+
   return (
     <View className="px-4 mt-4">
       <View className="flex-row justify-between items-center">
         <View className="flex flex-col gap-1 my-2">
-         <Text className="text-xl font-semibold text-gray-900">
-          Hi, {user?.email || 'Guest'} 👋
-        </Text> 
+          <Text className="text-xl font-semibold text-gray-900">
+            Hi, {userData?.firstName || 'Guest'} 👋
+          </Text>
           <Text className="text-3xl font-semibold text-black">
             Welcome back
           </Text>
@@ -45,8 +84,8 @@ const user = useAppSelector(state => state.auth.user);
           <TouchableOpacity
             onPress={() => {
               navigation.getParent()?.navigate('FlowStack', {
-                screen: "NotificationsScreen",
-              })
+                screen: 'NotificationsScreen',
+              });
             }}
             className="w-12 h-12 rounded-full bg-white items-center justify-center"
             style={{
@@ -97,10 +136,10 @@ const user = useAppSelector(state => state.auth.user);
           {/* Text */}
           <Text
             className="flex-1 text-sm"
-            style={{ color: '#000' }} // EXACT black
+            style={{ color: '#000' }}
             numberOfLines={1}
           >
-            Akshya Nagar 1st Block Ahmedabad
+            {currentAddress?.addressLineOne || 'Select delivery address'}
           </Text>
 
           {/* Right arrow */}

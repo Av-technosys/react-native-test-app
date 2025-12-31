@@ -1,8 +1,7 @@
 /* eslint-disable react/self-closing-comp */
-import { StatusBar, View } from 'react-native';
+import { StatusBar } from 'react-native';
 import OtpVerification from '../../components/auth/OtpVerificationScreen';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import ScreenHeader from '../../components/common/ScreenHeader';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function otpVerification() {
@@ -12,7 +11,6 @@ export default function otpVerification() {
                         barStyle={'dark-content'}
                         backgroundColor="#FFFFFF"
                         translucent              />
-  <ScreenHeader title="Enter Otp" rightType="menu" />
 
     <OtpVerification />
     </SafeAreaView>

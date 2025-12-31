@@ -9,11 +9,12 @@ interface BaseBottomSheetProps {
   snapPoints?: (string | number)[];
   backgroundStyle?: ViewStyle;
   scrollEnabled?: boolean;
+  enableDynamicSizing?: boolean; // New prop
 }
 
 const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(
-  ({ children, snapPoints, backgroundStyle, scrollEnabled = true }, ref) => {
-    const defaultSnapPoints = useMemo(() => snapPoints || ['70%'], []);
+  ({ children, snapPoints, backgroundStyle, scrollEnabled = true, enableDynamicSizing = false }, ref) => {
+    const defaultSnapPoints = useMemo(() => snapPoints || ['25%', '50%', '85%'], [snapPoints]);
 
     return scrollEnabled ? (
       <BottomSheet
@@ -21,12 +22,37 @@ const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(
         index={-1}
         snapPoints={defaultSnapPoints}
         enablePanDownToClose
+        // KEYBOARD HANDLING
+        keyboardBehavior="extend"
+        keyboardBlurBehavior="restore"
+        android_keyboardInputMode="adjustResize"
+        // DYNAMIC CONTENT HANDLING
+        enableDynamicSizing={enableDynamicSizing}
+        // TAB BAR HANDLING
+        bottomInset={60} // Adjust based on your tab bar height
+        // STYLING
+        handleIndicatorStyle={{ backgroundColor: '#ccc', width: 40 }}
         backgroundStyle={[
-          { borderRadius: 20, backgroundColor: 'white' },
+          { 
+            borderRadius: 20, 
+            backgroundColor: 'white',
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: -3 },
+            shadowOpacity: 0.1,
+            shadowRadius: 10,
+            elevation: 20,
+          },
           backgroundStyle,
         ]}
       >
-        <BottomSheetScrollView contentContainerStyle={{ padding: 20 }}>
+        <BottomSheetScrollView 
+          contentContainerStyle={{ 
+            padding: 20,
+            paddingBottom: 40, // Extra padding for buttons
+          }}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
           {children}
         </BottomSheetScrollView>
       </BottomSheet>
@@ -36,8 +62,22 @@ const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(
         index={-1}
         snapPoints={defaultSnapPoints}
         enablePanDownToClose
+        keyboardBehavior="extend"
+        keyboardBlurBehavior="restore"
+        android_keyboardInputMode="adjustResize"
+        enableDynamicSizing={enableDynamicSizing}
+        bottomInset={60}
+        handleIndicatorStyle={{ backgroundColor: '#ccc', width: 40 }}
         backgroundStyle={[
-          { borderRadius: 20, backgroundColor: 'white' },
+          { 
+            borderRadius: 20, 
+            backgroundColor: 'white',
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: -3 },
+            shadowOpacity: 0.1,
+            shadowRadius: 10,
+            elevation: 20,
+          },
           backgroundStyle,
         ]}
       >

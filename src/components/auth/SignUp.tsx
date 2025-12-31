@@ -4,8 +4,8 @@ import Feather from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
 import Button from '../common/Button';
 import { Signup } from '../../api';
-import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { showMessage } from 'react-native-flash-message';
 
 export default function SignUpScreen() {
   const navigation = useNavigation<any>();
@@ -30,19 +30,19 @@ export default function SignUpScreen() {
     const { name, phone, email, password } = form;
 
     if (!name || !phone || !email || !password) {
-      Toast.show({
-        type: 'error',
-        text1: 'Missing fields',
-        text2: 'All fields are required',
+      showMessage({
+        type: 'danger',
+        message: 'Missing fields',
+        description: 'All fields are required',
       });
       return;
     }
 
     if (password.length < 6) {
-      Toast.show({
-        type: 'error',
-        text1: 'Weak password',
-        text2: 'Password must be at least 6 characters',
+      showMessage({
+        type: 'danger',
+        message: 'Weak password',
+        description: 'Password must be at least 6 characters',
       });
       return;
     }
@@ -63,10 +63,10 @@ export default function SignUpScreen() {
 
       console.log('SIGNUP RESPONSE ✅', res?.data);
 
-      Toast.show({
+      showMessage({
         type: 'success',
-        text1: 'Signup successful',
-        text2: 'OTP sent to your phone',
+        message: 'Signup successful',
+        description: 'OTP sent to your phone',
       });
 
       navigation.getParent()?.navigate('AuthStack', {
@@ -84,11 +84,11 @@ export default function SignUpScreen() {
         message: error?.message,
         apiErrorMessage,
       });
-      
-      Toast.show({
-        type: 'error',
-        text1: 'Signup failed',
-        text2: apiErrorMessage || 'Something went wrong',
+
+      showMessage({
+        type: 'danger',
+        message: 'Signup failed',
+        description: apiErrorMessage || 'Something went wrong',
       });
     } finally {
       setLoading(false);
