@@ -11,6 +11,7 @@ import { useDispatch } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { logout } from '../../store/slices/authSlice';
 import Toast from 'react-native-toast-message';
+import { showMessage } from 'react-native-flash-message';
 
 
 
@@ -35,16 +36,16 @@ const handleLogout = async () => {
     // 🔥 Reset redux auth state
     dispatch(logout());
 
-    Toast.show({
+    showMessage({
       type: 'success',
-      text1: 'Logged out',
-      text2: 'You have been logged out successfully',
+      message: 'Logged out',
+      description: 'You have been logged out successfully',
     });
   } catch (error) {
-    Toast.show({
-      type: 'error',
-      text1: 'Logout failed',
-      text2: 'Please try again',
+    showMessage({
+      type: 'danger',
+      message: 'Logout failed',
+      description: 'Please try again',
     });
   }
 };

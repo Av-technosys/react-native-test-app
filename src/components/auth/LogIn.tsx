@@ -3,12 +3,12 @@ import { View, Text, TextInput, Pressable, Image, ScrollView, KeyboardAvoidingVi
 import Feather from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
 import Button from '../common/Button';
-import Toast from 'react-native-toast-message';
 import { login } from '../../api/auth';
 import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../../store/slices/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { decodeIdToken } from '../../utils/decodeToken';
+import { showMessage } from 'react-native-flash-message';
 
 
 export default function LoginScreen() {
@@ -23,10 +23,10 @@ export default function LoginScreen() {
 
 const handleLogin = async () => {
   if (!email || !password) {
-    Toast.show({
-      type: 'error',
-      text1: 'Missing fields',
-      text2: 'Email and password are required',
+    showMessage({
+      message: 'Missing fields',
+      description: 'Email and password are required',
+      type: 'danger',
     });
     return;
   }
@@ -45,6 +45,7 @@ const handleLogin = async () => {
 
     await AsyncStorage.setItem('accessToken', data.accessToken);
     await AsyncStorage.setItem('refreshToken', data.refreshToken);
+    await AsyncStorage.setItem('idToken', data.idToken);
 
     const user = decodeIdToken(data.idToken);
 
@@ -52,20 +53,20 @@ const handleLogin = async () => {
 
     dispatch(loginSuccess(user));
 
-    Toast.show({
+    showMessage({
       type: 'success',
-      text1: 'Login successful',
-      text2: `Welcome back ${user.email}`,
+      message: 'Login successful',
+      description: `Welcome back ${user.email}`,
     });
 
     navigation.getParent()?.navigate('MainTabs', {
       screen: 'Home',
     });
   } catch (error: any) {
-    Toast.show({
-      type: 'error',
-      text1: 'Login failed',
-      text2: error?.response?.data?.message || 'Invalid credentials',
+    showMessage({
+      type: 'danger',
+      message: 'Login failed',
+      description: error?.response?.data?.message || 'Invalid credentials',
     });
 
     console.log('LOGIN ERROR ❌', error?.response || error);

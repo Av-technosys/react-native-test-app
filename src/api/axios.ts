@@ -29,8 +29,8 @@ export const privateApi = axios.create({
 
 privateApi.interceptors.request.use(
   async config => {
-    const token = await AsyncStorage.getItem('accessToken');
-    console.log("Access token ", token)
+    const token = await AsyncStorage.getItem('idToken');
+    console.log("idToken  ", token)
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

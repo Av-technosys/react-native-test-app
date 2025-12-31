@@ -1,11 +1,11 @@
-import { View, Text, TextInput, Image, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, Image, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Feather from 'react-native-vector-icons/Feather';
-import Toast from 'react-native-toast-message';
 import Button from '../common/Button';
 import { forgotPassword } from '../../api/auth';
 import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
+import ScreenHeader from '../common/ScreenHeader';
+import { showMessage } from 'react-native-flash-message';
 
 export default function ForgotPasswordScreen() {
   const navigation = useNavigation<any>();
@@ -14,10 +14,10 @@ export default function ForgotPasswordScreen() {
 
   const handleSendOtp = async () => {
     if (!username) {
-      Toast.show({
-        type: 'error',
-        text1: 'Required',
-        text2: 'Please enter email or phone',
+     showMessage({
+        type: 'danger',
+        message: 'Required',
+        description: 'Please enter email or phone',
       });
       return;
     }
@@ -27,10 +27,10 @@ export default function ForgotPasswordScreen() {
 
       await forgotPassword({ username });
 
-      Toast.show({
+      showMessage({
         type: 'success',
-        text1: 'OTP Sent',
-        text2: 'Check your email',
+        message: 'OTP Sent',
+        description: 'Check your email',
       });
 
       navigation.navigate('OtpVerification', {
@@ -38,10 +38,10 @@ export default function ForgotPasswordScreen() {
         flow: 'forgotPassword',
       });
     } catch (error: any) {
-      Toast.show({
-        type: 'error',
-        text1: 'Failed',
-        text2: error?.response?.data?.message || 'Something went wrong',
+      showMessage({
+        type: 'danger',
+        message: 'Failed',
+        description: error?.response?.data?.message || 'Something went wrong',
       });
     } finally {
       setLoading(false);
@@ -54,14 +54,8 @@ export default function ForgotPasswordScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
       >
-        
+         <ScreenHeader title="Forgot Password" rightType="menu" />
     <SafeAreaView className="flex-1 bg-white px-5">
-      {/* HEADER */}
-      <View className="flex-row items-center mt-2">
-        <Pressable onPress={() => navigation.goBack()}>
-          <Feather name="arrow-left" size={22} color="#000" />
-        </Pressable>
-      </View>
 
       {/* LOGO */}
       <View className="items-center mt-4">
