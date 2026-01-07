@@ -7,7 +7,7 @@ import {
   Platform,
   PermissionsAndroid,
   DeviceEventEmitter,
-
+  BackHandler
 } from 'react-native';
 import {
   Search,
@@ -53,6 +53,28 @@ export default function AddressSheetContent() {
   const [deleting, setDeleting] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [loadingAddresses, setLoadingAddresses] = useState(true);
+
+useEffect(() => {
+  const onBackPress = () => {
+    // If user is on AddressForm → go back to list
+    if (mode === 'form') {
+      setMode('list');
+      setSelectedAddress(null);
+      return true; // ⛔ prevent sheet from closing
+    }
+
+    // If user is on list → allow sheet to close
+    return false; // ✅ let bottom sheet handle close
+  };
+
+  const subscription = BackHandler.addEventListener(
+    'hardwareBackPress',
+    onBackPress,
+  );
+
+  return () => subscription.remove();
+}, [mode]);
+
 
   const loadAddresses = async () => {
     try {
