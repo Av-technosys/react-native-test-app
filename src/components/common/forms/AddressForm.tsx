@@ -1,9 +1,17 @@
-import { View, Text, TouchableOpacity, Keyboard } from 'react-native';
+import {
+  View,
+  Text,
+  Keyboard,
+  DeviceEventEmitter,
+} from 'react-native';
 import { useState } from 'react';
 import { showMessage } from 'react-native-flash-message';
 import { addAddress, editAddress } from '../../../api/user';
 import Feather from 'react-native-vector-icons/Feather';
 import FloatingInput from '../FloatingInput';
+import { useRef } from 'react';
+import { TextInput } from 'react-native';
+import Button from '../Button'
 
 export type Address = {
   id?: number;
@@ -46,6 +54,16 @@ export default function AddressForm({
     id: initialData?.id,
   });
 
+  const titleRef = useRef<TextInput>(null);
+  const address1Ref = useRef<TextInput>(null);
+  const address2Ref = useRef<TextInput>(null);
+  const nameRef = useRef<TextInput>(null);
+  const numbefRef = useRef<TextInput>(null);
+  const cityRef = useRef<TextInput>(null);
+  const stateRef = useRef<TextInput>(null);
+  const codeRef = useRef<TextInput>(null);
+  const countryRef = useRef<TextInput>(null);
+
   const onChange = (key: keyof Address, value: string) => {
     setForm(prev => ({ ...prev, [key]: value }));
   };
@@ -53,7 +71,7 @@ export default function AddressForm({
   const onSubmit = async () => {
     // Dismiss keyboard first
     Keyboard.dismiss();
-    
+
     // ✅ REQUIRED FIELD VALIDATION
     if (
       !form.title ||
@@ -80,6 +98,8 @@ export default function AddressForm({
           latitude: '00',
           longitude: '00',
         });
+        // 🔔 Notify Header to refetch user + address
+        DeviceEventEmitter.emit('ADDRESS_UPDATED');
 
         showMessage({
           type: 'success',
@@ -95,6 +115,7 @@ export default function AddressForm({
           latitude: '00',
           longitude: '00',
         });
+        DeviceEventEmitter.emit('ADDRESS_UPDATED');
 
         showMessage({
           type: 'success',
@@ -104,7 +125,7 @@ export default function AddressForm({
 
       onSuccess();
     } catch (error) {
-      console.log(error)
+      console.log(error);
       showMessage({
         type: 'danger',
         message: 'Something went wrong',
@@ -121,6 +142,7 @@ export default function AddressForm({
 
       <FloatingInput
         label="Title"
+        ref={titleRef}
         value={form.title}
         onChangeText={(v: string) => onChange('title', v)}
       />
@@ -128,23 +150,27 @@ export default function AddressForm({
       <FloatingInput
         label="Address Line 1"
         value={form.addressLineOne}
+        ref={address1Ref}
         onChangeText={(v: string) => onChange('addressLineOne', v)}
       />
 
       <FloatingInput
         label="Address Line 2"
+        ref={address2Ref}
         value={form.addressLineTwo}
         onChangeText={(v: string) => onChange('addressLineTwo', v)}
       />
 
       <FloatingInput
         label="Receiver Name"
+        ref={nameRef}
         value={form.reciverName}
         onChangeText={(v: string) => onChange('reciverName', v)}
         icon="user"
       />
 
       <FloatingInput
+        ref={numbefRef}
         label="Contact Number"
         value={form.reciverNumber}
         onChangeText={(v: string) => onChange('reciverNumber', v)}
@@ -153,12 +179,14 @@ export default function AddressForm({
       />
 
       <FloatingInput
+        ref={cityRef}
         label="City"
         value={form.city}
         onChangeText={(v: string) => onChange('city', v)}
       />
 
       <FloatingInput
+        ref={stateRef}
         label="State"
         value={form.state}
         onChangeText={(v: string) => onChange('state', v)}
@@ -166,6 +194,7 @@ export default function AddressForm({
 
       <FloatingInput
         label="Postal Code"
+        ref={codeRef}
         value={form.postalCode}
         onChangeText={(v: string) => onChange('postalCode', v)}
         keyboardType="numeric"
@@ -173,31 +202,31 @@ export default function AddressForm({
 
       <FloatingInput
         label="Country"
+        ref={countryRef}
         value={form.country}
         onChangeText={(v: string) => onChange('country', v)}
       />
 
-      {/* ACTION BUTTONS */}
-      <View className="flex-row gap-3 mt-4 mb-8">
-        <TouchableOpacity
-          onPress={() => {
-            Keyboard.dismiss();
-            onCancel();
-          }}
-          className="flex-1 border border-gray-400 rounded-xl py-4 items-center"
-        >
-          <Text className="text-gray-700 font-semibold">Cancel</Text>
-        </TouchableOpacity>
+{/* ACTION BUTTONS */}
+<View className="flex-row gap-3 mt-4 mb-8">
+  <Button
+    label="Cancel"
+    variant="outline"
+    className="flex-1"
+    onPress={() => {
+      Keyboard.dismiss();
+      onCancel();
+    }}
+  />
 
-        <TouchableOpacity
-          onPress={onSubmit}
-          className="flex-1 bg-orange-500 rounded-xl py-4 items-center"
-        >
-          <Text className="text-white font-semibold">
-            {form.id ? 'Update' : 'Save'}
-          </Text>
-        </TouchableOpacity>
-      </View>
+  <Button
+    label={form.id ? 'Update' : 'Save'}
+    variant="primary"
+    className="flex-1"
+    onPress={onSubmit}
+  />
+</View>
+
     </View>
   );
 }

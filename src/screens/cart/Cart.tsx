@@ -4,7 +4,7 @@
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ScreenHeader from '../../components/common/ScreenHeader';
-import NotFound from '../../components/common/notFound/CartNotFound';
+import NotFound from '../../components/common/notFound/NotFound';
 import CartProductsScreen from '../../screens/cart/CartProducts'
 
 export default function CartScreen() {
@@ -12,10 +12,15 @@ export default function CartScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <ScreenHeader title="Cart" rightType="menu" />
+      <ScreenHeader title="Cart" rightType="menu" showBack={false} />
 
       <View className="flex-1">
-        {booking === 0 ? <NotFound /> : <CartProductsScreen />}
+        {booking === 0 ? <NotFound
+  title="Oops! No Booking yet"
+  description="It seems that you’ve got a blank state. We’ll let you know when updates arrive!"
+  ctaLabel="Book Now Event"
+  navigateTo={{ parent: 'MainTabs', screen: 'Event' }}
+/> : <CartProductsScreen />}
       </View>
     </SafeAreaView>
   );

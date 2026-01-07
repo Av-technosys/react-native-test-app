@@ -10,10 +10,10 @@ import Button from '../../components/common/Button';
 import { useDispatch } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { logout } from '../../store/slices/authSlice';
-import Toast from 'react-native-toast-message';
 import { showMessage } from 'react-native-flash-message';
-
-
+import { userDetails } from '../../api/user';
+import { useEffect, useState } from 'react';
+import {DeviceEventEmitter} from 'react-native'
 
 type RootStackParamList = {
   FAQ: undefined;
@@ -21,34 +21,56 @@ type RootStackParamList = {
 
 export default function ProfileScreen() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-
+  const [user, setUser] = useState<any>(null);
 
   const dispatch = useDispatch();
 
-const handleLogout = async () => {
-  try {
-    // 🔐 Clear tokens
-    await AsyncStorage.multiRemove([
-      'accessToken',
-      'refreshToken',
-    ]);
+useEffect(() => {
+  const fetchUser = async () => {
+    const res = await userDetails();
+    setUser(res.data);
+  };
 
-    // 🔥 Reset redux auth state
-    dispatch(logout());
+  fetchUser(); // initial load
 
-    showMessage({
-      type: 'success',
-      message: 'Logged out',
-      description: 'You have been logged out successfully',
-    });
-  } catch (error) {
-    showMessage({
-      type: 'danger',
-      message: 'Logout failed',
-      description: 'Please try again',
-    });
-  }
-};
+  const subscription = DeviceEventEmitter.addListener(
+    'RELOAD_USER',
+    () => {
+      fetchUser(); // 🔁 reload user when event fires
+    }
+  );
+
+  return () => {
+    subscription.remove();
+  };
+}, []);
+
+
+
+
+  
+   
+  const handleLogout = async () => {
+    try {
+      // 🔐 Clear tokens
+      await AsyncStorage.multiRemove(['accessToken', 'refreshToken']);
+
+      // 🔥 Reset redux auth state
+      dispatch(logout());
+
+      showMessage({
+        type: 'success',
+        message: 'Logged out',
+        description: 'You have been logged out successfully',
+      });
+    } catch (error) {
+      showMessage({
+        type: 'danger',
+        message: 'Logout failed',
+        description: 'Please try again',
+      });
+    }
+  };
 
   const userProfileItems = [
     {
@@ -56,112 +78,113 @@ const handleLogout = async () => {
       items: [
         { icon: 'star', title: 'Your Reviews', navigate: 'reviews' },
         { icon: 'list', title: 'Orders', navigate: 'OrdersScreen' },
-        { icon: 'bookmark', title: 'Manage Booking', navigate: 'ManageBookings' },
-      //  { icon: 'credit-card', title: 'Payment Method' },
+        {
+          icon: 'bookmark',
+          title: 'Manage Booking',
+          navigate: 'ManageBookings',
+        },
+        //  { icon: 'credit-card', title: 'Payment Method' },
       ],
     },
     {
       title: 'Support',
       items: [
-        { icon: 'help-circle', title: 'Frequently Asked Question', navigate: 'FAQ' },
+        {
+          icon: 'help-circle',
+          title: 'Frequently Asked Question',
+          navigate: 'FAQ',
+        },
         { icon: 'message-square', title: 'Share Feedback' },
       ],
     },
     {
       title: 'More',
       items: [
-       // { icon: 'bell', title: 'Notification Settings' },
+        // { icon: 'bell', title: 'Notification Settings' },
         { icon: 'settings', title: 'Permission', navigate: 'PermissionScreen' },
       ],
     },
   ];
 
   function handleEdit() {
-              navigation.getParent()?.navigate('FlowStack', {
-                screen: 'ProfileEditScreen',
-              })
-            }
+    navigation.getParent()?.navigate('FlowStack', {
+      screen: 'ProfileEditScreen',
+    });
+  }
 
   return (
-  <SafeAreaView className="flex-1 bg-white">
-    
-    {/* ===== TOP GRADIENT ===== */}
-    <View className="relative z-20">
-      <LinearGradient
-        colors={['#FFCE59', '#FFAE7D']}
-        className="h-40"
-      />
+    <SafeAreaView className="flex-1 bg-white">
+      {/* ===== TOP GRADIENT ===== */}
+      <View className="relative z-20">
+        <LinearGradient colors={['#FFCE59', '#FFAE7D']} className="h-40" />
 
-      {/* HEADER ON GRADIENT */}
-      <View className="absolute top-0 left-0 right-0 z-20">
-  <ScreenHeader title="Profile" rightType="notification" />
+        {/* HEADER ON GRADIENT */}
+        <View className="absolute top-0 left-0 right-0 z-20">
+          <ScreenHeader title="Profile" rightType="notification" showBack={false} />
+        </View>
 
+        {/* PROFILE CARD POSITIONED RELATIVE TO GRADIENT */}
+        <View className="absolute -bottom-12 left-0 right-0 z-30 px-4">
+          <ProfileInfoCard
+            name={`${user?.firstName ?? ''} ${user?.lastName ?? ''}`}
+            //city="Jaipur"
+            phone={user?.number ?? ''}
+            email={user?.email ?? ''}
+            profileImage={user?.profileImage}
+            onEdit={handleEdit}
+          />
+        </View>
       </View>
 
-      {/* PROFILE CARD POSITIONED RELATIVE TO GRADIENT */}
-      <View className="absolute -bottom-16 left-0 right-0 z-30 px-4">
-        <ProfileInfoCard
-          name="Michael Chen"
-          city="Jaipur"
-          phone="+91 1212121212"
-          email="xyz@gmail.com"
-          onEdit={() => handleEdit()}
-        />
-      </View>
-    </View>
+      {/* ===== CONTENT ===== */}
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 40 }}
+        className="pt-16" // Add padding top to make space for the profile card
+      >
+        {/* MENU SECTIONS */}
+        <View className="px-4 mt-6 gap-6">
+          {userProfileItems.map((section, index) => (
+            <View key={index} className="gap-2">
+              <Text className="text-lg font-semibold text-gray-700 pl-2">
+                {section.title}
+              </Text>
 
-    {/* ===== CONTENT ===== */}
-    <ScrollView
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingBottom: 40 }}
-      className="pt-16" // Add padding top to make space for the profile card
-    >
-
-      {/* MENU SECTIONS */}
-      <View className="px-4 mt-6 gap-6">
-        {userProfileItems.map((section, index) => (
-          <View key={index} className="gap-2">
-            <Text className="text-lg font-semibold text-gray-700 pl-2">
-              {section.title}
-            </Text>
-
-            <View className="border border-gray-200 rounded-2xl px-3">
-              {section.items.map((item, idx) => (
-                <Pressable
-                  key={idx}
-                  onPress={() =>
-                    item.navigate
-                      ? navigation.getParent()?.navigate('FlowStack', {
-                          screen: item.navigate,
-                        })
-                      : null
-                  }
-                >
-                  <View className="flex-row items-center justify-between py-3">
-                    <View className="flex-row items-center gap-3">
-                      <Feather name={item.icon} size={18} color="#F97316" />
-                      <Text className="text-gray-600 font-medium">
-                        {item.title}
-                      </Text>
+              <View className="border border-gray-200 rounded-2xl px-3">
+                {section.items.map((item, idx) => (
+                  <Pressable
+                    key={idx}
+                    onPress={() =>
+                      item.navigate
+                        ? navigation.getParent()?.navigate('FlowStack', {
+                            screen: item.navigate,
+                          })
+                        : null
+                    }
+                  >
+                    <View className="flex-row items-center justify-between py-3">
+                      <View className="flex-row items-center gap-3">
+                        <Feather name={item.icon} size={18} color="#F97316" />
+                        <Text className="text-gray-600 font-medium">
+                          {item.title}
+                        </Text>
+                      </View>
+                      <Feather name="chevron-right" size={18} color="#F97316" />
                     </View>
-                    <Feather name="chevron-right" size={18} color="#F97316" />
-                  </View>
-                </Pressable>
-              ))}
+                  </Pressable>
+                ))}
+              </View>
             </View>
-          </View>
-        ))}
-      </View>
+          ))}
+        </View>
 
-      {/* LOGOUT */}
-   <Button
-  label="Log Out"
-  className="mt-10 w-[82%] self-center"
-  onPress={handleLogout}
-/>
-
-    </ScrollView>
-  </SafeAreaView>
-);
-  
+        {/* LOGOUT */}
+        <Button
+          label="Log Out"
+          className="mt-10 w-[82%] self-center"
+          onPress={handleLogout}
+        />
+      </ScrollView>
+    </SafeAreaView>
+  );
 }

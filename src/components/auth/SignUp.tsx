@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, Image ,KeyboardAvoidingView, ScrollView, Platform} from 'react-native';
+import { View, Text, TextInput, Pressable, Image} from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
 import Button from '../common/Button';
 import { Signup } from '../../api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { showMessage } from 'react-native-flash-message';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 export default function SignUpScreen() {
   const navigation = useNavigation<any>();
@@ -71,9 +72,9 @@ export default function SignUpScreen() {
 
       navigation.getParent()?.navigate('AuthStack', {
         screen: 'OtpVerification',
-        flow: 'signup',
         params: {
           signUp: true,
+          flow: 'signup',
           email: payload.email,
         },
       });
@@ -96,16 +97,15 @@ export default function SignUpScreen() {
   };
 
   return (
-        <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
-    >
-      <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
-        keyboardShouldPersistTaps="handled"
-      >
-    <View className="flex-1 px-4 bg-white">
+    <KeyboardAwareScrollView
+      enableOnAndroid
+      keyboardShouldPersistTaps="handled"
+      extraScrollHeight={32}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{
+        padding: 18,
+      }}
+    >    <View className="flex-1 px-4 bg-white">
       {/* LOGO */}
       <View className="items-center mt-6">
         <Image
@@ -195,7 +195,6 @@ export default function SignUpScreen() {
         onPress={handleSignup}
       />
     </View>
-    </ScrollView>
-    </KeyboardAvoidingView>
+   </KeyboardAwareScrollView>
   );
 }

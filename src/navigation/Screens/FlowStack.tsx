@@ -16,7 +16,8 @@ import PermissionScreen from '../../screens/profile/PermissionScreen';
 import NotificationsScreen from '../../screens/Common/Notification';
 import ManageBookings from '../../screens/profile/ManageBookings';
 import CartProductDetail from '../../screens/cart/CartProductDetail';
-
+import FlowStackBackHandler from '../../utils/FlowStackBackHandler';
+import AddReview from '../../screens/profile/AddReviews';
 const Stack = createStackNavigator();
 
 const openConfig = {
@@ -37,6 +38,9 @@ const closeConfig = {
 
 export default function FlowStack() {
   return (
+    <>
+    <FlowStackBackHandler/>
+   
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
@@ -66,6 +70,7 @@ export default function FlowStack() {
       <Stack.Screen name="ProfileEditScreen" component={ProfileEditScreen} />
       <Stack.Screen name="OrdersScreen" component={OrdersScreen} />
       <Stack.Screen name="OrderDetailsScreen" component={OrderDetailsScreen} />
+      <Stack.Screen name="AddReviewsScreen" component={AddReview} />
       <Stack.Screen name="PermissionScreen" component={PermissionScreen} />
       <Stack.Screen name="ManageBookings" component={ManageBookings} />
 
@@ -73,5 +78,6 @@ export default function FlowStack() {
       <Stack.Screen name="CartProductDetail" component={CartProductDetail} />
 
     </Stack.Navigator>
+     </>
   );
 }

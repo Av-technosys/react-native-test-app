@@ -40,7 +40,7 @@ export default function CartProductDetail() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <ScreenHeader title="Order Summary" rightType = 'notification' />
+      <ScreenHeader title="Order Summary" rightType='notification' showBack={true} />
 
       <ScrollView
         showsVerticalScrollIndicator={false}

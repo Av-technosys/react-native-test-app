@@ -5,9 +5,7 @@ import {
   TextInput,
   Pressable,
   Image,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
+  ScrollView
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, RouteProp, useRoute } from '@react-navigation/native';
@@ -21,6 +19,7 @@ import { decodeIdToken } from '../../utils/decodeToken';
 import { useEffect } from 'react';
 import ScreenHeader from '../common/ScreenHeader';
 import { showMessage } from 'react-native-flash-message';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 type RouteProps = RouteProp<AuthStackParamList, 'OtpVerification'>;
 
@@ -35,9 +34,10 @@ export default function OtpVerificationScreen() {
   const navigation = useNavigation<any>();
   const route = useRoute<RouteProps>();
 
-  const flow = route.params?.flow;
+const { flow } = route.params ?? {};
+
   const username = route.params?.email || '';
-  console.log('username', username);
+  //console.log('username', username);
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
   const [loading, setLoading] = useState(false);
 
@@ -126,10 +126,10 @@ export default function OtpVerificationScreen() {
         description: 'You may proceed'
       });
 
-      // 🔴 FLOW 1: SIGNUP → LOGIN USER
       if (flow === 'signup') {
-        const { accessToken, refreshToken, idToken } = data;
 
+        const { accessToken, refreshToken, idToken } = data;
+        console.log('data', data)
         await AsyncStorage.multiSet([
           ['accessToken', accessToken],
           ['refreshToken', refreshToken],
@@ -166,17 +166,16 @@ export default function OtpVerificationScreen() {
   };
 
   return (
-            <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
-        >
-          <ScrollView
-            contentContainerStyle={{ flexGrow: 1 }}
-            keyboardShouldPersistTaps="handled"
-          >
-  <ScreenHeader title="Enter Otp" rightType="menu" />
-s
+    <KeyboardAwareScrollView
+      enableOnAndroid
+      keyboardShouldPersistTaps="handled"
+      extraScrollHeight={32}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{
+        padding: 18,
+      }}
+    >  <ScreenHeader title="Enter Otp" rightType="menu" showBack={true} />
+
     <SafeAreaView className="flex-1 bg-white px-5">
       {/* LOGO */}
       <View className="items-center">
@@ -244,7 +243,6 @@ s
         disabled={loading}
       />
     </SafeAreaView>
-    </ScrollView>
-    </KeyboardAvoidingView>
+    </KeyboardAwareScrollView>
   );
 }

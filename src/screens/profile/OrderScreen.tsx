@@ -38,7 +38,7 @@ export default function OrdersScreen({ navigation }: any) {
   return (
     <SafeAreaView className="flex-1 bg-white">
       {/* Header */}
-      <ScreenHeader title="Orders" rightType="notification" />
+      <ScreenHeader title="Orders" rightType="notification" showBack={true} />
 
       {/* Orders */}
       <ScrollView

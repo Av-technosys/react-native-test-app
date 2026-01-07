@@ -1,51 +1,116 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { View, Text, FlatList, Pressable } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRoute } from '@react-navigation/native';
 import ScreenHeader from '../../components/common/ScreenHeader';
-import Icon from 'react-native-vector-icons/Feather';
 import ProductCard from '../../components/common/cards/ProductsCard';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import { getProductsByCategoryId } from '../../api/product';
+import NotFound from '../../components/common/notFound/NotFound';
 
 
-const products = Array.from({ length: 12 }).map((_, index) => ({
-  id: index + 1,
-  title: 'The Beverage Bar',
-  guests: 150,
-  menu: 'Premium menu',
-  rating: 5,
-  reviews: '1.4k+',
-  price: 999,
-  image: require('../../assets/images/service2.png'),
-}));
-
-
-
+const S3_BASE_URL =
+  'https://freaky-files.s3.ap-south-1.amazonaws.com';
 
 export default function CategoryProducts() {
+  const route = useRoute<any>();
+  const { categoryId, title } = route.params ?? {};
+
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const res = await getProductsByCategoryId(categoryId);
+        console.log(res)
+        setProducts(res.data); // ✅ IMPORTANT
+      } catch (err) {
+        console.log('PRODUCT FETCH ERROR', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProducts();
+  }, [categoryId]);
+
+
+  if (loading) {
+    return (
+      <SafeAreaView className="flex-1 bg-white px-4">
+        <ScreenHeader title={title ?? 'Products'} showBack={true} />
+
+        <SkeletonPlaceholder>
+          {[1, 2, 3, 4].map(i => (
+            <View
+              key={i}
+              style={{
+                height: 140,
+                borderRadius: 16,
+                marginBottom: 16,
+              }}
+            />
+          ))}
+        </SkeletonPlaceholder>
+      </SafeAreaView>
+    );
+  }
+
+  if (!loading && products.length === 0) {
   return (
-    <SafeAreaView className="flex-1 bg-white ">
-      {/* HEADER */}
-  <ScreenHeader title="Categories" rightType="notification" />
+    <SafeAreaView className="flex-1 bg-white">
+      <ScreenHeader
+        title={title ?? 'Products'}
+        showBack={true}
+        rightType="notification" 
+      />
+
+      <NotFound
+        title="No Products Found"
+        description="There are no products available in this category right now."
+        ctaLabel="Browse Categories"
+        navigateTo={{ parent: 'MainTabs', screen: 'Categories' }}
+      />
+    </SafeAreaView>
+  );
+}
 
 
-      {/* PRODUCT LIST */}
+  return (
+    <SafeAreaView className="flex-1 bg-white">
+      <ScreenHeader title={title ?? 'Products'} rightType="notification" showBack={true} />
+
       <FlatList
         data={products}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={item => item.productId.toString()}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ padding: 16 }}
-        renderItem={({ item }) => (
-          <View className=" mt-5">
-            <ProductCard
-              title={item.title}
-              guests={item.guests}
-              menu={item.menu}
-              rating={item.rating}
-              reviews={item.reviews}
-              price={item.price}
-              image={item.image}
-            />
-          </View>
-        )}
+        contentContainerStyle={{ padding: 16, paddingTop: 30 }}
+        renderItem={({ item }) => {
+          const price =
+            item.price?.[0]?.salePrice ??
+            item.price?.[0]?.listPrice ??
+            0;
+
+          const imageSource = item.bannerImage
+            ? { uri: `${S3_BASE_URL}/${item.bannerImage}` }
+            : require('../../assets/images/service2.png');
+
+          return (
+            <View className="mb-5">
+              <ProductCard
+                title={item.title}
+                guests={item.minQuantity ?? 0}
+                menu={item.pricingType}
+                rating={item.rating ?? 0}
+                reviews={`${item.rating ?? 0}.0`}
+                price={price}
+                image={imageSource}
+              />
+            </View>
+          );
+        }}
       />
     </SafeAreaView>
   );

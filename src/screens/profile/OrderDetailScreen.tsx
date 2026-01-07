@@ -6,6 +6,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import ScreenHeader from '../../components/common/ScreenHeader';
 import Button from '../../components/common/Button';
+import { useNavigation } from '@react-navigation/native';
 
 type OrderStackParamList = {
   OrderDetailsScreen: {
@@ -48,10 +49,12 @@ const SERVICES = [
 export default function OrderDetailsScreen() {
   const route = useRoute<OrderDetailsRouteProp>();
   const { status } = route.params;
+  const navigation = useNavigation<any>();
+
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <ScreenHeader title="Order Summary" rightType="notification" />
+      <ScreenHeader title="Order Summary" rightType="notification" showBack={true} />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -126,44 +129,46 @@ export default function OrderDetailsScreen() {
 
         <View className="mb-8">
      
-          <Text className="font-semibold mb-3 text-gray-900">
-         
-            Reviews
-          </Text>
-  <View className="border border-gray-200 rounded-2xl px-4 py-4 bg-white">
-  {/* TOP ROW */}
-  <View className="flex-row items-center justify-between mb-3">
-    <View className="flex-row items-center gap-3">
-      <Image
-        source={{
-          uri: 'https://randomuser.me/api/portraits/women/44.jpg',
-        }}
-        className="w-10 h-10 rounded-full"
-      />
+  
 
-      <Text className="font-semibold text-base text-gray-900">
-        Sarah Johnson
-      </Text>
-    </View>
-
-    {/* RATING */}
-    <View className="flex-row items-center gap-1">
-      <Text className="text-yellow-400 text-base">★</Text>
-      <Text className="font-semibold text-gray-900">5.0</Text>
-    </View>
-  </View>
-
-  {/* COMMENT */}
-  <Text className="text-sm text-gray-600 leading-6 mb-3">
-    Excellent service! Michael was punctual and did an amazing job
-    cleaning our house. Highly recommend!
+<View className="mb-8">
+  <Text className="font-semibold mb-3 text-gray-900">
+    Reviews
   </Text>
 
-  {/* TIME */}
-  <Text className="text-xs text-gray-400">
-    2 days ago
-  </Text>
+  <Pressable
+   onPress={() =>
+  navigation.getParent()?.navigate('FlowStack', {
+    screen: 'AddReviewsScreen',
+    params: {
+      eventId: 2,
+      eventTitle: "Piyush’s Birthday",
+      services: SERVICES.map(s => ({
+        productId: Number(s.id),
+        title: s.title,
+        price: s.price,
+      })),
+    },
+  })
+}
+
+    className="border border-dashed border-orange-400 rounded-2xl px-4 py-5 bg-orange-50"
+  >
+    <View className="flex-row items-center justify-between">
+      <View>
+        <Text className="font-semibold text-base text-orange-600">
+          Add Review
+        </Text>
+        <Text className="text-sm text-gray-600 mt-1">
+          Rate this event and services
+        </Text>
+      </View>
+
+      <Feather name="chevron-right" size={22} color="#EA580C" />
+    </View>
+  </Pressable>
 </View>
+
 
         </View>
         {/* PRICING (MATCHED SPACING) */}

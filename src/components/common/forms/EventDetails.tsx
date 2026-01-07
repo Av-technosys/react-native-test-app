@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, Modal, Platform } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import FloatingInput from '../FloatingInput';
 import Icon from 'react-native-vector-icons/Feather';
+import Button from '../Button';
 
 export type BookingDetails = {
   fullName: string;
@@ -181,26 +181,17 @@ export default function EventDetails({
         </View>
       )}
 
-      {/* CONTINUE BUTTON */}
-      <View className="mt-6">
-        <Pressable disabled={!isFormValid} onPress={handleContinue}>
-          <LinearGradient
-            colors={
-              isFormValid ? ['#F97316', '#FACC15'] : ['#E5E7EB', '#E5E7EB']
-            }
-            style={{
-              height: 64,
-              borderRadius: 18,
-              justifyContent: 'center',
-              opacity: isFormValid ? 1 : 0.7,
-            }}
-          >
-            <Text className="text-white text-center text-lg font-bold">
-              {submitLabel}
-            </Text>
-          </LinearGradient>
-        </Pressable>
-      </View>
+
+{/* CONTINUE BUTTON */}
+<View className="mt-6">
+  <Button
+    label={submitLabel}
+    variant="primary"
+    className="w-full h-16 rounded-[18px]"
+    disabled={!isFormValid}
+    onPress={handleContinue}
+  />
+</View>
 
       {/* EVENT MODAL */}
       {!isBottomSheet && (
