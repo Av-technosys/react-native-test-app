@@ -1,10 +1,14 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { decodeIdToken } from '../utils/decodeToken';
 
+const BASE_URL ='https://751ue73p4j.execute-api.ap-south-1.amazonaws.com/v1';
 
+const REFRESH_THRESHOLD_SEC = 120;
 
 export const publicApi = axios.create({
-  baseURL: 'https://751ue73p4j.execute-api.ap-south-1.amazonaws.com/v1',
+  baseURL: BASE_URL,
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
@@ -17,30 +21,13 @@ publicApi.interceptors.request.use(config => {
   return config;
 });
 
-
-
 export const privateApi = axios.create({
-  baseURL: 'https://751ue73p4j.execute-api.ap-south-1.amazonaws.com/v1', // change later
+  baseURL: BASE_URL,
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
   },
 });
-
-privateApi.interceptors.request.use(
-  async config => {
-    const token = await AsyncStorage.getItem('idToken');
-    console.log("idToken  ", token)
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-
-    return config;
-  },
-  error => Promise.reject(error)
-);
-
-
 
 let isRefreshing = false;
 let failedQueue: {
@@ -48,20 +35,88 @@ let failedQueue: {
   reject: (error: any) => void;
 }[] = [];
 
-const processQueue = (
-  error: any,
-  token: string | null = null
-) => {
-  failedQueue.forEach(promise => {
+const processQueue = (error: any, token: string | null) => {
+  failedQueue.forEach(p => {
     if (error) {
-      promise.reject(error);
+      p.reject(error);
     } else {
-      promise.resolve(token as string);
+      p.resolve(token as string);
     }
   });
-
   failedQueue = [];
 };
+
+const refreshIdToken = async () => {
+  const refreshToken = await AsyncStorage.getItem('refreshToken');
+  const username = await AsyncStorage.getItem('username');
+
+  if (!refreshToken || !username) {
+    throw new Error('Missing refresh credentials');
+  }
+
+  const { data } = await axios.post(
+    `${BASE_URL}/auth/refresh_token`,
+    {
+      refreshToken,
+      username,
+    },
+  );
+
+  const newIdToken =
+    data?.response?.AuthenticationResult?.IdToken;
+
+  if (!newIdToken) {
+    throw new Error('Invalid refresh response');
+  }
+
+  await AsyncStorage.setItem('idToken', newIdToken);
+
+  return newIdToken;
+};
+
+privateApi.interceptors.request.use(
+  async config => {
+    const idToken = await AsyncStorage.getItem('idToken');
+
+    if (!idToken) {
+      return config;
+    }
+
+    const decoded = decodeIdToken(idToken);
+    const now = Math.floor(Date.now() / 1000);
+    const expiresIn = decoded.exp - now;
+
+    if (expiresIn <= REFRESH_THRESHOLD_SEC) {
+      if (!isRefreshing) {
+        isRefreshing = true;
+
+        try {
+          const newToken = await refreshIdToken();
+          processQueue(null, newToken);
+        } catch (err) {
+          processQueue(err, null);
+          throw err;
+        } finally {
+          isRefreshing = false;
+        }
+      }
+
+      return new Promise((resolve, reject) => {
+        failedQueue.push({
+          resolve: token => {
+            config.headers.Authorization = `Bearer ${token}`;
+            resolve(config);
+          },
+          reject,
+        });
+      });
+    }
+
+    config.headers.Authorization = `Bearer ${idToken}`;
+    return config;
+  },
+  error => Promise.reject(error),
+);
 
 privateApi.interceptors.response.use(
   response => response,
@@ -70,48 +125,34 @@ privateApi.interceptors.response.use(
 
     if (
       error.response?.status === 401 &&
-      !originalRequest._retry
+      !originalRequest._retry &&
+      !originalRequest.url.includes('/auth/refresh_token')
     ) {
+      originalRequest._retry = true;
+
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject });
-        }).then(token => {
-          originalRequest.headers.Authorization = `Bearer ${token}`;
-          return privateApi(originalRequest);
+          failedQueue.push({
+            resolve: token => {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+              resolve(privateApi(originalRequest));
+            },
+            reject,
+          });
         });
       }
 
-      originalRequest._retry = true;
       isRefreshing = true;
 
       try {
-        const refreshToken = await AsyncStorage.getItem('refreshToken');
-         // i will put this url in env
-         
-        const { data } = await axios.post(
-          'https://751ue73p4j.execute-api.ap-south-1.amazonaws.com/v1/auth/refresh_token',
-          { refreshToken }
-        );
+        const newToken = await refreshIdToken();
+        processQueue(null, newToken);
 
-        await AsyncStorage.setItem(
-          'accessToken',
-          data.accessToken
-        );
-
-        privateApi.defaults.headers.Authorization = `Bearer ${data.accessToken}`;
-        processQueue(null, data.accessToken);
-
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return privateApi(originalRequest);
       } catch (err) {
         processQueue(err, null);
-
-        await AsyncStorage.multiRemove([
-          'accessToken',
-          'refreshToken',
-        ]);
-
-        // store.dispatch(logout())
-
+        await AsyncStorage.multiRemove(['idToken', 'refreshToken']);
         return Promise.reject(err);
       } finally {
         isRefreshing = false;
@@ -119,6 +160,5 @@ privateApi.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
-

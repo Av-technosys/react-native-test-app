@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, Image, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+also the login screen to chnage into gluestack ui  import React, { useState } from 'react';
+import { View, Text, TextInput, Pressable, Image } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
 import Button from '../common/Button';
@@ -8,7 +8,15 @@ import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../../store/slices/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { decodeIdToken } from '../../utils/decodeToken';
-import { showMessage } from 'react-native-flash-message';
+//import { showMessage } from 'react-native-flash-message';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import {
+  useToast,
+  Toast,
+  ToastTitle,
+  ToastDescription,
+} from '@/components/ui/toast';
+
 
 
 export default function LoginScreen() {
@@ -16,18 +24,43 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-
+  const toast = useToast();
   const navigation = useNavigation();
   const dispatch = useDispatch();
+
+  const showErrorToast = (title: string, description: string) => {
+  toast.show({
+    placement: 'top',
+    duration: 3000,
+    render: () => (
+      <Toast action="error" variant="solid">
+        <ToastTitle>{title}</ToastTitle>
+        <ToastDescription>{description}</ToastDescription>
+      </Toast>
+    ),
+  });
+};
+
+const showSuccessToast = (title: string, description: string) => {
+  toast.show({
+    placement: 'top',
+    duration: 3000,
+    render: () => (
+      <Toast action="success" variant="solid">
+        <ToastTitle>{title}</ToastTitle>
+        <ToastDescription>{description}</ToastDescription>
+      </Toast>
+    ),
+  });
+};
 
 
 const handleLogin = async () => {
   if (!email || !password) {
-    showMessage({
-      message: 'Missing fields',
-      description: 'Email and password are required',
-      type: 'danger',
-    });
+    showErrorToast(
+      'Missing fields',
+      'Email and password are required'
+    );
     return;
   }
 
@@ -36,40 +69,34 @@ const handleLogin = async () => {
     password,
   };
 
-  console.log('LOGIN PAYLOAD 👉', payload);
-
   try {
     setLoading(true);
 
     const data = await login(payload);
+    const decoded = decodeIdToken(data.idToken);
+    const cognitoUsername = decoded.username;
 
     await AsyncStorage.setItem('accessToken', data.accessToken);
     await AsyncStorage.setItem('refreshToken', data.refreshToken);
     await AsyncStorage.setItem('idToken', data.idToken);
+    await AsyncStorage.setItem('username', cognitoUsername);
 
     const user = decodeIdToken(data.idToken);
-
-    console.log('DECODED USER 👉', user);
-
     dispatch(loginSuccess(user));
 
-    showMessage({
-      type: 'success',
-      message: 'Login successful',
-      description: `Welcome back ${user.email}`,
-    });
+    showSuccessToast(
+      'Login successful',
+      `Welcome back ${user.email}`
+    );
 
     navigation.getParent()?.navigate('MainTabs', {
       screen: 'Home',
     });
   } catch (error: any) {
-    showMessage({
-      type: 'danger',
-      message: 'Login failed',
-      description: error?.response?.data?.message || 'Invalid credentials',
-    });
-
-    console.log('LOGIN ERROR ❌', error?.response || error);
+    showErrorToast(
+      'Login failed',
+      error?.response?.data?.message || 'Invalid credentials'
+    );
   } finally {
     setLoading(false);
   }
@@ -77,16 +104,15 @@ const handleLogin = async () => {
 
 
   return (
-        <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
+    <KeyboardAwareScrollView
+      enableOnAndroid
+      keyboardShouldPersistTaps="handled"
+      extraScrollHeight={32}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{
+        padding: 18,
+      }}
     >
-      <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
-        keyboardShouldPersistTaps="handled"
-        className='px-4'
-      >
       {/* LOGO */}
       <View className="items-center">
         <Image
@@ -180,7 +206,6 @@ const handleLogin = async () => {
         <Text>Don’t have an account? </Text>
         <Text className="text-blue-500 font-semibold">Sign Up</Text>
       </Pressable>
-    </ScrollView>
-    </KeyboardAvoidingView>
+    </KeyboardAwareScrollView>
   );
-}
+}  

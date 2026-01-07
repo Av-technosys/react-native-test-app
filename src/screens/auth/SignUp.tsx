@@ -1,7 +1,7 @@
 /* eslint-disable react/self-closing-comp */
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SignUp from '../../components/auth/SignUp';
-import { StatusBar, View } from 'react-native';
+import { StatusBar } from 'react-native';
 import ScreenHeader from '../../components/common/ScreenHeader';
 
 export default function signUp() {
@@ -11,7 +11,7 @@ export default function signUp() {
                         barStyle={'dark-content'}
                         backgroundColor="#FFFFFF"
                         translucent              />
-<ScreenHeader title="Sign Up" rightType="menu" />
+<ScreenHeader title="Sign Up" rightType="menu" showBack={true} />
 
     <SignUp />
     </SafeAreaView>

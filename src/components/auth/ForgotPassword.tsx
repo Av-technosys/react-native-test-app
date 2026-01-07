@@ -1,4 +1,4 @@
-import { View, Text, TextInput, Image, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Button from '../common/Button';
 import { forgotPassword } from '../../api/auth';
@@ -6,6 +6,8 @@ import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
 import ScreenHeader from '../common/ScreenHeader';
 import { showMessage } from 'react-native-flash-message';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 
 export default function ForgotPasswordScreen() {
   const navigation = useNavigation<any>();
@@ -49,12 +51,16 @@ export default function ForgotPasswordScreen() {
   };
 
  return (
-          <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
-      >
-         <ScreenHeader title="Forgot Password" rightType="menu" />
+            <KeyboardAwareScrollView
+              enableOnAndroid
+              keyboardShouldPersistTaps="handled"
+              extraScrollHeight={32}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{
+                padding: 18,
+              }}
+            >
+         <ScreenHeader title="Forgot Password" rightType="menu" showBack={false} />
     <SafeAreaView className="flex-1 bg-white px-5">
 
       {/* LOGO */}
@@ -103,7 +109,7 @@ export default function ForgotPasswordScreen() {
       />
     </SafeAreaView>
   
-    </KeyboardAvoidingView>
+    </KeyboardAwareScrollView>
   );
 }
 

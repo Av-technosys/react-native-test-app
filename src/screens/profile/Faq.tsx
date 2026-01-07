@@ -42,7 +42,7 @@ useEffect(() => {
   return (
     <SafeAreaView className="flex-1 bg-white">
       {/* HEADER */}
-  <ScreenHeader title="FAQs" rightType="notification" />
+  <ScreenHeader title="FAQs" rightType="notification" showBack={true} />
 
 
       {/* SEARCH */}

@@ -15,8 +15,7 @@ export type CognitoIdToken = {
 
   'custom:user_id'?: string;
   'custom:user_type'?: string;
-  'cognito:username'?: string;
-
+'cognito:username': string;
   [key: string]: any;
 };
 

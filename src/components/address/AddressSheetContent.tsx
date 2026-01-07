@@ -6,8 +6,8 @@ import {
   TouchableOpacity,
   Platform,
   PermissionsAndroid,
-  Alert,
   DeviceEventEmitter,
+
 } from 'react-native';
 import {
   Search,
@@ -26,8 +26,8 @@ import { getAddresses, deleteAddress, setCurrentAddress } from '../../api/user';
 import AddressForm from '../../components/common/forms/AddressForm';
 import { showMessage } from 'react-native-flash-message';
 import { Modal } from 'react-native';
-import { Keyboard, TouchableWithoutFeedback } from 'react-native';
-
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import KeyboardWrapper from '../common/KeyboardWrapper';
 
 type Address = {
   id: number;
@@ -49,24 +49,21 @@ export default function AddressSheetContent() {
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
-  const [currentAddress, setCurrentAddressdetails] = useState<any>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
   const [deleting, setDeleting] = useState(false);
- const [searchQuery, setSearchQuery] = useState(''); 
-
-
-   const dismissKeyboard = () => {
-    Keyboard.dismiss();
-  };
-
+  const [searchQuery, setSearchQuery] = useState('');
+  const [loadingAddresses, setLoadingAddresses] = useState(true);
 
   const loadAddresses = async () => {
     try {
+      setLoadingAddresses(true);
       const res = await getAddresses();
       const list = res?.data ?? [];
       setAddresses(Array.isArray(list) ? list : []);
     } catch {
       setAddresses([]);
+    } finally {
+      setLoadingAddresses(false);
     }
   };
 
@@ -84,14 +81,17 @@ export default function AddressSheetContent() {
     try {
       setDeleting(true);
 
-      await deleteAddress({ id: confirmDeleteId });
+      const res = await deleteAddress({ id: confirmDeleteId });
 
       showMessage({
         type: 'success',
         message: 'Address deleted successfully',
       });
+      // 🔔 Notify Header to refetch user + address
+      DeviceEventEmitter.emit('RELOAD_USER');
 
-      setConfirmDeleteId(null);
+      // Close menu & reload list
+      setMenuOpenId(null);
       loadAddresses();
     } catch (error) {
       showMessage({
@@ -103,50 +103,52 @@ export default function AddressSheetContent() {
     }
   };
 
-const handleSetCurrent = async (id: number) => {
-  try {
-   const res = await setCurrentAddress({ id });
-   console.log(res)
+  const handleSetCurrent = async (id: number) => {
+    try {
+      const res = await setCurrentAddress({ id });
+      console.log(res);
 
-    showMessage({
-      type: 'success',
-      message: 'Current address updated',
-    });
+      showMessage({
+        type: 'success',
+        message: 'Current address updated',
+      });
 
-    // 🔔 Notify Header to refetch user + address
-    DeviceEventEmitter.emit('ADDRESS_UPDATED');
+      // 🔔 Notify Header to refetch user + address
+      DeviceEventEmitter.emit('ADDRESS_UPDATED');
 
-    // Close menu & reload list
-    setMenuOpenId(null);
-    loadAddresses();
+      // Close menu & reload list
+      setMenuOpenId(null);
+      loadAddresses();
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.error ||
+        error?.response?.data?.message ||
+        'Failed to set current address';
 
-  } catch (error: any) {
-    const message =
-      error?.response?.data?.error ||
-      error?.response?.data?.message ||
-      'Failed to set current address';
-
-    showMessage({
-      type: 'danger',
-      message,
-    });
-  }
-};
+      showMessage({
+        type: 'danger',
+        message,
+      });
+    }
+  };
 
   if (mode === 'form') {
     return (
-      <AddressForm
-        initialData={selectedAddress}
-        onSuccess={() => {
-          setMode('list');
-          setSelectedAddress(null);
-          loadAddresses();
-        }}
-        onCancel={() => {
-          setMode('list');
-          setSelectedAddress(null);
-        }} 
-      />
+        <KeyboardWrapper>
+
+        <AddressForm
+          initialData={selectedAddress}
+          onSuccess={() => {
+            setMode('list');
+            setSelectedAddress(null);
+            loadAddresses();
+          }}
+          onCancel={() => {
+            setMode('list');
+            setSelectedAddress(null);
+          }}
+        />
+      </KeyboardWrapper>
     );
   }
 
@@ -211,123 +213,190 @@ const handleSetCurrent = async (id: number) => {
 
   return (
     <>
-      <TouchableWithoutFeedback onPress={dismissKeyboard}>
-      <View style={{ flex: 1 }}>
-      {/* HEADER */}
-      <View className="flex-row items-center gap-2 mb-6">
-        <Feather name="map-pin" size={20} color="#000" />
-        <Text className="text-xl font-semibold text-black">Address</Text>
-      </View>
+      <KeyboardWrapper>
+        <View style={{ flex: 1 }}>
+          {/* HEADER */}
+          <View className="flex-row items-center gap-2 mb-6">
+            <Feather name="map-pin" size={20} color="#000" />
+            <Text className="text-xl font-semibold text-black">Address</Text>
+          </View>
 
-      {/* Search */}
-      <View className="border border-gray-200 rounded-xl flex-row items-center px-3 h-[45px] mb-3">
-        <Search size={18} color="#555" />
-        <TextInput
-          placeholder="Search address, city, state"
-          className="ml-2 flex-1 text-black"
-          placeholderTextColor="#777"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          clearButtonMode="while-editing" // iOS
-        />
-      </View>
+          {/* Search */}
+          <View className="border border-gray-200 rounded-xl flex-row items-center px-3 h-[45px] mb-3">
+            <Search size={18} color="#555" />
+            <TextInput
+              placeholder="Search address, city, state"
+              className="ml-2 flex-1 text-black"
+              placeholderTextColor="#777"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              clearButtonMode="while-editing" // iOS
+            />
+          </View>
 
-      <TouchableOpacity
-        onPress={fetchCurrentLocation}
-        className="flex-row items-center gap-2 mt-4 pb-[15px] border-b border-gray-300"
-      >
-        <Feather name="navigation" size={18} color="#2563eb" />
-        <Text className="text-blue-500 text-base">Use Current Location</Text>
-      </TouchableOpacity>
-      {/* Add New */}
-      <TouchableOpacity
-        className="flex-row items-center mt-2 pb-[15px] border-b border-gray-300"
-        onPress={() => {
-          setSelectedAddress(null);
-          setMode('form');
-        }}
-      >
-        <Plus size={18} color="#2b6ef2" />
-        <Text className="ml-2 text-blue-500 text-base">Add New Address</Text>
-      </TouchableOpacity>
+          <TouchableOpacity
+            onPress={fetchCurrentLocation}
+            className="flex-row items-center gap-2 mt-4 pb-[15px] border-b border-gray-300"
+          >
+            <Feather name="navigation" size={18} color="#2563eb" />
+            <Text className="text-blue-500 text-base">
+              Use Current Location
+            </Text>
+          </TouchableOpacity>
+          {/* Add New */}
+          <TouchableOpacity
+            className="flex-row items-center mt-2 pb-[15px] border-b border-gray-300"
+            onPress={() => {
+              setSelectedAddress(null);
+              setMode('form');
+            }}
+          >
+            <Plus size={18} color="#2b6ef2" />
+            <Text className="ml-2 text-blue-500 text-base">
+              Add New Address
+            </Text>
+          </TouchableOpacity>
 
-      <Text className="mt-5 mb-4 text-sm text-gray-500">Saved Addresses</Text>
+          <Text className="mt-5 mb-4 text-sm text-gray-500">
+            Saved Addresses
+          </Text>
 
-      <View className="gap-6">
-        {filteredAddresses.length === 0 ? (
-          <Text className="text-gray-400 text-sm">No saved addresses</Text>
-        ) : (
-          filteredAddresses.map(item => (
-            <View
-              key={item.id}
-              className="flex-row justify-between items-center"
-            >
-              {/* LEFT */}
-              <View className="flex-1 pr-3">
-                <View className="flex-row items-center gap-2">
-                  {item.title === 'Home' ? (
-                    <Home size={20} />
-                  ) : (
-                    <Briefcase size={20} />
+          <View className="gap-6">
+            {loadingAddresses ? (
+              <SkeletonPlaceholder
+                backgroundColor="#EDEDED"
+                highlightColor="#F6F6F6"
+              >
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <View
+                    key={i}
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
+                    {/* LEFT SIDE */}
+                    <View style={{ flex: 1, paddingRight: 12 }}>
+                      {/* Title row */}
+                      <View
+                        style={{ flexDirection: 'row', alignItems: 'center' }}
+                      >
+                        <SkeletonPlaceholder.Item
+                          width={20}
+                          height={20}
+                          borderRadius={10}
+                          marginRight={8}
+                        />
+                        <SkeletonPlaceholder.Item
+                          width={80}
+                          height={14}
+                          borderRadius={6}
+                        />
+                      </View>
+
+                      {/* Address line */}
+                      <SkeletonPlaceholder.Item
+                        marginTop={8}
+                        marginLeft={28}
+                        width="75%"
+                        height={12}
+                        borderRadius={6}
+                      />
+                    </View>
+
+                    {/* RIGHT ACTION ICONS */}
+                    <View style={{ flexDirection: 'row', gap: 16 }}>
+                      <SkeletonPlaceholder.Item
+                        width={20}
+                        height={20}
+                        borderRadius={10}
+                      />
+                      <SkeletonPlaceholder.Item
+                        width={20}
+                        height={20}
+                        borderRadius={10}
+                      />
+                    </View>
+                  </View>
+                ))}
+              </SkeletonPlaceholder>
+            ) : filteredAddresses.length === 0 ? (
+              <Text className="text-gray-400 text-sm">No saved addresses</Text>
+            ) : (
+              filteredAddresses.map(item => (
+                <View
+                  key={item.id}
+                  className="flex-row justify-between items-center"
+                >
+                  {/* LEFT */}
+                  <View className="flex-1 pr-3">
+                    <View className="flex-row items-center gap-2">
+                      {item.title === 'Home' ? (
+                        <Home size={20} />
+                      ) : (
+                        <Briefcase size={20} />
+                      )}
+                      <Text className="text-base font-semibold">
+                        {item.title}
+                      </Text>
+                    </View>
+
+                    <Text className="text-gray-500 ml-6 mt-1 text-sm">
+                      {truncateWords(item.addressLineOne, 6)}
+                    </Text>
+                  </View>
+
+                  {/* RIGHT ACTIONS */}
+                  <View className="flex-row items-center gap-4">
+                    {/* EDIT */}
+                    <TouchableOpacity
+                      onPress={() => {
+                        setSelectedAddress(item);
+                        setMode('form');
+                      }}
+                    >
+                      <Edit size={20} color="#f97316" />
+                    </TouchableOpacity>
+
+                    {/* MENU */}
+                    <TouchableOpacity
+                      onPress={() =>
+                        setMenuOpenId(menuOpenId === item.id ? null : item.id)
+                      }
+                    >
+                      <MoreVertical size={20} />
+                    </TouchableOpacity>
+                  </View>
+
+                  {/* MENU DROPDOWN */}
+                  {menuOpenId === item.id && (
+                    <View className="absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-md z-50">
+                      <TouchableOpacity
+                        onPress={() => handleSetCurrent(item.id)}
+                        className="flex-row items-center gap-2 px-4 py-3"
+                      >
+                        <Check size={16} />
+                        <Text>Set as current</Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        onPress={() => handleDeletePress(item.id)}
+                        className="flex-row items-center gap-2 px-4 py-3"
+                      >
+                        <Trash2 size={16} color="#f43f5e" />
+                        <Text className="text-red-500">Delete</Text>
+                      </TouchableOpacity>
+                    </View>
                   )}
-                  <Text className="text-base font-semibold">{item.title}</Text>
                 </View>
+              ))
+            )}
+          </View>
 
-                <Text className="text-gray-500 ml-6 mt-1 text-sm">
-                  {truncateWords(item.addressLineOne, 6)}
-                </Text>
-              </View>
-
-              {/* RIGHT ACTIONS */}
-              <View className="flex-row items-center gap-4">
-                {/* EDIT */}
-                <TouchableOpacity
-                  onPress={() => {
-                    setSelectedAddress(item);
-                    setMode('form');
-                  }}
-                >
-                  <Edit size={20} color="#f97316" />
-                </TouchableOpacity>
-
-                {/* MENU */}
-                <TouchableOpacity
-                  onPress={() =>
-                    setMenuOpenId(menuOpenId === item.id ? null : item.id)
-                  }
-                >
-                  <MoreVertical size={20} />
-                </TouchableOpacity>
-              </View>
-
-              {/* MENU DROPDOWN */}
-              {menuOpenId === item.id && (
-                <View className="absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-md z-50">
-                  <TouchableOpacity
-                    onPress={() => handleSetCurrent(item.id)}
-                    className="flex-row items-center gap-2 px-4 py-3"
-                  >
-                    <Check size={16} />
-                    <Text>Set as current</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    onPress={() => handleDeletePress(item.id)}
-                    className="flex-row items-center gap-2 px-4 py-3"
-                  >
-                    <Trash2 size={16} color="#f43f5e" />
-                    <Text className="text-red-500">Delete</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-            </View>
-          ))
-        )}
-      </View>
-
-        <View style={{ height: Platform.OS === 'ios' ? 34 : 20 }} />
-      </View>
-    </TouchableWithoutFeedback>
+          <View style={{ height: Platform.OS === 'ios' ? 34 : 20 }} />
+        </View>
+      </KeyboardWrapper>
       <Modal
         visible={confirmDeleteId !== null}
         transparent

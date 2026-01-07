@@ -4,10 +4,7 @@ import {
   Text,
   TextInput,
   Pressable,
-  Image,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
+  Image
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Feather from 'react-native-vector-icons/Feather';
@@ -15,6 +12,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { confirmForgotPassword } from '../../api/auth';
 import { showMessage } from 'react-native-flash-message';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 type RouteParams = {
   ResetPassword: {
@@ -24,6 +22,7 @@ type RouteParams = {
 };
 
 export default function ResetPasswordScreen() {
+  
   const navigation = useNavigation<any>();
   const route = useRoute<RouteProp<RouteParams, 'ResetPassword'>>();
   const { username, code } = route.params;
@@ -104,16 +103,15 @@ export default function ResetPasswordScreen() {
   };
 
   return (
-            <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
-        >
-          <ScrollView
-            contentContainerStyle={{ flexGrow: 1 }}
-            keyboardShouldPersistTaps="handled"
-          >
-    <SafeAreaView className="flex-1 bg-white px-5">
+    <KeyboardAwareScrollView
+      enableOnAndroid
+      keyboardShouldPersistTaps="handled"
+      extraScrollHeight={32}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{
+        padding: 18,
+      }}
+    >    <SafeAreaView className="flex-1 bg-white px-5">
       {/* LOGO */}
       <View className="items-center">
         <Image
@@ -205,7 +203,6 @@ export default function ResetPasswordScreen() {
         </LinearGradient>
       </Pressable>
     </SafeAreaView>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      </KeyboardAwareScrollView>
   );
 }

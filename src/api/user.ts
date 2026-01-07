@@ -24,7 +24,38 @@ export const userDetails = async () => {
 };
 
 
-//addess
+export const updateUserProfile = async (
+  payload: any,
+) => {
+  const response = await privateApi.post(
+    '/user/update_personal_info',
+    payload,
+  );
+  return response.data;
+};
+
+
+//upload on s3
+
+export const getBucketUrl = async (payload: any) => {
+  const response = await privateApi.post('/upload/get_S3_url', payload);
+  return response.data;
+};
+
+
+export const setProfilePicture = async (payload :any) => {
+  const response = await privateApi.post('/user/profile_picture', payload);
+  return response.data;
+};
+
+
+export const deleteProfilePicture = async (payload :any) => {
+  const response = await privateApi.delete('/upload/profile_picture', payload);
+  return response.data;
+};
+
+
+//addrsess
 
 export const getAddresses = async () => {
   const response = await privateApi.get('/user/address');
@@ -61,3 +92,4 @@ export const fetchCurrentAddress = async (addressId: number) => {
   );
   return response.data;
 };
+

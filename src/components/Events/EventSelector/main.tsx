@@ -53,7 +53,8 @@ export default function EventTypeSelector() {
     <SafeAreaView className="flex-1 bg-white  ">
       <ScreenHeader
         title="Events"
-        right={
+        showBack={false}
+        rightType={
           <View className="relative">
             <MaterialIcons name="more-vert" size={22} color="#000" />
           </View>

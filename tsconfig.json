@@ -8,5 +8,15 @@
   "exclude": [
     "**/node_modules",
     "**/Pods"
-  ]
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@/*": [
+        "./*"
+      ],
+      "tailwind.config": [
+        "./tailwind.config.js"
+      ]
+    }
+  }
 }

@@ -10,12 +10,21 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Feather from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
 import Button from '../common/Button';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 export default function SendOtpScreen() {
   const [value, setValue] = useState('');
   const navigation = useNavigation()
   return (
-    <SafeAreaView className="flex-1 bg-white px-5">
+    <KeyboardAwareScrollView
+      enableOnAndroid
+      keyboardShouldPersistTaps="handled"
+      extraScrollHeight={32}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{
+        padding: 18,
+      }}
+    >    <SafeAreaView className="flex-1 bg-white px-5">
 
       {/* HEADER */}
       <View className="flex-row items-center mt-2">
@@ -71,5 +80,6 @@ export default function SendOtpScreen() {
   }
 />
     </SafeAreaView>
+    </KeyboardAwareScrollView>
   );
 }

@@ -2,20 +2,29 @@ import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { useNavigation } from '@react-navigation/native';
+import {
+  useNavigation,
+  useNavigationState,
+} from '@react-navigation/native';
 
 type RightType = 'notification' | 'menu' | 'none';
 
 type ScreenHeaderProps = {
   title: string;
   rightType?: RightType;
+  showBack : boolean
 };
 
 export default function ScreenHeader({
   title,
   rightType = 'none',
+  showBack = true
 }: ScreenHeaderProps) {
   const navigation = useNavigation<any>();
+
+  // ✅ THIS IS THE KEY LINE
+  const index = useNavigationState(state => state.index);
+
 
   const renderRight = () => {
     switch (rightType) {
@@ -42,7 +51,7 @@ export default function ScreenHeader({
         );
 
       default:
-        return <View className="w-6" />; // keeps layout aligned
+        return <View className="w-6" />;
     }
   };
 
@@ -50,9 +59,13 @@ export default function ScreenHeader({
     <View className="flex-row items-center justify-between px-4 py-3">
       {/* LEFT */}
       <View className="flex-row items-center">
-        <Pressable onPress={() => navigation.goBack()}>
-          <Feather name="arrow-left" size={24} color="#000" />
-        </Pressable>
+        {showBack ? (
+          <Pressable onPress={() => navigation.goBack()}>
+            <Feather name="arrow-left" size={24} color="#000" />
+          </Pressable>
+        ) : (
+          <View className="" />
+        )}
 
         <Text className="ml-3 text-xl font-semibold text-black">
           {title}

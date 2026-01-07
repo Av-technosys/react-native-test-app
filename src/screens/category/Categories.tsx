@@ -1,47 +1,107 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { View, Text, FlatList, Pressable } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList, Pressable, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ScreenHeader from '../../components/common/ScreenHeader';
-import Icon from 'react-native-vector-icons/Feather';
-import MaskedView from '@react-native-masked-view/masked-view';
-import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import { getProductTypes } from '../../api/product';
+import NotFound from '../../components/common/notFound/NotFound';
 
 type RootStackParamList = {
-  CategoryProducts: undefined;
+  CategoryProducts: { categoryId: number; title: string };
+};
+
+type ProductType = {
+  id: number;
+  name: string;
+  mediaURL: string;
+  altText: string;
 };
 
 export default function CategoriesScreen() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const services = [
-    { id: 1, title: 'Bartender', icon: 'coffee' },
-    { id: 2, title: 'Decor', icon: 'flag' },
-    { id: 3, title: 'Photography', icon: 'camera' },
-    { id: 4, title: 'Henna Artist', icon: 'edit-3' },
 
-    { id: 5, title: 'DJ Services', icon: 'music' },
-    { id: 6, title: 'Lighting', icon: 'zap' },
-    { id: 7, title: 'Kids Activity', icon: 'smile' },
-    { id: 8, title: 'Face Painting', icon: 'aperture' },
+  const [categories, setCategories] = useState<ProductType[]>([]);
+  const [loading, setLoading] = useState(true);
 
-    { id: 9, title: 'Catering', icon: 'shopping-bag' },
-    { id: 10, title: 'Makeup Artist', icon: 'user' },
-    { id: 11, title: 'Live Band', icon: 'headphones' },
-    { id: 12, title: 'Sound System', icon: 'speaker' },
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const res = await getProductTypes();
+        setCategories(res.data);
+      } catch (err) {
+        console.log('Failed to load categories', err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    { id: 13, title: 'Balloon Decor', icon: 'cloud' },
-    { id: 14, title: 'Flower Decor', icon: 'feather' },
-    { id: 15, title: 'Anchor / Host', icon: 'mic' },
-    { id: 16, title: 'Event Security', icon: 'shield' },
-  ];
+    loadCategories();
+  }, []);
+
+  if (loading) {
+    return (
+      <SafeAreaView className="flex-1 bg-white mb-16">
+        <ScreenHeader
+          title="Categories"
+          rightType="notification"
+          showBack={false}
+        />
+
+        <SkeletonPlaceholder>
+          <View
+            style={{
+              padding: 16,
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              justifyContent: 'space-between',
+            }}
+          >
+            {Array.from({ length: 8 }).map((_, index) => (
+              <View
+                key={index}
+                style={{
+                  width: '48%',
+                  height: 176,
+                  borderRadius: 24,
+                  marginBottom: 16,
+                }}
+              />
+            ))}
+          </View>
+        </SkeletonPlaceholder>
+      </SafeAreaView>
+    );
+  }
+  if (!loading && categories.length === 0) {
+    return (
+      <SafeAreaView className="flex-1 bg-white mb-16">
+        <ScreenHeader
+          title="Categories"
+          rightType="notification"
+          showBack={false}
+        />
+
+        <NotFound
+          title="No Category Found"
+          description="There are no categories available right now."
+          ctaLabel="Explore Services"
+        />
+      </SafeAreaView>
+    );
+  }
+
   return (
-    <SafeAreaView className="flex-1  bg-white mb-16">
-  <ScreenHeader title="Categories" rightType="notification" />
+    <SafeAreaView className="flex-1 bg-white mb-16">
+      <ScreenHeader
+        title="Categories"
+        rightType="notification"
+        showBack={false}
+      />
 
-
-      {/* GRID */}
       <FlatList
-        data={services}
+        data={categories}
         keyExtractor={item => item.id.toString()}
         numColumns={2}
         showsVerticalScrollIndicator={false}
@@ -52,27 +112,30 @@ export default function CategoriesScreen() {
             onPress={() =>
               navigation.getParent()?.navigate('FlowStack', {
                 screen: 'CategoryProducts',
+                params: {
+                  categoryId: item.id,
+                  title: item.name,
+                },
               })
             }
             className="mb-4 w-[48%]"
           >
-            <View className="h-36 rounded-3xl border border-orange-400 bg-white items-center justify-center shadow shadow-slate-200">
-              <View className="w-10 h-10 items-center justify-center">
-                <MaskedView
-                  style={{ width: 36, height: 36 }}
-                  maskElement={<Icon name={item.icon} size={36} color="#000" />}
-                >
-                  <LinearGradient
-                    colors={['#FFD451', '#FFA588']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={{ width: 36, height: 36 }}
-                  />
-                </MaskedView>
+            <View className="h-44 rounded-3xl border border-orange-400 bg-white shadow shadow-slate-200 items-center justify-center">
+              {/* ICON IMAGE */}
+              <View className="w-16 h-16 mb-3 items-center justify-center">
+                <Image
+                  source={{ uri: item.mediaURL }}
+                  className="w-12 h-12"
+                  resizeMode="contain"
+                />
               </View>
 
-              <Text className="mt-2 text-lg font-medium text-gray-800">
-                {item.title}
+              {/* TITLE */}
+              <Text
+                className="text-base font-semibold text-gray-800 text-center px-2"
+                numberOfLines={2}
+              >
+                {item.name}
               </Text>
             </View>
           </Pressable>

@@ -9,7 +9,42 @@ import { userDetails } from '../../api/user';
 import { useEffect, useState } from 'react';
 import { fetchCurrentAddress } from '../../api/user';
 import { DeviceEventEmitter } from 'react-native';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 
+function HeaderSkeleton() {
+  return (
+    <View className="px-4 mt-4">
+      <SkeletonPlaceholder borderRadius={12}>
+        {/* Top Row */}
+        <SkeletonPlaceholder.Item
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          {/* Left text */}
+          <SkeletonPlaceholder.Item>
+            <SkeletonPlaceholder.Item width={140} height={22} marginBottom={8} />
+            <SkeletonPlaceholder.Item width={180} height={32} />
+          </SkeletonPlaceholder.Item>
+
+          {/* Right icons */}
+          <SkeletonPlaceholder.Item flexDirection="row" gap={12}>
+            <SkeletonPlaceholder.Item width={48} height={48} borderRadius={24} />
+            <SkeletonPlaceholder.Item width={48} height={48} borderRadius={24} />
+          </SkeletonPlaceholder.Item>
+        </SkeletonPlaceholder.Item>
+
+        {/* Address Bar */}
+        <SkeletonPlaceholder.Item
+          marginTop={20}
+          width="100%"
+          height={54}
+          borderRadius={30}
+        />
+      </SkeletonPlaceholder>
+    </View>
+  );
+}
 
 export default function HeaderSection({
   bottomSheetRef,
@@ -19,32 +54,35 @@ export default function HeaderSection({
   const navigation = useNavigation<NavigationProp<any>>();
   const [userData, setUserData] = useState<any>(null);
   const [currentAddress, setCurrentAddress] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  const fetchUserDetails = async () => {
-    try {
-      const res = await userDetails();
+const fetchUserDetails = async () => {
+  try {
+    setLoading(true);
 
-      setUserData(res.data);
-      const addressId = res.data.currentAddressId;
+    const res = await userDetails();
+    setUserData(res.data);
 
-      if (addressId) {
-        const addressRes = await fetchCurrentAddress(addressId);
-        setCurrentAddress(addressRes.data);
-      }
-    } catch (error) {
-      console.log(error);
-      showMessage({
-        type: 'danger',
-        message: 'Failed to fetch user details',
-      });
+    const addressId = res.data.currentAddressId;
+    if (addressId) {
+      const addressRes = await fetchCurrentAddress(addressId);
+      setCurrentAddress(addressRes.data);
     }
-  };
+  } catch (error) {
+    showMessage({
+      type: 'danger',
+      message: 'Failed to fetch user details',
+    });
+  } finally {
+    setLoading(false);
+  }
+};
 
 useEffect(() => {
   fetchUserDetails();
 
   const subscription = DeviceEventEmitter.addListener(
-    'ADDRESS_UPDATED',
+    'RELOAD_USER',
     () => {
       fetchUserDetails(); // 🔁 re-fetch user + current address
       bottomSheetRef.current?.close(); // ⬇️ close bottom sheet
@@ -53,6 +91,10 @@ useEffect(() => {
 
   return () => subscription.remove();
 }, [bottomSheetRef])
+
+if (loading) {
+  return <HeaderSkeleton />;
+}
 
   return (
     <View className="px-4 mt-4">
@@ -149,3 +191,5 @@ useEffect(() => {
     </View>
   );
 }
+
+
