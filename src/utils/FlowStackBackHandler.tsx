@@ -1,28 +1,28 @@
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+// utils/FlowStackBackHandler.tsx
+import { useEffect } from 'react';
 import { BackHandler } from 'react-native';
-import { useCallback } from 'react';
+import { useNavigation } from '@react-navigation/native';
 
 export default function FlowStackBackHandler() {
   const navigation = useNavigation<any>();
 
-  useFocusEffect(
-    useCallback(() => {
-      const onBackPress = () => {
-        if (navigation.canGoBack()) {
-          navigation.goBack();
-          return true; // prevent app exit
-        }
-        return false;
-      };
+  useEffect(() => {
+    const onBackPress = () => {
+      if (navigation.canGoBack()) {
+        navigation.goBack();
+        return true; // ⛔ prevent app exit
+      }
 
-      const subscription = BackHandler.addEventListener(
-        'hardwareBackPress',
-        onBackPress
-      );
+      return false; // allow app exit at root
+    };
 
-      return () => subscription.remove();
-    }, [navigation])
-  );
+    const sub = BackHandler.addEventListener(
+      'hardwareBackPress',
+      onBackPress
+    );
+
+    return () => sub.remove();
+  }, [navigation]);
 
   return null;
 }

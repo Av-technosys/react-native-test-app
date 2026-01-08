@@ -9,11 +9,22 @@ interface BaseBottomSheetProps {
   snapPoints?: (string | number)[];
   backgroundStyle?: ViewStyle;
   scrollEnabled?: boolean;
-  enableDynamicSizing?: boolean; // New prop
+  enableDynamicSizing?: boolean;
+  onChange?: (index: number) => void; // ✅ ADD
 }
 
 const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(
-  ({ children, snapPoints, backgroundStyle, scrollEnabled = true, enableDynamicSizing = false }, ref) => {
+  (
+    {
+      children,
+      snapPoints,
+      backgroundStyle,
+      scrollEnabled = true,
+      enableDynamicSizing = false,
+      onChange, // ✅ ADD
+    },
+    ref,
+  ) => {
     const defaultSnapPoints = useMemo(() => snapPoints || ['25%', '50%', '85%'], [snapPoints]);
 
     return scrollEnabled ? (
@@ -21,8 +32,7 @@ const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(
         ref={ref}
         index={-1}
         snapPoints={defaultSnapPoints}
-        enablePanDownToClose
-        // KEYBOARD HANDLING
+        onChange={onChange}              
         keyboardBehavior="extend"
         keyboardBlurBehavior="restore"
         android_keyboardInputMode="adjustResize"
