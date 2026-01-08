@@ -7,7 +7,8 @@ import {
   Platform,
   PermissionsAndroid,
   DeviceEventEmitter,
-
+  BackHandler,
+  Dimensions
 } from 'react-native';
 import {
   Search,
@@ -21,13 +22,18 @@ import {
 } from 'lucide-react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import Geolocation from 'react-native-geolocation-service';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { getAddresses, deleteAddress, setCurrentAddress } from '../../api/user';
 import AddressForm from '../../components/common/forms/AddressForm';
 import { showMessage } from 'react-native-flash-message';
 import { Modal } from 'react-native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import KeyboardWrapper from '../common/KeyboardWrapper';
+
+import Animated, {
+  FadeInRight,
+  FadeOutRight,
+} from 'react-native-reanimated';
 
 type Address = {
   id: number;
@@ -44,7 +50,17 @@ type Address = {
   longitude?: string;
 };
 
-export default function AddressSheetContent() {
+type Props = {
+  isOpen: boolean;
+  onClose: () => void;
+};
+
+
+//  trigger the user back event 
+// on every trigger we will check is he on form or list 
+// if he is on list so close bottom sheet and else go to list mode
+
+export default function AddressSheetContent({ isOpen, onClose }: Props) {
   const [mode, setMode] = useState<'list' | 'form'>('list');
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
@@ -53,6 +69,8 @@ export default function AddressSheetContent() {
   const [deleting, setDeleting] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [loadingAddresses, setLoadingAddresses] = useState(true);
+
+  
 
   const loadAddresses = async () => {
     try {
@@ -70,6 +88,35 @@ export default function AddressSheetContent() {
   useEffect(() => {
     loadAddresses();
   }, []);
+
+
+  useEffect(() => {
+  console.log('🟡 isOpen changed:', isOpen);
+}, [isOpen]);
+   const handleUserBack = useCallback(() => {
+    // FORM → go back to list
+    if (mode === 'form') {
+      setMode('list');
+      setSelectedAddress(null);
+      return true;
+    }
+
+    // LIST → close bottom sheet
+    onClose();
+    return true;
+  }, [mode, onClose]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const sub = BackHandler.addEventListener(
+      'hardwareBackPress',
+      handleUserBack
+    );
+
+    return () => sub.remove();
+  }, [isOpen, handleUserBack]);
+
 
   const handleDeletePress = (id: number) => {
     setConfirmDeleteId(id);
@@ -132,10 +179,14 @@ export default function AddressSheetContent() {
     }
   };
 
-  if (mode === 'form') {
-    return (
-        <KeyboardWrapper>
-
+if (mode === 'form') {
+  return (
+    <Animated.View
+      style={{ flex: 1 }}
+      entering={FadeInRight.duration(350)}
+      exiting={FadeOutRight.duration(250)}
+    >
+      <KeyboardWrapper>
         <AddressForm
           initialData={selectedAddress}
           onSuccess={() => {
@@ -149,8 +200,10 @@ export default function AddressSheetContent() {
           }}
         />
       </KeyboardWrapper>
-    );
-  }
+    </Animated.View>
+  );
+}
+
 
   const requestLocationPermission = async () => {
     if (Platform.OS === 'android') {

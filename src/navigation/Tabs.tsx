@@ -7,11 +7,15 @@ import Categories from '../screens/category/Categories';
 import EventScreen from '../screens/event/EventSelector';
 import CartScreen from '../screens/cart/Cart';
 import ProfileScreen from '../screens/profile/Profile';
+//import TabsBackHandler from './TabBackHandeler';
 
 const Tab = createBottomTabNavigator();
 
 export default function Tabs() {
   return (
+    <>   
+         {/* <TabsBackHandler /> */}
+
     <Tab.Navigator
       screenOptions={{ headerShown: false }}
       tabBar={props => <MyTabBar {...props} />}
@@ -22,5 +26,6 @@ export default function Tabs() {
       <Tab.Screen name="Cart" component={CartScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
+    </>
   );
 }

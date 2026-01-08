@@ -2,6 +2,7 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { decodeIdToken } from '../utils/decodeToken';
+import { DeviceEventEmitter } from 'react-native';
 
 const BASE_URL ='https://751ue73p4j.execute-api.ap-south-1.amazonaws.com/v1';
 
@@ -34,6 +35,17 @@ let failedQueue: {
   resolve: (token: string) => void;
   reject: (error: any) => void;
 }[] = [];
+
+const forceLogout = async () => {
+  await AsyncStorage.multiRemove([
+    'idToken',
+    'refreshToken',
+    'username',
+  ]);
+
+  // emit event or reset navigation
+  DeviceEventEmitter.emit('FORCE_LOGOUT');
+};
 
 const processQueue = (error: any, token: string | null) => {
   failedQueue.forEach(p => {
@@ -152,7 +164,7 @@ privateApi.interceptors.response.use(
         return privateApi(originalRequest);
       } catch (err) {
         processQueue(err, null);
-        await AsyncStorage.multiRemove(['idToken', 'refreshToken']);
+        await forceLogout();
         return Promise.reject(err);
       } finally {
         isRefreshing = false;
@@ -162,3 +174,11 @@ privateApi.interceptors.response.use(
     return Promise.reject(error);
   },
 );
+
+
+
+
+
+
+
+

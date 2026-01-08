@@ -19,6 +19,7 @@ import { getBanners } from '../../api/event';
 export default function HomeScreen() {
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [banners, setBanners] = useState<any[]>([]);
+  const [isAddressSheetOpen, setIsAddressSheetOpen] = useState(false);
 
   useEffect(() => {
     fetchBanners();
@@ -79,9 +80,18 @@ export default function HomeScreen() {
         <HowItWork />
       </ScrollView>
 
-      <BaseBottomSheet ref={bottomSheetRef}>
-        <AddressSheetContent />
-      </BaseBottomSheet>
+<BaseBottomSheet
+  ref={bottomSheetRef}
+  onChange={(index) => {
+    console.log('🟢 sheet index:', index);
+    setIsAddressSheetOpen(index >= 0);
+  }}
+>
+  <AddressSheetContent
+    isOpen={isAddressSheetOpen}
+    onClose={() => bottomSheetRef.current?.close()}
+  />
+</BaseBottomSheet>
     </SafeAreaView>
   );
 }

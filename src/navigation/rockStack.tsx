@@ -1,4 +1,4 @@
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store';
 
@@ -7,7 +7,7 @@ import FlowStack from '../navigation/Screens/FlowStack';
 import AuthStack from '../navigation/Screens/AuthStack';
 import { useEffect } from 'react';
 
-const Stack = createNativeStackNavigator();
+const Stack = createStackNavigator();
 
 export default function RootStack() {
   const { isLoggedIn } = useSelector((state: RootState) => state.auth);
