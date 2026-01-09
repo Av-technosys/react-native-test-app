@@ -77,9 +77,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.appname"
+    namespace "com.freakychimp.user"
     defaultConfig {
-        applicationId "com.appname"
+        applicationId "com.freakychimp.user"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -113,6 +113,7 @@ android {
 }
 
 dependencies {
+    
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
 // implementation 'com.facebook.react:react-native-vector-icons:8.1.0'
@@ -124,3 +125,5 @@ dependencies {
 }
 // apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
 // implementation 'com.facebook.react:react-native-vector-icons'
+apply plugin: 'com.google.gms.google-services'
+

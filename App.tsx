@@ -8,6 +8,7 @@ import { applyGlobalFont } from './src/utils/GlobalFont';
 import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import FlashMessage from 'react-native-flash-message';
+import messaging from '@react-native-firebase/messaging';
 
 import RootStack from './src/navigation/rockStack';
 import { Provider } from 'react-redux';
@@ -18,6 +19,16 @@ function App() {
   useEffect(() => {
     applyGlobalFont();
   }, []);
+
+  useEffect(() => {
+  const initFCM = async () => {
+    const token = await messaging().getToken();
+    console.log('FCM TOKEN:', token);
+  };
+
+  initFCM();
+}, []);
+
 
   const isDarkMode = useColorScheme() === 'dark';
 
@@ -31,6 +42,7 @@ function App() {
 
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
+            
             <NavigationContainer>
               {/* ✅ GLOBAL STATUS BAR */}
 
