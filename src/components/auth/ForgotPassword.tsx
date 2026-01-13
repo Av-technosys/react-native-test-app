@@ -57,11 +57,11 @@ export default function ForgotPasswordScreen() {
               extraScrollHeight={32}
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{
-                padding: 18,
+              /// paddingtop: 20,
               }}
             >
-         <ScreenHeader title="Forgot Password" rightType="menu" showBack={false} />
-    <SafeAreaView className="flex-1 bg-white px-5">
+         {/* <ScreenHeader title="Forgot Password" rightType="menu" showBack={false} /> */}
+    <SafeAreaView className="flex-1 px-5">
 
       {/* LOGO */}
       <View className="items-center mt-4">

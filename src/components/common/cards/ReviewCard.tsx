@@ -20,7 +20,7 @@ export default function ReviewCard({
   media,
 }: ReviewCardProps) {
   const avatarImage =
-    media.find(m => m.type === 'image')?.url ?? null;
+    media?.find(m => m.type === 'image')?.url ?? null;
 
   return (
     <View className="bg-white border border-gray-200 rounded-2xl p-4 mb-4 shadow-lg">
@@ -61,7 +61,7 @@ export default function ReviewCard({
       <Text className="text-lg text-gray-700 mt-3">{comment}</Text>
 
       {/* MEDIA */}
-      {media.length > 0 && (
+      {media?.length > 0 && (
         <FlatList
           data={media}
           horizontal

@@ -6,8 +6,6 @@ import ScreenHeader from '../../common/ScreenHeader';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useAppDispatch } from '../../../store/hooks';
-import { setEventTypeId } from '../../../store/slices/eventSlice';
 
 export type EventStackParamList = {
   eventSelector: undefined;
@@ -44,7 +42,6 @@ const OPTIONS: Option[] = [
 ];
 
 export default function EventTypeSelector() {
-  const dispatch = useAppDispatch();
   const [selected, setSelected] = useState<string | null>(null);
   const navigation =
     useNavigation<NativeStackNavigationProp<EventStackParamList>>();
@@ -112,7 +109,6 @@ export default function EventTypeSelector() {
           onPress={() => {
             if (!selected) return;
 
-            dispatch(setEventTypeId(selected));
 
             navigation.getParent()?.navigate('FlowStack', {
               screen: 'eventDetails',

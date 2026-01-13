@@ -22,3 +22,23 @@ export const getFeaturedEvents = async () => {
   const response = await privateApi.get('/event/featured');
   return response.data;
 };
+
+export const createEvent = async (eventData: any) => {
+  const response = await privateApi.post('/event/create', eventData);
+  return response.data;
+};
+
+export const fetchEventType = async () => {
+  const response = await privateApi.get('/event/event_type');
+  return response.data;
+};
+
+
+export const saveInBookingDraft = async (payload: {
+  eventId: any;
+  productId: any;
+  quantity: 1;
+}) => {
+  const response = await privateApi.post('/event/create_eventitem', payload);
+  return response.data;
+};

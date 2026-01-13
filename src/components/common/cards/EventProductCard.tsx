@@ -7,22 +7,19 @@ type Props = {
   guests: string;
   menuType: string;
   rating: number;
-  reviews: string;
-  price: number;
+  price: any;
   image: any;
   added?: boolean;
-  disabled?: boolean;   // 👈 ADD THIS
+  disabled?: boolean; // 👈 ADD THIS
   onAdd?: () => void;
   onRemove?: () => void;
 };
-
 
 export default function EventProductCard({
   title,
   guests,
   menuType,
   rating,
-  reviews,
   price,
   image,
   added,
@@ -43,8 +40,8 @@ export default function EventProductCard({
         <Text className="text-gray-500 mt-2 font-light text-md">
           {guests} • {menuType}
         </Text>
-  
-           <View className="flex-row items-center mt-2">
+
+        <View className="flex-row items-center mt-2">
           {[1, 2, 3, 4, 5].map(i => (
             <AntDesign
               key={i}
@@ -53,13 +50,17 @@ export default function EventProductCard({
               color={i < rating ? '#FACC15' : '#E5E7EB'}
             />
           ))}
-          <Text className="text-gray-500 text-xs ml-2">{reviews}</Text>
+          {/* <Text className="text-gray-500 text-xs ml-2">{reviews}</Text> */}
         </View>
 
         {/* PRICE */}
-        <Text className="text-lg font-semibold text-black mt-2">
-          $ {price}
-        </Text>
+        <View className="mt-2 h-6 justify-center">
+          {price != null && price !== '' ? (
+            <Text className="text-lg font-semibold text-black">$ {price}</Text>
+          ) : (
+            <Text className="text-lg font-semibold text-transparent"></Text>
+          )}
+        </View>
 
         {/* ACTION */}
         {!added ? (
@@ -77,9 +78,7 @@ export default function EventProductCard({
             disabled={disabled}
             onPress={onRemove}
             className={`self-start px-4 py-1.5 rounded-md mt-3 border ${
-              disabled
-                ? 'border-gray-300'
-                : 'border-yellow-400'
+              disabled ? 'border-gray-300' : 'border-yellow-400'
             }`}
           >
             <Text

@@ -1,66 +1,74 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-export type StepKey =
-  | 'food'
-  | 'drinks'
-  | 'cake'
-  | 'venue'
-  | 'photography'
-  | 'videography';
-
 export type BookingDetails = {
-  fullName: string;
-  phone: string;
-  address: string;
-  date: string;
-  time: string;
-  guests: string | null;
+  eventTypeId: number;
+
+  contactName: string;
+  contactNumber: string;
+  description: string;
+
+  startTime: string;
+  endTime: string;
+
+  minGuestCount: number;
+  maxGuestCount: number;
+
+  latitude: string;
+  longitude: string;
+};
+
+type EventTypeInfo = {
+  id: number;
+  name: string;
+  image: string | null;
 };
 
 type EventState = {
-  eventTypeId: string | null;
+  eventId: number | null;
+  eventType: EventTypeInfo | null;
   bookingDetails: BookingDetails | null;
-  selections: Record<StepKey, string[]>;
+  selections: Record<string, string[]>;
 };
-
-const ALL_STEP_KEYS: StepKey[] = [
-  'food',
-  'drinks',
-  'cake',
-  'venue',
-  'photography',
-  'videography',
-];
-
-const emptySelections = ALL_STEP_KEYS.reduce((acc, key) => {
-  acc[key] = [];
-  return acc;
-}, {} as Record<StepKey, string[]>);
 
 const initialState: EventState = {
-  eventTypeId: null,
+  eventId: null,
+  eventType: null,
   bookingDetails: null,
-  selections: emptySelections,
+  selections: {},
 };
-
 const eventSlice = createSlice({
   name: 'event',
   initialState,
   reducers: {
-    
-    setEventTypeId(state, action: PayloadAction<string>) {
-      state.eventTypeId = action.payload;
+
+    setEventType(
+      state,
+      action: PayloadAction<{
+        id: number;
+        name: string;
+        image: string | null;
+      }>
+    ) {
+      state.eventType = action.payload;
     },
 
     setBookingDetails(state, action: PayloadAction<BookingDetails>) {
       state.bookingDetails = action.payload;
     },
+    setEventId(state, action: PayloadAction<number>) {
+      state.eventId = action.payload;
+    },
 
     addProduct(
       state,
-      action: PayloadAction<{ step: StepKey; productId: string }>,
+      action: PayloadAction<{ step: string; productId: string }>
     ) {
       const { step, productId } = action.payload;
+
+      if (!state.selections[step]) {
+        state.selections[step] = [];
+      }
+
       if (!state.selections[step].includes(productId)) {
         state.selections[step].push(productId);
       }
@@ -68,11 +76,13 @@ const eventSlice = createSlice({
 
     removeProduct(
       state,
-      action: PayloadAction<{ step: StepKey; productId: string }>,
+      action: PayloadAction<{ step: string; productId: string }>
     ) {
       const { step, productId } = action.payload;
+      if (!state.selections[step]) return;
+
       state.selections[step] = state.selections[step].filter(
-        id => id !== productId,
+        id => id !== productId
       );
     },
 
@@ -83,11 +93,12 @@ const eventSlice = createSlice({
 });
 
 export const {
-  setEventTypeId,
+  setEventType,
   setBookingDetails,
   addProduct,
   removeProduct,
   resetEvent,
+  setEventId
 } = eventSlice.actions;
 
 export default eventSlice.reducer;

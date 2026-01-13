@@ -35,7 +35,7 @@ export default function ProductDetails() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-  <ScreenHeader title="Categories" rightType="notification" />
+  <ScreenHeader title="Categories" rightType="notification" showBack={true} />
 
 
       {/* CONTENT */}

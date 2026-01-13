@@ -7,23 +7,22 @@ type Props = {
   title?: string;
   subtitle?: string;
   image: any;
+  date:any;
   onPress?: () => void;
 };
-
 export default function Header({
-  title = "Piyush’s",
-  subtitle = 'Birthday',
+  title,
+  subtitle,
   image,
+  date,
   onPress,
 }: Props) {
   return (
     <Pressable
       onPress={onPress}
-      className="m-6  flex-row items-center justify-between"
+      className="m-6 flex-row items-center justify-between"
     >
-      {/* LEFT CONTENT */}
       <View className="flex-1 pr-4">
-        {/* GRADIENT TITLE */}
         <MaskedView
           maskElement={
             <View>
@@ -50,13 +49,13 @@ export default function Header({
           </LinearGradient>
         </MaskedView>
 
-        {/* DATE */}
-        <Text className="text-gray-500 mt-4 text-base">
-          20 Aug 2025
-        </Text>
+        {date && (
+          <Text className="text-gray-500 mt-4 text-base">
+            {date}
+          </Text>
+        )}
       </View>
 
-      {/* RIGHT IMAGE */}
       <View className="w-36 h-36 rounded-2xl overflow-hidden shadow-lg">
         <Image
           source={image}

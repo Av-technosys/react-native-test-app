@@ -14,6 +14,9 @@ import RootStack from './src/navigation/rockStack';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './src/store';
+import { createTamagui,TamaguiProvider, View } from 'tamagui'
+import { config } from '@tamagui/config';
+
 
 function App() {
   useEffect(() => {
@@ -31,6 +34,7 @@ function App() {
 
 
   const isDarkMode = useColorScheme() === 'dark';
+const tamaguiConfig = createTamagui(config);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -45,13 +49,14 @@ function App() {
             
             <NavigationContainer>
               {/* ✅ GLOBAL STATUS BAR */}
-
+<TamaguiProvider config={tamaguiConfig}>
               <StatusBar
                 barStyle={isDarkMode ? 'light-content' : 'dark-content'}
                 backgroundColor="#FFFFFF"
                 translucent
               />
               <RootStack />
+              </TamaguiProvider>
             </NavigationContainer>
           </PersistGate>
         </Provider>

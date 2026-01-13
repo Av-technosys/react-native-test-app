@@ -32,7 +32,7 @@ const handleLogin = async () => {
   }
 
   const payload = {
-    username: email,
+    email: email,
     password,
   };
 
@@ -80,7 +80,7 @@ const handleLogin = async () => {
         <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 40}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 50}
     >
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
