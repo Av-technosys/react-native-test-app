@@ -33,3 +33,19 @@ export const getProductsByProductTypeId = async (
   );
   return response.data;
 };
+
+
+
+export const getAllFeaturedProducts = async () => {
+   const response = await privateApi.get(
+    `/product/featuredProducts`,
+  );
+  return response.data;
+}
+
+export const fetchProductReview = async (productId: number) => {
+  const response = await privateApi.get(
+    `/product/reviews/${productId}`
+  );
+  return response.data;
+};

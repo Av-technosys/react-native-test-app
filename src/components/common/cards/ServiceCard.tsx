@@ -15,43 +15,39 @@ export default function ServiceCard({ item }: any) {
       onPress={() =>
         navigation.getParent()?.navigate('FlowStack', {
           screen: 'ProductDetails',
-        })
+  params: {
+    productId: item.id,
+  }        })
       }
-      className="w-[22rem] m-6 bg-white rounded-2xl shadow-lg border border-gray-200 mx-2 pb-4"
+      className="w-[22rem] bg-white rounded-2xl border border-gray-200 mx-2 overflow-hidden"
     >
-      {/* Image */}
-      <Image
-        source={item.image}
-        className="w-full h-40 rounded-t-2xl"
-        resizeMode="cover"
-      />
+      {/* IMAGE */}
+      <Image source={item.image} className="w-full h-36" resizeMode="cover" />
 
-      {/* Title */}
-      <Text
-        numberOfLines={2}
-        className="mt-3 px-4 font-semibold text-lg text-gray-900"
-      >
-        {item.title}
-      </Text>
-
-      {/* Rating */}
-      <View className="flex-row items-center px-4 mt-2">
-        {[...Array(5)].map((_, index) => (
-          <Icon key={index} name="star" size={16} color="#facc15" />
-        ))}
-        <Text className="ml-2 text-gray-700 font-medium">{item.rating}</Text>
-        <Text className="ml-2 text-gray-500">{item.reviews}+</Text>
-      </View>
-
-      {/* Price */}
-      <View className="px-4 mt-2">
-        <Text className="text-black w-16 bg-gray-100 px-3 py-1 rounded-full font-semibold w-fit">
-          ${item.price}
+      {/* CONTENT */}
+      <View className="px-4 py-3">
+        {/* TITLE */}
+        <Text
+          numberOfLines={2}
+          className="text-base font-semibold text-gray-900"
+        >
+          {item.title}
         </Text>
-      </View>
 
-      {/* Store */}
-      <Text className="px-4 mt-1 text-gray-500">{item.store}</Text>
+        {/* RATING */}
+        <View className="flex-row items-center mt-2">
+          {[...Array(item.rating)].map((_, index) => (
+            <Icon key={index} name="star" size={16} color="#facc15" />
+          ))}
+        </View>
+
+        {/* PRICE (only if available) */}
+        {item.price ? (
+          <Text className="mt-3 text-lg font-bold text-gray-900">
+            ₹{item.price}
+          </Text>
+        ) : null}
+      </View>
     </Pressable>
   );
 }

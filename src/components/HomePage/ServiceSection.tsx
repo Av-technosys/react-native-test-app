@@ -2,113 +2,121 @@ import { View, Text, FlatList } from 'react-native';
 import { useEffect, useState } from 'react';
 import ServiceCard from '../common/cards/ServiceCard';
 import SectionHeader from '../common/SectionHeader';
-import { getEvents } from '../../api/event';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import { getAllFeaturedProducts } from '../../api/product';
 
-// single fallback image
+// S3 base URL
+const S3_BASE_URL =
+  'https://freaky-files.s3.ap-south-1.amazonaws.com';
+
+// fallback image
 const FALLBACK_IMAGE = require('../../assets/images/service1.png');
-
-const labels = {
-  popular: 'Popular In Town',
-  recent: 'Recently Added',
-};
 
 function ServiceCardSkeleton() {
   return (
     <SkeletonPlaceholder borderRadius={16}>
-      <View style={{ width: 220, marginRight: 12 }}>
+      <View style={{ width: 352, marginHorizontal: 8 }}>
         {/* Image */}
-        <SkeletonPlaceholder.Item width="100%" height={140} borderRadius={16} />
-        {/* Title */}
-        <SkeletonPlaceholder.Item marginTop={10} width="80%" height={14} />
-        {/* Subtitle */}
-        <SkeletonPlaceholder.Item marginTop={6} width="60%" height={12} />
-        {/* Meta row */}
-        <SkeletonPlaceholder.Item marginTop={8} width="40%" height={12} />
+        <SkeletonPlaceholder.Item
+          width="100%"
+          height={144}
+          borderRadius={16}
+        />
+
+        {/* Content */}
+        <SkeletonPlaceholder.Item marginTop={12}>
+          <SkeletonPlaceholder.Item width="90%" height={16} />
+          <SkeletonPlaceholder.Item
+            marginTop={6}
+            width="70%"
+            height={16}
+          />
+
+          {/* Rating */}
+          <SkeletonPlaceholder.Item
+            marginTop={10}
+            width="40%"
+            height={14}
+          />
+
+          {/* Price */}
+          <SkeletonPlaceholder.Item
+            marginTop={12}
+            width="30%"
+            height={18}
+          />
+        </SkeletonPlaceholder.Item>
       </View>
     </SkeletonPlaceholder>
   );
 }
+
 export default function ServicesBlock() {
-  const [popular, setPopular] = useState<any[]>([]);
-  const [recent, setRecent] = useState<any[]>([]);
+  const [sections, setSections] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchEvents();
+    fetchFeatured();
   }, []);
 
-const fetchEvents = async () => {
-  try {
-    setLoading(true);
+  const fetchFeatured = async () => {
+    try {
+      setLoading(true);
 
-    const res = await getEvents();
-    const events = res.data || [];
+      const res = await getAllFeaturedProducts();
+      const categories = res?.data ?? [];
 
-    const mapped = events.map((item: any) => ({
-      id: item.eventId,
-      title: item.name,
-      rating: '4.5',
-      reviews: 0,
-      price: item.minGuestCount,
-      store: item.description,
-      image: FALLBACK_IMAGE,
-      eventDate: item.eventDate,
-    }));
+      const mappedSections = categories.map((category: any) => ({
+        id: category.id,
+        title: category.name,
+        products: category.products.map((product: any) => ({
+          id: product.productId,
+          title: product.title,
+          rating: product.rating ?? 4,
+          price: product.price?.[0]?.price ?? null,
+          description: product.description,
+          image: product.bannerImage
+            ? { uri: `${S3_BASE_URL}/${product.bannerImage}` }
+            : FALLBACK_IMAGE,
+        })),
+      }));
 
-    setPopular(mapped.slice(0, 5));
-    setRecent(mapped.slice(-5));
-  } catch (error) {
-    console.error('Failed to fetch events', error);
-  } finally {
-    setLoading(false);
-  }
-};
+      setSections(mappedSections);
+    } catch (error) {
+      console.error('Failed to fetch featured products', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  return (
+    <View className="mt-6">
+      {loading ? (
+        <ServiceCardSkeleton />
+      ) : (
+        sections.map((section) => (
+          <View key={section.id} className="mb-6">
+            <SectionHeader
+              left={
+                <Text className="text-2xl font-bold text-black">
+                  {section.title}
+                </Text>
+              }
+            />
 
-  const renderService = ({ item }: any) => (
-    <ServiceCard item={item} />
+            <FlatList
+              horizontal
+              data={section.products}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item }) => (
+                <ServiceCard item={item} />
+              )}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingHorizontal: 4 }}
+            />
+          </View>
+        ))
+      )}
+    </View>
   );
-
-return (
-  <View className="mt-6">
-
-    {/* POPULAR */}
-    <SectionHeader
-      left={<Text className="text-2xl font-bold text-black">{labels.popular}</Text>}
-    />
-    {loading ? (
-      <ServiceCardSkeleton />
-    ) : (
-      <FlatList
-        horizontal
-        data={popular}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderService}
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 4 }}
-      />
-    )}
-
- 
-    {/* RECENT */}
-    <SectionHeader
-      left={<Text className="text-2xl mt-4 font-bold text-black">{labels.recent}</Text>}
-    />
-    {loading ? (
-      <ServiceCardSkeleton />
-    ) : (
-      <FlatList
-        horizontal
-        data={recent}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderService}
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 4 }}
-      />
-    )}
-
-  </View>
-);
-
 }

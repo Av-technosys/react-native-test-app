@@ -113,7 +113,7 @@ export default function CategoriesScreen() {
               navigation.getParent()?.navigate('FlowStack', {
                 screen: 'CategoryProducts',
                 params: {
-                  categoryId: item.id,
+                  typeId: item.id,
                   title: item.name,
                 },
               })

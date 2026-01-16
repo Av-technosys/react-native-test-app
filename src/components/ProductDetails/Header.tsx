@@ -8,12 +8,15 @@ type VendorHeaderCardProps = {
   location: string;
   rating: number;
   logo: any;
+  mediaImages?: string[];
 };
 export default function VendorHeaderCard({
   name,
   location,
   rating,
   logo,
+  mediaImages = [],
+
 }: VendorHeaderCardProps) {
   return (
     <View className=" mt-8">
@@ -46,24 +49,36 @@ export default function VendorHeaderCard({
         </View>
 
         {/* RIGHT LOGO */}
-        <View className="h-28 w-28 items-center justify-center rounded-xl">
-          <Image source={logo} resizeMode="contain" />
-        </View>
+{/* RIGHT LOGO */}
+<View className="h-28 w-28 items-center justify-center rounded-xl bg-gray-100">
+  <Image
+    source={
+      logo?.uri
+        ? logo
+        : require('../../assets/images/vendor-logo.png')
+    }
+    style={{
+      width: '80%',
+      height: '80%',
+    }}
+    resizeMode="contain"
+  />
+</View>
+
       </View>
 
       {/* CAROUSEL — OUTSIDE ROW */}
       <View className="mt-4">
-        <Carousel
-          fullWidth={false}
-          itemSpacing={0}
-          borderRadius={15}
-          images={[
-            require('../../assets/images/vendor-product.jpg'),
-            require('../../assets/images/vendor-product.jpg'),
-            require('../../assets/images/vendor-product.jpg'),
-            require('../../assets/images/vendor-product.jpg'),
-          ]}
-        />
+       {mediaImages && mediaImages.length > 0 && (
+  <View className="mt-4">
+    <Carousel
+      fullWidth={false}
+      itemSpacing={0}
+      borderRadius={15}
+      images={mediaImages.map((uri) => ({ uri }))} // 👈 IMPORTANT
+    />
+  </View>
+)}
       </View>
     </View>
   );

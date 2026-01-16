@@ -1,106 +1,237 @@
-import { Pressable, View, ScrollView, Image, Text } from 'react-native';
+import { View, ScrollView, Pressable, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import ScreenHeader from '../../../src/components/common/ScreenHeader';
-import Icon from 'react-native-vector-icons/Feather';
-import LinearGradient from 'react-native-linear-gradient';
+import ScreenHeader from '../../components/common/ScreenHeader';
+//import LinearGradient from 'react-native-linear-gradient';
 import BottomSheet from '@gorhom/bottom-sheet';
 import BaseBottomSheet from '../../components/common/BaseBottomSheet';
 import VendorHeaderCard from '../../components/ProductDetails/Header';
 import Details from '../../components/ProductDetails/Details';
 import VendorDetailsCard from '../../components/ProductDetails/VendorDetails';
 import ReviewSection from '../../components/ProductDetails/CustomerReviewsSection';
-import RecommendationSection from '../../components/ProductDetails/RecommendationSection';
-import { useEffect, useRef } from 'react';
+//import RecommendationSection from '../../components/ProductDetails/RecommendationSection';
 import AddToCartForm from '../../components/common/AddToCartForm';
-import { useAppSelector } from '../../store/hooks';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+
+import { useEffect, useRef, useState } from 'react';
+import { useRoute } from '@react-navigation/native';
+//import { useAppSelector } from '../../store/hooks';
+import { getProductsByProductId, fetchProductReview } from '../../api/product';
+import LinearGradient from 'react-native-linear-gradient';
+import { fetchVendorDetail } from '../../api/vendor';
+
+const S3_BASE_URL = 'https://freaky-files.s3.ap-south-1.amazonaws.com';
 
 export default function ProductDetails() {
-  const disabled = false;
+  const route = useRoute<any>();
+  const { productId } = route.params ?? {};
+  console.log(productId);
   const bottomSheetRef = useRef<BottomSheet>(null);
+  //const cartItems = useAppSelector(state => state.cart.items);
+  const [vendor, setVendor] = useState<any>(null);
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [reviewsLoading, setReviewsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [product, setProduct] = useState<any>(null);
 
-  const cartItems = useAppSelector(state => state.cart.items);
+  const vendorLogo = vendor?.logoUrl
+    ? { uri: `${S3_BASE_URL}/${vendor.logoUrl}` }
+    : require('../../assets/images/vendor-logo.png');
 
   useEffect(() => {
-    console.log('CART STATE:', cartItems);
-  }, [cartItems]);
+    if (!productId) return;
 
-  const productData = {
-    ProductId: '24',
-    title: 'Juice Junction',
-    vendorName: 'EVENTER’S',
-    vendorId: 'VXX455',
-    location: 'Mansarovar, Jaipur',
-    price: 949,
-  };
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        const [productRes, vendorRes] = await Promise.all([
+          getProductsByProductId(productId),
+          fetchVendorDetail(),
+        ]);
+
+        setProduct(productRes.product);
+        setVendor(vendorRes.data);
+      } catch (err) {
+        console.log('DETAIL FETCH ERROR', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [productId]);
+
+  useEffect(() => {
+    if (!productId) return;
+
+    const fetchReviews = async () => {
+      try {
+        setReviewsLoading(true);
+        const res = await fetchProductReview(productId);
+
+        setReviews(res.data ?? []);
+      } catch (err) {
+        console.log('REVIEW FETCH ERROR', err);
+      } finally {
+        setReviewsLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, [productId]);
+
+  if (loading) {
+ return (
+    <SafeAreaView className="flex-1 bg-white">
+      <View className="h-14" />
+
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <SkeletonPlaceholder borderRadius={16}>
+          {/* Vendor Header */}
+          <View style={{ marginTop: 24, paddingHorizontal: 24 }}>
+            <View style={{ flexDirection: 'row' }}>
+              <View style={{ flex: 1 }}>
+                <View style={{ width: '70%', height: 26 }} />
+                <View style={{ marginTop: 10, width: '50%', height: 14 }} />
+                <View style={{ marginTop: 10, width: 60, height: 22 }} />
+              </View>
+              <View style={{ width: 112, height: 112, borderRadius: 16 }} />
+            </View>
+          </View>
+
+          {/* Carousel */}
+          <View style={{ marginTop: 24, paddingLeft: 24, flexDirection: 'row' }}>
+            {[1, 2, 3].map(i => (
+              <View
+                key={i}
+                style={{
+                  width: 260,
+                  height: 160,
+                  borderRadius: 16,
+                  marginRight: 12,
+                }}
+              />
+            ))}
+          </View>
+
+          {/* Details */}
+          <View style={{ marginTop: 28, paddingHorizontal: 24 }}>
+            <View style={{ width: '60%', height: 24 }} />
+            <View style={{ marginTop: 8, width: '40%', height: 16 }} />
+            <View style={{ marginTop: 12, width: '30%', height: 20 }} />
+
+            {[1, 2, 3, 4].map(i => (
+              <View
+                key={i}
+                style={{
+                  marginTop: 10,
+                  width: '100%',
+                  height: 12,
+                }}
+              />
+            ))}
+          </View>
+
+          {/* Vendor Details Card */}
+          <View
+            style={{
+              marginTop: 28,
+              marginHorizontal: 24,
+              height: 160,
+              borderRadius: 20,
+            }}
+          />
+
+          {/* Reviews */}
+          <View style={{ marginTop: 28, paddingHorizontal: 24 }}>
+            <View style={{ width: '40%', height: 20 }} />
+
+            {[1, 2].map(i => (
+              <View
+                key={i}
+                style={{
+                  marginTop: 16,
+                  height: 120,
+                  borderRadius: 16,
+                }}
+              />
+            ))}
+          </View>
+
+          {/* Add to cart */}
+          <View
+            style={{
+              marginTop: 32,
+              marginHorizontal: 24,
+              height: 64,
+              borderRadius: 20,
+            }}
+          />
+        </SkeletonPlaceholder>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+  if (!product) return null;
+
+  const price =
+    product.prices?.[0]?.salePrice ?? product.prices?.[0]?.listPrice ?? null;
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-  <ScreenHeader title="Categories" rightType="notification" showBack={true} />
+      <ScreenHeader title={product.title} showBack rightType="notification" />
 
-
-      {/* CONTENT */}
       <ScrollView
-        className="flex-1"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 20 }}
+        contentContainerStyle={{ paddingBottom: 24 }}
       >
+        {/* HEADER */}
         <VendorHeaderCard
-          name="EVENTER’S"
-          location="Jaipur"
-          rating={4.5}
-          logo={require('../../assets/images/vendor-logo.png')}
+          name={vendor?.businessName ?? 'Vendor'}
+          location={`${vendor?.city ?? ''} ${vendor?.state ?? ''}`}
+          rating={product.rating}
+          logo={vendorLogo}
+          mediaImages={
+            product.media
+              ?.filter((m: any) => m.mediaType === 'image')
+              ?.map((m: any) => `${S3_BASE_URL}/${m.mediaUrl}`) ?? []
+          }
         />
 
+        {/* DETAILS */}
         <Details
-          title="Juice Junction"
-          subtitle="Premium package || Full Day Coverage"
-          rating={5}
-          ratingCount="14k+"
-          price={949}
-          description="We provide professional photography and videography services to capture your special moments with creativity and care. From events to personal shoots, we deliver high-quality photos and cinematic videos you’ll cherish forever."
-          services={[
-            'Event Photography & Videography – Weddings, engagements, birthdays, and parties',
-            'Pre-Wedding & Couple Shoots – Romantic outdoor or studio sessions',
-            'Candid Photography – Natural, unscripted moments',
-            'Cinematic Wedding Films – Highlight reels and full-day coverage',
-            'Portrait & Portfolio Shoots – Individual, family, kids, or professional portfolios',
-            'Corporate Photography & Videography – Events, product launches, promotional videos',
-            'Drone Photography & Aerial Videography – Stunning overhead shots',
-            'Photo Albums & Video Editing – Custom-designed albums and professional post-production',
-            'Live Streaming Services – For weddings and events to reach remote guests',
-            'Reels & Social Media Clips – Short, engaging content for online sharing',
-          ]}
+          title={product.title}
+          subtitle={product.pricingType}
+          rating={product.rating}
+          ratingCount={`${product.rating}.0`}
+          price={price}
+          description={product.description}
+          //services={product.description?.split('\n')?.filter(Boolean) ?? []}
         />
 
+        {/* VENDOR */}
         <VendorDetailsCard
-          name="XYZ"
-          location="Mansarovar, Jaipur"
-          vendorId="VXX455"
-          serviceId="DX47"
-          email="eventors@gmail.com"
+          logo={vendorLogo}
+          name={vendor?.businessName}
+          location={`${vendor?.streetAddressLine1}, ${vendor?.city}`}
+          vendorId={vendor?.vendorId}
+          serviceId={product.productId}
+          email={vendor?.primaryContactEmail}
         />
 
-        <ReviewSection />
-        <RecommendationSection />
+        <ReviewSection reviews={reviews} loading={reviewsLoading} />
 
-        <Image
-          source={require('../../assets/images/location.png')}
-          className="m-6 w-[92%] h-44 rounded-xl self-center"
-          resizeMode="cover"
-        />
+        {/* <RecommendationSection /> */}
 
+        {/* ADD TO CART */}
         <Pressable
-          disabled={disabled}
-          className="w-full items-center"
-          onPress={() => {
-            bottomSheetRef.current?.snapToIndex(0);
-          }}
+          className="w-full items-center mt-6"
+          onPress={() => bottomSheetRef.current?.snapToIndex(0)}
         >
           <View style={{ borderRadius: 18, overflow: 'hidden', width: '92%' }}>
             <LinearGradient
-              colors={
-                disabled ? ['#E5E7EB', '#E5E7EB'] : ['#F97316', '#FACC15']
-              }
+              colors={['#F97316', '#FACC15']}
               start={{ x: 0, y: 0.5 }}
               end={{ x: 1, y: 0.5 }}
               style={{
@@ -115,8 +246,15 @@ export default function ProductDetails() {
         </Pressable>
       </ScrollView>
 
-      <BaseBottomSheet ref={bottomSheetRef} snapPoints={['90%']}>
-        <AddToCartForm product={productData} />
+      <BaseBottomSheet ref={bottomSheetRef} snapPoints={['80%']}>
+        <AddToCartForm
+          product={{
+            productId: product.productId,
+            title: product.title,
+            price,
+            vendorId: product.vendorId,
+          }}
+        />
       </BaseBottomSheet>
     </SafeAreaView>
   );

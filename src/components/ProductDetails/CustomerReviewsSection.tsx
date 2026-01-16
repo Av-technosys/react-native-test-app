@@ -7,37 +7,37 @@ type RootStackParamList = {
   ProductDetails: any;
 };
 
-const reviews = [
-  {
-    name: 'John Doe',
-    daysAgo: '6 days ago',
-    rating: 5,
-    comment: 'Great service and quick delivery!',
-    avatarColor: '#111827',
-    images: [
-      require('../../assets/images/event1.png'),
-      require('../../assets/images/event1.png'),
-      require('../../assets/images/event1.png'),
-      require('../../assets/images/event1.png'),
-    ],
-  },
-  {
-    name: 'Jane Smith',
-    daysAgo: '6 days ago',
-    rating: 5,
-    comment: 'Loved the quality of products.',
-    avatarColor: '#020617',
-    images: [
-      require('../../assets/images/event2.png'),
-      require('../../assets/images/event2.png'),
-      require('../../assets/images/event2.png'),
-      require('../../assets/images/event2.png'),
-    ],
-  },
-];
+type ReviewSectionProps = {
+  reviews: {
+    reviewId: number;
+    rating: number;
+    title: string;
+    description: string;
+    createdAt: string;
+    reviewMedia: {
+      mediaUrl: string;
+      mediaType: 'image' | 'video';
+    }[];
+  }[];
+  loading: boolean;
+};
 
-export default function CustomerReviewsSection() {
+const S3_BASE_URL =
+  'https://freaky-files.s3.ap-south-1.amazonaws.com';
+
+export default function CustomerReviewsSection({
+  reviews,
+  loading,
+}: ReviewSectionProps) {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
+  if (loading) {
+    return null; // skeleton can be added later
+  }
+
+  if (!reviews || reviews.length === 0) {
+    return null; // hide section if no reviews
+  }
 
   return (
     <View className="mt-6 px-4">
@@ -53,20 +53,42 @@ export default function CustomerReviewsSection() {
         </View>
 
         <Pressable
-          onPress={() => {
+          onPress={() =>
             navigation.getParent()?.navigate('FlowStack', {
               screen: 'reviews',
-            });
-          }}
+            })
+          }
         >
           <Text className="text-lg text-gray-500">See All</Text>
         </Pressable>
       </View>
 
       {/* REVIEWS */}
-      {reviews.map((item, index) => (
-        <ReviewCard key={index} {...item} />
-      ))}
+{reviews.map((review) => {
+  const images =
+    review.reviewMedia
+      ?.filter(m => m.mediaType === 'image')
+      ?.map(m => ({
+        uri: `${S3_BASE_URL}/${m.mediaUrl}`,
+      })) ?? [];
+
+  const videos =
+    review.reviewMedia
+      ?.filter(m => m.mediaType === 'video')
+      ?.map(m => `${S3_BASE_URL}/${m.mediaUrl}`) ?? [];
+
+  return (
+    <ReviewCard
+      key={review.reviewId}
+      title={review.title}
+      rating={review.rating}
+      comment={review.description}
+      createdAt={review.createdAt}
+      images={images}
+      videos={videos}
+    />
+  );
+})}
     </View>
   );
 }

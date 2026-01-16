@@ -28,7 +28,7 @@ export default function Details({
   ratingCount,
   price,
   description,
-  services,
+  //services,
 }: DetailsProps) {
   return (
     <View className="mt-4 rounded-xl bg-white p-4 shadow-sm">
@@ -125,7 +125,7 @@ export default function Details({
       </Markdown>
 
       {/* SERVICES */}
-      <Text className="mt-4 text-base font-semibold text-black">
+      {/* <Text className="mt-4 text-base font-semibold text-black">
         What We Provide
       </Text>
 
@@ -142,7 +142,7 @@ export default function Details({
         }}
       >
         {safeMarkdown(services)}
-      </Markdown>
+      </Markdown> */}
 
     </View>
   );

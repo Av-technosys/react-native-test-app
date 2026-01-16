@@ -8,7 +8,8 @@ type RootStackParamList = {
   ProductDetails: any;
 };
 
-type BeverageCardProps = {
+type ProductCardProps = {
+  id: number;
   title: string;
   guests: number;
   menu: string;
@@ -19,14 +20,14 @@ type BeverageCardProps = {
 };
 
 export default function ProductCard({
+  id,
   title,
   guests,
   menu,
   rating,
-  reviews,
   price,
   image,
-}: BeverageCardProps) {
+}: ProductCardProps) {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   return (
@@ -34,34 +35,53 @@ export default function ProductCard({
       onPress={() =>
         navigation.getParent()?.navigate('FlowStack', {
           screen: 'ProductDetails',
+          params: {
+            productId: id,
+          },
         })
       }
-      className="flex-row bg-white border mx-1 border-gray-300 rounded-2xl px-4 py-3 shadow shadow-slate-200 h-40"
+      className="flex-row bg-white border border-gray-200 rounded-2xl p-4 shadow-sm"
     >
       {/* LEFT CONTENT */}
-      <View className="flex-1 pr-3 justify-between">
+      <View className="flex-1 pr-4 justify-between">
+        {/* TOP */}
         <View>
-          <Text className="text-xl font-semibold text-black">{title}</Text>
+          <Text
+            numberOfLines={1}
+            className="text-xl font-semibold text-gray-900"
+          >
+            {title}
+          </Text>
 
-          <Text className="mt-1 text-md text-gray-500">
-            {guests} guests • {menu}
+          <Text
+            numberOfLines={2}
+            className="mt-1 text-md text-gray-500 leading-5"
+          >
+            {menu}
           </Text>
 
           <View className="mt-2 flex-row items-center">
-            {[...Array(5)].map((_, i) => (
-              <Icon key={i} name="star" size={14} color="#FACC15" />
-            ))}
-            <Text className="ml-2 text-md text-gray-500">{reviews}</Text>
+            <Icon name="star" size={14} color="#FACC15" />
+            <Text className="ml-1 text-sm text-gray-600">
+              {rating.toFixed(1)}
+            </Text>
+
+            <Text className="mx-2 text-gray-300">•</Text>
+
+            <Text className="text-sm text-gray-500">{guests} guests</Text>
           </View>
         </View>
 
-        <Text className="text-xl font-semibold text-black">${price}</Text>
+        {/* BOTTOM */}
+        {price ? (
+          <Text className="mt-3 text-lg font-bold text-gray-900">₹{price}</Text>
+        ) : null}
       </View>
 
       {/* RIGHT IMAGE */}
       <Image
         source={image}
-        className="w-36 h-full rounded-xl"
+        className="w-28 h-28 rounded-xl bg-gray-100"
         resizeMode="cover"
       />
     </Pressable>

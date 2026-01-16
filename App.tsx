@@ -18,6 +18,9 @@ import { createTamagui,TamaguiProvider, View } from 'tamagui'
 import { config } from '@tamagui/config';
 
 
+import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
+import '@/global.css';
+
 function App() {
   useEffect(() => {
     applyGlobalFont();
@@ -37,7 +40,9 @@ function App() {
 const tamaguiConfig = createTamagui(config);
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    
+    <GluestackUIProvider mode="dark">
+      <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <FlashMessage
           position="top"
@@ -62,6 +67,8 @@ const tamaguiConfig = createTamagui(config);
         </Provider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
+    </GluestackUIProvider>
+  
   );
 }
 
