@@ -4,8 +4,7 @@ import {
   Text,
   TextInput,
   Pressable,
-  Image,
-  ScrollView
+  Image
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, RouteProp, useRoute } from '@react-navigation/native';
