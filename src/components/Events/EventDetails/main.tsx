@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ScrollView } from 'react-native';
+import { ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ScreenHeader from '../../common/ScreenHeader';
 import BookingDetailsForm from '../../common/forms/EventDetails';
@@ -28,7 +28,7 @@ export default function EventTypeSelector() {
 
   return (
     <SafeAreaView className="flex-1 bg-white  ">
-<ScreenHeader title="Events" rightType="menu" />
+<ScreenHeader title="Events" rightType="menu" showBack={true} />
 
       <ScrollView
         className="flex-1 m-4 my-12"

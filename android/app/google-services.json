@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "602292833348",
+    "project_id": "freaky-chimp",
+    "storage_bucket": "freaky-chimp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:602292833348:android:a6ddb0840806fbc7fcc011",
+        "android_client_info": {
+          "package_name": "com.freakychimp.user"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqmPbTUm4Y6_uytKRumoJxkXg459qJUnQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -165,16 +165,18 @@ const { flow } = route.params ?? {};
     }
   };
 
-  return (
-    <KeyboardAwareScrollView
-      enableOnAndroid
-      keyboardShouldPersistTaps="handled"
-      extraScrollHeight={32}
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={{
-        padding: 18,
-      }}
-    >  <ScreenHeader title="Enter Otp" rightType="menu" showBack={true} />
+return (
+  <KeyboardAwareScrollView
+    enableOnAndroid
+    keyboardShouldPersistTaps="handled"
+    extraScrollHeight={32}
+    showsVerticalScrollIndicator={false}
+    contentContainerStyle={{
+      padding: 8,
+      flexGrow: 1,
+    }}
+  >
+    <ScreenHeader title="Enter Otp" rightType="menu" showBack={true} />
 
     <SafeAreaView className="flex-1 bg-white px-5">
       {/* LOGO */}
@@ -194,17 +196,10 @@ const { flow } = route.params ?? {};
         </Text>
       </View>
 
-      {/* OTP INPUTS (GUARANTEED 6 VISIBLE) */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{
-          flexDirection: 'row',
-          justifyContent: 'center',
-          gap: 12,
-          paddingHorizontal: 16,
-        }}
-        className="mt-12"
+      {/* OTP INPUTS — NO HORIZONTAL SCROLL */}
+      <View
+        className="mt-12 flex-row justify-center"
+        style={{ gap: 12 }}
       >
         {otp.map((digit, index) => (
           <TextInput
@@ -217,7 +212,7 @@ const { flow } = route.params ?? {};
             className="w-14 h-16 border border-gray-500 rounded-xl text-center text-xl font-semibold text-black"
           />
         ))}
-      </ScrollView>
+      </View>
 
       {/* RESEND */}
       <View className="flex-row justify-between mt-6 px-4">
@@ -235,6 +230,7 @@ const { flow } = route.params ?? {};
           <Text className="text-gray-500">{formatTime(secondsLeft)}</Text>
         )}
       </View>
+
       {/* CONFIRM BUTTON */}
       <Button
         label="Confirm"
@@ -243,6 +239,7 @@ const { flow } = route.params ?? {};
         disabled={loading}
       />
     </SafeAreaView>
-    </KeyboardAwareScrollView>
-  );
+  </KeyboardAwareScrollView>
+);
+
 }

@@ -22,3 +22,14 @@ export const getProductsByProductId = async (productId: number) => {
   return response.data; 
 };
 
+
+export const getProductsByProductTypeId = async (
+  productTypeId: number, 
+  page: number = 1, 
+  pageSize: number = 10
+) => {
+  const response = await privateApi.get(
+    `/product/by_product_type_id?productTypeId=${productTypeId}&page=${page}&page_size=${pageSize}`,
+  );
+  return response.data;
+};

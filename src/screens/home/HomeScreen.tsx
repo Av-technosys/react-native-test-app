@@ -17,12 +17,16 @@ import HowItWork from '../../components/HomePage/HowItWork';
 import { getBanners } from '../../api/event';
 
 export default function HomeScreen() {
+
+
+  
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [banners, setBanners] = useState<any[]>([]);
   const [isAddressSheetOpen, setIsAddressSheetOpen] = useState(false);
 
   useEffect(() => {
     fetchBanners();
+
   }, []);
 
   const fetchBanners = async () => {

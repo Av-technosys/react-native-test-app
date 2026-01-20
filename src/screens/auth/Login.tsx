@@ -12,7 +12,7 @@ export default function LoginScreen() {
         translucent
       />
 
-      <ScreenHeader title="Log in" rightType={null} showBack />
+      <ScreenHeader title="Log in"  showBack={true} />
 
       <Login />
     </SafeAreaView>
