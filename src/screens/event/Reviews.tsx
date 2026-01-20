@@ -7,6 +7,7 @@ import ReviewCard from '../../components/common/cards/ReviewCard';
 import { getAllReviews } from '../../api/review';
 import { getProductsByProductId } from '../../api/product';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import NotFound from '@/src/components/common/notFound/NotFound';
 
 type ReviewUIModel = {
   id: number;
@@ -25,6 +26,19 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 export default function Reviews() {
   const [reviews, setReviews] = useState<ReviewUIModel[]>([]);
   const [loading, setLoading] = useState(true);
+  const hasReviews = reviews.length > 0;
+
+    const formatDate = (isoDate?: string) => {
+  if (!isoDate) return '';
+
+  const date = new Date(isoDate);
+
+  return date.toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
+};
 
 
   useEffect(() => {
@@ -51,7 +65,7 @@ export default function Reviews() {
             productTitle,
             rating: review.rating,
             comment: review.description,
-            daysAgo: dayToGO(review.createdAt),
+            daysAgo: formatDate(review.createdAt),
             media:
               review.review_media?.[0]?.map((m: any) => ({
                 url: m.mediaUrl,
@@ -66,40 +80,62 @@ export default function Reviews() {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    console.log('reviews', reviews);
-  }, [reviews]);
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <ScreenHeader title="Reviews" rightType="notification" showBack />
+<SafeAreaView className="flex-1 bg-white">
+  <ScreenHeader title="Reviews" rightType="notification" showBack />
 
+  <View className="flex-1 m-4">
+    {loading ? (
       <ScrollView
-        className="flex-1 m-4"
-        contentContainerStyle={{ paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 40 }}
       >
-        {loading
-          ? Array.from({ length: 4 }).map((_, i) => (
-              <ReviewCardSkeleton key={i} />
-            ))
-          : reviews.map(item => (
-              <ReviewCard key={item.id} {...item} />
-            ))}
+        {Array.from({ length: 4 }).map((_, i) => (
+          <ReviewCardSkeleton key={i} />
+        ))}
       </ScrollView>
-    </SafeAreaView>
+    ) : !hasReviews ? (
+      <NotFound
+        title="No reviews yet"
+        description="It looks like there are no reviews available right now. Be the first to share your experience."
+        ctaLabel="Explore Events"
+        navigateTo={{ parent: 'MainTabs', screen: 'Event' }}
+      />
+    ) : (
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 40 }}
+      >
+  {reviews.map(item => {
+  const images = item.media
+    .filter(m => m.type === 'image')
+    .map(m => ({ uri: m.url }));
+
+  const videos = item.media
+    .filter(m => m.type === 'video')
+    .map(m => m.url);
+
+  return (
+    <ReviewCard
+      key={item.id}
+      title={item.productTitle}
+      rating={item.rating}
+      comment={item.comment}
+      createdAt={item.daysAgo}
+      images={images}
+      videos={videos}
+    />
+  );
+})}
+
+      </ScrollView>
+    )}
+  </View>
+</SafeAreaView>
+
   );
 }
 
-const dayToGO = (date: string) => {
-  const d = new Date(date);
-
-  return d.toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  });
-};
 
 
 

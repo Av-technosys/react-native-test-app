@@ -19,7 +19,7 @@ export function PermissionDialog({
     const OPTIONS = [
         { id: 'once', label: 'Only Once' },
         { id: 'while', label: 'While using this app' },
-        { id: 'always', label: 'Permanent' },
+        { id: 'always', label: 'Always' },
     ];
 
     return (

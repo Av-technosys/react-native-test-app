@@ -242,8 +242,8 @@ const selections = useAppSelector(
 
     // 4️⃣ NAVIGATE
     navigation.getParent()?.navigate('FlowStack', {
-      screen: 'ProductDetails',
-      params: { bookingId },
+      screen: 'TestingPayment',
+
     });
   } catch (error: any) {
     showMessage({
@@ -352,6 +352,7 @@ const selections = useAppSelector(
             onEndReachedThreshold={0.5}
             renderItem={({ item }) => (
               <EventProductCard
+                id={item.id}
                 title={item.title}
                 guests={`${item.minQuantity ?? 1} - ${item.maxQuantity ?? '∞'}`}
                 menuType={item.pricingType}

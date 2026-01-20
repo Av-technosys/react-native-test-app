@@ -1,56 +1,44 @@
-import { View, Text, Image, FlatList } from 'react-native';
+import { View, Text, Image, FlatList, Pressable } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
 type ReviewCardProps = {
-  productTitle: string;
-  daysAgo: string;
+  title: string;
   rating: number;
   comment: string;
-  media: {
-    url: string;
-    type: 'image' | 'video';
-  }[];
+  createdAt: string;
+  images: { uri: string }[];
+  videos: string[];
 };
 
+
+
 export default function ReviewCard({
-  productTitle,
-  daysAgo,
+  title,
   rating,
   comment,
-  media,
+  createdAt,
+  images,
+  videos,
 }: ReviewCardProps) {
-  const avatarImage =
-    media?.find(m => m.type === 'image')?.url ?? null;
-
   return (
-    <View className="bg-white border border-gray-200 rounded-2xl p-4 mb-4 shadow-lg">
+    <View className="bg-white border border-gray-200 rounded-2xl p-4 mb-4">
       {/* HEADER */}
-      <View className="flex-row items-center justify-between">
-        <View className="flex-row items-center flex-1">
-          {avatarImage ? (
-            <Image
-              source={{ uri: avatarImage }}
-              className="w-14 h-14 rounded-full mr-3"
-            />
-          ) : (
-            <View className="w-14 h-14 rounded-full mr-3 bg-gray-300" />
-          )}
-
-          <View>
-            <Text className="font-semibold text-lg text-black">
-              {productTitle}
-            </Text>
-            <Text className="text-sm text-gray-400">{daysAgo}</Text>
-          </View>
+      <View className="flex-row justify-between items-start">
+        <View className="flex-1 pr-2">
+          <Text className="text-lg font-semibold text-black">
+            {title}
+          </Text>
+          <Text className="text-sm text-gray-400 mt-1">
+{new Date(createdAt).toLocaleDateString()}          </Text>
         </View>
 
-        {/* Rating */}
+        {/* RATING */}
         <View className="flex-row">
-          {Array.from({ length: 5 }).map((_, i) => (
+          {[...Array(5)].map((_, i) => (
             <AntDesign
               key={i}
               name="star"
-              size={16}
+              size={14}
               color={i < rating ? '#FACC15' : '#E5E7EB'}
             />
           ))}
@@ -58,28 +46,45 @@ export default function ReviewCard({
       </View>
 
       {/* COMMENT */}
-      <Text className="text-lg text-gray-700 mt-3">{comment}</Text>
+      <Text className="text-base text-gray-700 mt-3">
+        {comment}
+      </Text>
 
-      {/* MEDIA */}
-      {media?.length > 0 && (
+      {/* IMAGE MEDIA */}
+      {images.length > 0 && (
         <FlatList
-          data={media}
+          data={images}
           horizontal
-          keyExtractor={(_, i) => i.toString()}
+          keyExtractor={(_, i) => `img-${i}`}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ marginTop: 12 }}
-          renderItem={({ item }) =>
-            item.type === 'image' ? (
-              <Image
-                source={{ uri: item.url }}
-                className="w-28 h-24 rounded-lg mr-3"
+          renderItem={({ item }) => (
+            <Image
+              source={item}
+              className="w-28 h-24 rounded-lg mr-3 bg-gray-100"
+              resizeMode="cover"
+            />
+          )}
+        />
+      )}
+
+      {/* VIDEO MEDIA */}
+      {videos.length > 0 && (
+        <FlatList
+          data={videos}
+          horizontal
+          keyExtractor={(_, i) => `vid-${i}`}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ marginTop: 12 }}
+          renderItem={({  }) => (
+            <Pressable className="w-28 h-24 rounded-lg mr-3 bg-black justify-center items-center">
+              <AntDesign
+                name="playcircleo"
+                size={32}
+                color="#fff"
               />
-            ) : (
-              <View className="w-28 h-24 rounded-lg mr-3 bg-black justify-center items-center">
-                <AntDesign name="playcircleo" size={28} color="#fff" />
-              </View>
-            )
-          }
+            </Pressable>
+          )}
         />
       )}
     </View>

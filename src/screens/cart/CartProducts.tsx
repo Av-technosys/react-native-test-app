@@ -1,72 +1,131 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from 'react';
-import { View, ScrollView, Alert } from 'react-native';
+import {
+  View,
+  ScrollView,
+  Modal,
+  Text,
+  TouchableOpacity,
+} from 'react-native';
 import OrderCard from '../../components/common/cards/OrderCard';
 import { useNavigation } from '@react-navigation/native';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 
-
-
-
-
-export default function CartProductScreen() {
-    const ORDERS = [
-    {
-      id: '1',
-      title: 'Abhash’s Birthday',
-      location: 'Jaipur',
-      date: 'Saturday, August 25, 2025',
-    },
-    {
-      id: '2',
-      title: 'Piyush’s Birthday',
-      location: 'Jaipur',
-      date: 'Saturday, August 25, 2025',
-    },
-  ];
-
-  
-  const navigation = useNavigation();
-  const [orders, setOrders] = useState(ORDERS);
-
-const handleDelete = (id: string) => {
-  Alert.alert(
-    'Delete booking',
-    'Are you sure you want to delete this booking?',
-    [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Delete',
-        style: 'destructive',
-        onPress: () =>
-          setOrders(prev => prev.filter(o => o.id !== id)),
-      },
-    ]
-  );
+type Props = {
+  orders: any[];
+  loading: boolean;
+  onDelete: (bookingDraftId: number) => Promise<void>;
 };
 
+function OrderCardSkeleton() {
+  return (
+    <SkeletonPlaceholder borderRadius={16}>
+      <View style={{ padding: 16, borderRadius: 16 }}>
+        <View style={{ width: '70%', height: 18 }} />
+        <View style={{ marginTop: 8, width: '40%', height: 14 }} />
+        <View style={{ marginTop: 6, width: '55%', height: 14 }} />
+      </View>
+    </SkeletonPlaceholder>
+  );
+}
+
+export default function CartProductsScreen({
+  orders,
+  loading,
+  onDelete,
+}: Props) {
+  const navigation = useNavigation();
+
+  const [confirmDeleteId, setConfirmDeleteId] =
+    useState<number | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  const confirmDelete = async () => {
+    if (!confirmDeleteId) return;
+
+    try {
+      setDeleting(true);
+      await onDelete(confirmDeleteId);
+      setConfirmDeleteId(null);
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   return (
-    <ScrollView
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ padding: 16, paddingBottom: 40, paddingTop: 30 }}
-    >
-      <View className="gap-4">
-        {orders.map(order => (
-          <OrderCard
-            key={order.id}
-            title={order.title}
-            location={order.location}
-            date={order.date}
-            variant="compact"
-            onPress={() =>
-              navigation.getParent()?.navigate('FlowStack', {
-                screen: 'CartProductDetail',
-              })
-            }
-            onDelete={() => handleDelete(order.id)}
-          />
-        ))}
-      </View>
-    </ScrollView>
+    <>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          padding: 16,
+          paddingBottom: 40,
+          paddingTop: 30,
+        }}
+      >
+        <View className="gap-4">
+          {loading
+            ? [1, 2, 3].map(i => <OrderCardSkeleton key={i} />)
+            : orders.map(order => (
+                <OrderCard
+                  key={order.bookingDraftId}
+                  title={order.contactName}
+                  location={`${order.latitude}, ${order.longitude}`}
+                  date={new Date(order.startTime).toDateString()}
+                  variant="compact"
+                  onPress={() =>
+                    navigation.getParent()?.navigate('FlowStack', {
+                      screen: 'CartProductDetail',
+                    })
+                  }
+                  onDelete={() =>
+                    setConfirmDeleteId(order.bookingDraftId)
+                  }
+                />
+              ))}
+        </View>
+      </ScrollView>
+
+      {/* DELETE CONFIRM MODAL */}
+      <Modal
+        visible={confirmDeleteId !== null}
+        transparent
+        animationType="fade"
+        statusBarTranslucent
+      >
+        <View className="flex-1 bg-black/40 justify-center items-center">
+          <View className="bg-white w-[85%] rounded-2xl p-5">
+            <Text className="text-lg font-semibold text-black mb-2">
+              Delete Booking
+            </Text>
+
+            <Text className="text-gray-600 mb-5">
+              Are you sure you want to delete this booking?
+            </Text>
+
+            <View className="flex-row gap-3">
+              <TouchableOpacity
+                disabled={deleting}
+                onPress={() => setConfirmDeleteId(null)}
+                className="flex-1 border border-gray-300 rounded-xl py-3 items-center"
+              >
+                <Text className="text-gray-700 font-semibold">
+                  Cancel
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                disabled={deleting}
+                onPress={confirmDelete}
+                className="flex-1 bg-red-500 rounded-xl py-3 items-center"
+              >
+                <Text className="text-white font-semibold">
+                  {deleting ? 'Deleting...' : 'Delete'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </>
   );
 }

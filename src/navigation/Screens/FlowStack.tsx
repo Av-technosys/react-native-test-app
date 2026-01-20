@@ -18,6 +18,8 @@ import ManageBookings from '../../screens/profile/ManageBookings';
 import CartProductDetail from '../../screens/cart/CartProductDetail';
 import FlowStackBackHandler from '../../utils/FlowStackBackHandler';
 import AddReview from '../../screens/profile/AddReviews';
+import TestingPayment from '../../screens/event/TestingPayment'
+
 const Stack = createStackNavigator();
 
 const openConfig = {
@@ -62,6 +64,7 @@ export default function FlowStack() {
       {/* Event Stack Screens */}
       <Stack.Screen name="eventDetails" component={eventDetails} />
       <Stack.Screen name="eventProducts" component={eventProduct} />
+      <Stack.Screen name="TestingPayment" component={TestingPayment} />
       <Stack.Screen name="reviews" component={reviewScreen} />
       {/* Cart Stack Sreen */}
 

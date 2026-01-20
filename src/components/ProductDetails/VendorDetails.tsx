@@ -65,7 +65,11 @@ export default function VendorDetailsCard({
       {/* RIGHT LOGO */}
       <View className="rounded-xl ">
         <Image
-          source={logo ?? require('../../assets/images/vendor-logo.png')}
+          source={
+      logo?.uri
+        ? logo
+        : require('../../assets/images/vendor-logo.png')
+    }
           className="w-36 h-36"
           resizeMode="contain"
         />

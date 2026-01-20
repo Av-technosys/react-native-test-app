@@ -32,7 +32,7 @@ const handleLogin = async () => {
   }
 
   const payload = {
-    email: email,
+    username: email,
     password,
   };
 

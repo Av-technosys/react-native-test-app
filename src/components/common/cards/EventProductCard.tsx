@@ -1,8 +1,16 @@
 import React from 'react';
 import { View, Text, Image, Pressable } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-//import { useNavigation } from '@react-navigation/native';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
+
+type RootStackParamList = {
+  CategoryProducts: undefined;
+  ProductDetails: any;
+};
+
+
 type Props = {
+  id:number;
   title: string;
   guests: string;
   menuType: string;
@@ -16,6 +24,7 @@ type Props = {
 };
 
 export default function EventProductCard({
+  id,
   title,
   guests,
   menuType,
@@ -27,6 +36,9 @@ export default function EventProductCard({
   onAdd,
   onRemove,
 }: Props) {
+
+    const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  
   return (
     <View
       className={`rounded-2xl mx-3 mt-3 border border-gray-200 shadow-lg flex-row justify-between ${
@@ -93,13 +105,21 @@ export default function EventProductCard({
       </View>
 
       {/* RIGHT IMAGE */}
-      <View className="p-3">
+      <Pressable className="p-3"  
+       onPress={() =>
+        navigation.getParent()?.navigate('FlowStack', {
+          screen: 'ProductDetails',
+          params: {
+            productId: id,
+          },
+        })
+      }>
         <Image
           source={image}
           className="w-44 h-40 rounded-xl"
           resizeMode="cover"
         />
-      </View>
+      </Pressable>
     </View>
   );
 }

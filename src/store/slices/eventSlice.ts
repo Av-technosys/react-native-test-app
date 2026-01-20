@@ -13,9 +13,10 @@ export type BookingDetails = {
   minGuestCount: number;
   maxGuestCount: number;
 
-  latitude: string;
-  longitude: string;
+  latitude: number;
+  longitude: number;
 };
+
 
 type EventTypeInfo = {
   id: number;

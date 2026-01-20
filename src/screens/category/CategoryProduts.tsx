@@ -6,7 +6,7 @@ import { useRoute } from '@react-navigation/native';
 import ScreenHeader from '../../components/common/ScreenHeader';
 import ProductCard from '../../components/common/cards/ProductsCard';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import { getProductsByCategoryId } from '../../api/product';
+import { getProductsByCategoryId, getProductsByProductTypeId } from '../../api/product';
 import NotFound from '../../components/common/notFound/NotFound';
 
 
@@ -15,7 +15,7 @@ const S3_BASE_URL =
 
 export default function CategoryProducts() {
   const route = useRoute<any>();
-  const { categoryId, title } = route.params ?? {};
+  const { typeId, title } = route.params ?? {};
 
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,7 +23,7 @@ export default function CategoryProducts() {
   useEffect(() => {
     const loadProducts = async () => {
       try {
-        const res = await getProductsByCategoryId(categoryId);
+        const res = await getProductsByProductTypeId(typeId);
         console.log(res)
         setProducts(res.data); // ✅ IMPORTANT
       } catch (err) {
@@ -34,19 +34,29 @@ export default function CategoryProducts() {
     };
 
     loadProducts();
-  }, [categoryId]);
+  }, [typeId]);
 
+
+  const truncateWords = (text: string, wordLimit = 6) => {
+  if (!text) return '';
+
+  const words = text.trim().split(/\s+/);
+  return words.length > wordLimit
+    ? words.slice(0, wordLimit).join(' ') + '...'
+    : text;
+};
 
   if (loading) {
     return (
       <SafeAreaView className="flex-1 bg-white px-4">
         <ScreenHeader title={title ?? 'Products'} showBack={true} />
 
-        <SkeletonPlaceholder>
-          {[1, 2, 3, 4].map(i => (
+        <SkeletonPlaceholder >
+          {[1, 2, 3, 4,5].map(i => (
             <View
               key={i}
               style={{
+                marginTop:16,
                 height: 140,
                 borderRadius: 16,
                 marginBottom: 16,
@@ -77,7 +87,6 @@ export default function CategoryProducts() {
   );
 }
 
-
   return (
     <SafeAreaView className="flex-1 bg-white">
       <ScreenHeader title={title ?? 'Products'} rightType="notification" showBack={true} />
@@ -100,14 +109,16 @@ export default function CategoryProducts() {
           return (
             <View className="mb-5">
               <ProductCard
+                id={item.productId}
                 title={item.title}
                 guests={item.minQuantity ?? 0}
-                menu={item.pricingType}
+                menu={truncateWords(item.description, 6)}
                 rating={item.rating ?? 0}
                 reviews={`${item.rating ?? 0}.0`}
                 price={price}
                 image={imageSource}
               />
+
             </View>
           );
         }}
