@@ -6,7 +6,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
 const FilterBottomSheet = forwardRef<BottomSheet>((_, ref) => {
-const snapPoints = useMemo(() => ['85%'], []);
+const snapPoints = useMemo(() => ['50%'], []);
 
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
@@ -19,6 +19,7 @@ const snapPoints = useMemo(() => ['85%'], []);
       index={-1}
       snapPoints={snapPoints}
       enablePanDownToClose
+      bottomInset={0}
       backgroundStyle={{ borderRadius: 24 }}
     >
       <BottomSheetScrollView contentContainerStyle={{ padding: 20 }}>

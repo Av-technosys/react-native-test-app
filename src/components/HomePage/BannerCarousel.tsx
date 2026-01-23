@@ -12,19 +12,32 @@ type Banner = {
 };
 
 type Props = {
-  banners: Banner[];
+  banners?: Banner[];
   loading?: boolean;
 };
 
 const { width } = Dimensions.get('window');
-const BANNER_HEIGHT = 180; // adjust to match your carousel
+const BANNER_HEIGHT = 180;
 
-export default function BannerCarousel({ banners, loading }: Props) {
-  // Convert API banners into carousel-compatible images
-  const images = banners.map(item => ({
-    uri: item.mediaURL,
-  }));
+// ✅ Default local banners (fallback)
+const DEFAULT_BANNERS = [
+  require('../../assets/images/banner.png'),
+  require('../../assets/images/banner.png'),
+  require('../../assets/images/banner.png'),
+  require('../../assets/images/banner.png'),
+];
 
+export default function BannerCarousel({
+  banners = [],
+  loading = false,
+}: Props) {
+  // ✅ Prefer API banners, fallback to local
+  const images =
+    banners.length > 0
+      ? banners.map(item => ({ uri: item.mediaURL }))
+      : DEFAULT_BANNERS;
+
+  // ⏳ Loading state
   if (loading) {
     return (
       <View className="mt-5 px-4">
@@ -38,16 +51,14 @@ export default function BannerCarousel({ banners, loading }: Props) {
     );
   }
 
+  // ❌ No banners at all (should rarely happen)
   if (!images.length) {
     return null;
   }
 
   return (
     <View className="mt-5">
-      <Carousel
-        fullWidth
-        images={images}
-      />
+      <Carousel fullWidth images={images} />
     </View>
   );
 }

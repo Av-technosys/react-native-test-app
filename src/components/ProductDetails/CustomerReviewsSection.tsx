@@ -52,19 +52,20 @@ export default function CustomerReviewsSection({
           </Text>
         </View>
 
-        <Pressable
-          onPress={() =>
-            navigation.getParent()?.navigate('FlowStack', {
-              screen: 'reviews',
-            })
-          }
-        >
+<Pressable
+  onPress={() =>
+    navigation.getParent()?.navigate('FlowStack', {
+      screen: 'reviews',
+      params: { reviews },
+    })
+  }
+>
           <Text className="text-lg text-gray-500">See All</Text>
         </Pressable>
       </View>
 
       {/* REVIEWS */}
-{reviews.map((review) => {
+{reviews?.slice(0, 2).map((review) => {
   const images =
     review.reviewMedia
       ?.filter(m => m.mediaType === 'image')

@@ -38,7 +38,7 @@ export default function VendorDetailsCard({
         
       {/* LEFT CONTENT */}
       <View className="flex-1 pr-3">
-        <Text className="text-white text-4xl font-bold">
+        <Text className="text-white text-3xl font-bold">
           {name}
         </Text>
 

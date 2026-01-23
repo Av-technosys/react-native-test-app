@@ -22,7 +22,13 @@ export default function ServiceCard({ item }: any) {
       className="w-[22rem] bg-white rounded-2xl border border-gray-200 mx-2 overflow-hidden"
     >
       {/* IMAGE */}
-      <Image source={item.image} className="w-full h-36" resizeMode="cover" />
+<View className="w-full h-44 overflow-hidden">
+  <Image
+    source={item.image}
+    className="w-full h-full"
+    resizeMode="cover"
+  />
+</View>
 
       {/* CONTENT */}
       <View className="px-4 py-3">

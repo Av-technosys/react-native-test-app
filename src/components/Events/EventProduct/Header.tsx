@@ -7,9 +7,10 @@ type Props = {
   title?: string;
   subtitle?: string;
   image: any;
-  date:any;
+  date?: string;
   onPress?: () => void;
 };
+
 export default function Header({
   title,
   subtitle,
@@ -20,16 +21,26 @@ export default function Header({
   return (
     <Pressable
       onPress={onPress}
-      className="m-6 flex-row items-center justify-between"
+      className="m-6 flex-row items-start justify-between"
     >
+      {/* TEXT */}
       <View className="flex-1 pr-4">
         <MaskedView
           maskElement={
             <View>
-              <Text className="text-6xl font-bold leading-tight">
+              <Text
+                numberOfLines={1}
+                ellipsizeMode="tail"
+                style={{ fontSize: 44, lineHeight: 52, fontWeight: '700' }}
+              >
                 {title}
               </Text>
-              <Text className="text-4xl font-extrabold leading-tight">
+
+              <Text
+                numberOfLines={3}
+                ellipsizeMode="tail"
+                style={{ fontSize: 26, lineHeight: 34, fontWeight: '800' }}
+              >
                 {subtitle}
               </Text>
             </View>
@@ -40,23 +51,42 @@ export default function Header({
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
           >
-            <Text className="text-6xl font-bold opacity-0">
+            {/* MUST MATCH MASK EXACTLY */}
+            <Text
+              numberOfLines={1}
+              style={{
+                fontSize: 44,
+                lineHeight: 52,
+                fontWeight: '700',
+                opacity: 0,
+              }}
+            >
               {title}
             </Text>
-            <Text className="text-6xl font-extrabold opacity-0">
+
+            <Text
+              numberOfLines={3}
+              style={{
+                fontSize: 26,
+                lineHeight: 34,
+                fontWeight: '800',
+                opacity: 0,
+              }}
+            >
               {subtitle}
             </Text>
           </LinearGradient>
         </MaskedView>
 
         {date && (
-          <Text className="text-gray-500 mt-4 text-base">
+          <Text className="text-gray-500 mt-3 text-base">
             {date}
           </Text>
         )}
       </View>
 
-      <View className="w-36 h-36 rounded-2xl overflow-hidden shadow-lg">
+      {/* IMAGE */}
+      <View className="w-32 h-36 rounded-2xl overflow-hidden shadow-lg flex-shrink-0">
         <Image
           source={image}
           className="w-full h-full"

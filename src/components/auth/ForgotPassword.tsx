@@ -1,12 +1,12 @@
-import { View, Text, TextInput, Image } from 'react-native';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { View, Text, TextInput, Image, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Button from '../common/Button';
 import { forgotPassword } from '../../api/auth';
 import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
 import ScreenHeader from '../common/ScreenHeader';
-import { showMessage } from 'react-native-flash-message';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { showAndroidToast } from '../toast/androidToast';
 
 
 export default function ForgotPasswordScreen() {
@@ -16,75 +16,59 @@ export default function ForgotPasswordScreen() {
 
   const handleSendOtp = async () => {
     if (!username) {
-     showMessage({
-        type: 'danger',
-        message: 'Required',
-        description: 'Please enter email or phone',
-      });
+
+        showAndroidToast('Please enter email or phone');
+
+
       return;
     }
 
     try {
       setLoading(true);
 
-      await forgotPassword({ username });
+      await forgotPassword({email: username });
 
-      showMessage({
-        type: 'success',
-        message: 'OTP Sent',
-        description: 'Check your email',
-      });
+      showAndroidToast('OTP sent successfully');
 
       navigation.navigate('OtpVerification', {
          email: username,
         flow: 'forgotPassword',
       });
     } catch (error: any) {
-      showMessage({
-        type: 'danger',
-        message: 'Failed',
-        description: error?.response?.data?.message || 'Something went wrong',
-      });
+      showAndroidToast('Something went wrong. Please try again.');
+
     } finally {
       setLoading(false);
     }
   };
 
  return (
-            <KeyboardAwareScrollView
-              enableOnAndroid
-              keyboardShouldPersistTaps="handled"
-              extraScrollHeight={32}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={{
-              /// paddingtop: 20,
-              }}
-            >
-         {/* <ScreenHeader title="Forgot Password" rightType="menu" showBack={false} /> */}
-    <SafeAreaView className="flex-1 px-5">
-
+  <>
+    <SafeAreaView className="flex-1">
+           <ScreenHeader title="Forgot Password" rightType="menu" showBack={false} />
+<ScrollView className='flex-1 px-4'>
       {/* LOGO */}
-      <View className="items-center mt-4">
+      <View className="items-center pt-8">
         <Image
           source={require('../../assets/images/freeky-icon.png')}
-          className="w-80 h-56"
+          className="w-90 h-40"
           resizeMode="contain"
         />
       </View>
 
       {/* TITLE */}
-      <View className="items-center mt-2 px-6">
+      <View className="items-center pt-6 px-6">
         <Text className="text-3xl font-semibold text-black">
           Forgot Password
         </Text>
 
-        <Text className="text-gray-500 text-center text-base mt-2">
+        <Text className="text-gray-500 text-center text-base pt-2">
           Enter your email or phone number to receive the OTP
         </Text>
       </View>
 
       {/* INPUT */}
-      <View className="mt-10 px-2">
+      <View className="pt-16 px-2">
         <Text className="text-md font-medium text-gray-400 m-2">
           Email / Phone No.
         </Text>
@@ -103,13 +87,14 @@ export default function ForgotPasswordScreen() {
       {/* SEND OTP BUTTON */}
       <Button
         label="Send OTP"
-        className="mt-16"
+        className="mt-24"
         onPress={handleSendOtp}
         disabled={loading}
       />
+      </ScrollView>
     </SafeAreaView>
   
-    </KeyboardAwareScrollView>
+    </>
   );
 }
 

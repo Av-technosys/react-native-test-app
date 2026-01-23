@@ -14,7 +14,6 @@ import Feather from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
 import ScreenHeader from '../../components/common/ScreenHeader';
 import { useNavigation } from '@react-navigation/native';
-import { showMessage } from 'react-native-flash-message';
 import { launchImageLibrary } from 'react-native-image-picker';
 import RNBlobUtil from 'react-native-blob-util';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
@@ -25,7 +24,8 @@ import {
   getBucketUrl,
   setProfilePicture,
 } from '../../api/user';
-import KeyboardWrapper from '../../components/common/KeyboardWrapper';
+
+import { showAndroidToast } from '../../components/toast/androidToast';
 
 const S3_BASE_URL =
   'https://freaky-files.s3.ap-south-1.amazonaws.com';
@@ -61,10 +61,7 @@ useEffect(() => {
         profileImage: data.profileImage ?? null,
       });
     } catch (err) {
-      showMessage({
-        type: 'danger',
-        message: 'Failed to load profile',
-      });
+      showAndroidToast('Failed to load user data.');
     } finally {
       setInitialLoading(false);
     }
@@ -88,18 +85,11 @@ await updateUserProfile({
          number: user.number, // ← unchanged value
 
     });
-    showMessage({
-      type: 'success',
-      message: 'Profile updated successfully',
-    });
-
+   showAndroidToast('Profile updated successfully');
     DeviceEventEmitter.emit('RELOAD_USER');
     navigation.goBack();
   } catch (err) {
-    showMessage({
-      type: 'danger',
-      message: 'Profile update failed',
-    });
+    showAndroidToast('Failed to update profile. Please try again.');
   } finally {
     setLoading(false);
   }
@@ -157,15 +147,9 @@ await updateUserProfile({
       tempProfileImage: filePath,
     }));
 
-    showMessage({
-      type: 'success',
-      message: 'Image selected. Save to apply.',
-    });
+  showAndroidToast('Image uploaded successfully. Save to apply changes.');
   } catch (err) {
-    showMessage({
-      type: 'danger',
-      message: 'Image upload failed',
-    });
+    showAndroidToast('Failed to upload image. Please try again.');
   } finally {
     setLoading(false);
   }
@@ -182,11 +166,11 @@ const avatarSource =
 
 
   return (
-    <SafeAreaView className="flex-1 bg-white px-4">
+    <SafeAreaView className="flex-1 bg-white px-4 ">
       
-      <KeyboardWrapper>
+      
           {/* HEADER */}
-          <View className="absolute top-0 left-0 right-0 z-20">
+          <View className="absolute top-0 mt-10 left-0 right-0 z-20">
             <ScreenHeader title="Profile" rightType="notification" showBack={true} />
           </View>
 
@@ -351,7 +335,6 @@ const avatarSource =
               </LinearGradient>
             </Pressable>
           </View></> )}
-</KeyboardWrapper>
     </SafeAreaView>
   );
 }

@@ -36,7 +36,6 @@ export default function EventProductCard({
   onAdd,
   onRemove,
 }: Props) {
-
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   
   return (

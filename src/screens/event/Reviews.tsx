@@ -7,7 +7,8 @@ import ReviewCard from '../../components/common/cards/ReviewCard';
 import { getAllReviews } from '../../api/review';
 import { getProductsByProductId } from '../../api/product';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import NotFound from '@/src/components/common/notFound/NotFound';
+import NotFound from '../../components/common/notFound/NotFound';
+import { useRoute, RouteProp } from '@react-navigation/native';
 
 type ReviewUIModel = {
   id: number;
@@ -21,12 +22,41 @@ type ReviewUIModel = {
   }[];
 };
 
+type FlowStackParamList = {
+  reviews?: {
+    reviews?: ReviewUIModel[];
+  };
+};
+
+
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 export default function Reviews() {
   const [reviews, setReviews] = useState<ReviewUIModel[]>([]);
   const [loading, setLoading] = useState(true);
   const hasReviews = reviews.length > 0;
+  const route = useRoute<RouteProp<FlowStackParamList, 'reviews'>>();
+  const passedReviews = route.params?.reviews;
+
+
+
+
+  const mapPassedReviews = (data: any[]): ReviewUIModel[] => {
+  return data.map(review => ({
+    id: review.reviewId,
+    productTitle: 'Event Review', // or pass product title if available
+    rating: review.rating,
+    comment: review.description,
+    daysAgo: formatDate(review.createdAt),
+    media:
+      review.reviewMedia?.map((m: any) => ({
+        url: m.mediaUrl,
+        type: m.mediaType,
+      })) ?? [],
+  }));
+};
+
+
 
     const formatDate = (isoDate?: string) => {
   if (!isoDate) return '';
@@ -41,9 +71,16 @@ export default function Reviews() {
 };
 
 
-  useEffect(() => {
+useEffect(() => {
+  if (passedReviews && passedReviews.length > 0) {
+    const mapped = mapPassedReviews(passedReviews);
+    setReviews(mapped);
+    setLoading(false);
+  } else {
     loadReviews();
-  }, []);
+  }
+}, []);
+
 
   const loadReviews = async () => {
     try {

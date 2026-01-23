@@ -1,5 +1,6 @@
 import { View, Text, Image, FlatList, Pressable } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import { useMemo, useState } from 'react';
 
 type ReviewCardProps = {
   title: string;
@@ -20,6 +21,21 @@ export default function ReviewCard({
   images,
   videos,
 }: ReviewCardProps) {
+
+
+  const WORD_LIMIT = 10;
+const [expanded, setExpanded] = useState(false);
+
+
+const words = useMemo(() => comment.trim().split(/\s+/), [comment]);
+const shouldTruncate = words.length > WORD_LIMIT;
+
+const previewText = shouldTruncate
+  ? words.slice(0, WORD_LIMIT).join(' ')
+  : comment;
+
+
+
   return (
     <View className="bg-white border border-gray-200 rounded-2xl p-4 mb-4">
       {/* HEADER */}
@@ -46,9 +62,18 @@ export default function ReviewCard({
       </View>
 
       {/* COMMENT */}
-      <Text className="text-base text-gray-700 mt-3">
-        {comment}
-      </Text>
+   <Text className="text-base text-gray-700 mt-3">
+  {expanded || !shouldTruncate ? comment : previewText + '...'}
+</Text>
+
+{shouldTruncate && (
+  <Pressable onPress={() => setExpanded(v => !v)}>
+    <Text className="mt-1 text-sm text-orange-500 font-medium">
+      {expanded ? 'Read less' : 'Read more'}
+    </Text>
+  </Pressable>
+)}
+
 
       {/* IMAGE MEDIA */}
       {images.length > 0 && (

@@ -4,12 +4,12 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { ChevronDown, MapPin, Bell, Search } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { showMessage } from 'react-native-flash-message';
 import { userDetails } from '../../api/user';
 import { useEffect, useState } from 'react';
 import { fetchCurrentAddress } from '../../api/user';
 import { DeviceEventEmitter } from 'react-native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import { showAndroidToast } from '../toast/androidToast';
 
 function HeaderSkeleton() {
   return (
@@ -69,10 +69,7 @@ const fetchUserDetails = async () => {
       setCurrentAddress(addressRes.data);
     }
   } catch (error) {
-    showMessage({
-      type: 'danger',
-      message: 'Failed to fetch user details',
-    });
+     showAndroidToast('Failed to load user details.');
   } finally {
     setLoading(false);
   }

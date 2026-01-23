@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, Image} from 'react-native';
-import Feather from 'react-native-vector-icons/Feather';
+import { View, Text, Image} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Button from '../common/Button';
 import { Signup } from '../../api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { showMessage } from 'react-native-flash-message';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { showAndroidToast } from '../toast/androidToast';
+import AppTextInput from '../common/AppTextInput';
 
 export default function SignUpScreen() {
   const navigation = useNavigation<any>();
@@ -31,20 +30,12 @@ export default function SignUpScreen() {
     const { name, phone, email, password } = form;
 
     if (!name || !phone || !email || !password) {
-      showMessage({
-        type: 'danger',
-        message: 'Missing fields',
-        description: 'All fields are required',
-      });
+      showAndroidToast('Please fill in all fields');
       return;
     }
 
     if (password.length < 6) {
-      showMessage({
-        type: 'danger',
-        message: 'Weak password',
-        description: 'Password must be at least 6 characters',
-      });
+    showAndroidToast('Password must be at least 6 characters');
       return;
     }
 
@@ -64,11 +55,7 @@ export default function SignUpScreen() {
 
       console.log('SIGNUP RESPONSE ✅', res?.data);
 
-      showMessage({
-        type: 'success',
-        message: 'Signup successful',
-        description: 'OTP sent to your phone',
-      });
+     showAndroidToast('Signup successful. Please verify OTP');
 
       navigation.getParent()?.navigate('AuthStack', {
         screen: 'OtpVerification',
@@ -86,31 +73,20 @@ export default function SignUpScreen() {
         apiErrorMessage,
       });
 
-      showMessage({
-        type: 'danger',
-        message: 'Signup failed',
-        description: apiErrorMessage || 'Something went wrong',
-      });
+    showAndroidToast(
+        apiErrorMessage || 'Signup failed. Please try again.'
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <KeyboardAwareScrollView
-      enableOnAndroid
-      keyboardShouldPersistTaps="handled"
-      extraScrollHeight={32}
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={{
-        padding: 18,
-      }}
-    >    <View className="flex-1 px-4 bg-white">
-      {/* LOGO */}
-      <View className="items-center mt-6">
+<>      {/* LOGO */}
+      <View className="items-center">
         <Image
           source={require('../../assets/images/freeky-icon.png')}
-          className="w-96 h-60"
+          className="w-96 h-40"
           resizeMode="contain"
         />
       </View>
@@ -119,73 +95,65 @@ export default function SignUpScreen() {
       <View className="mt-8 px-2 space-y-6">
         {/* NAME */}
         <View>
-          <Text className="text-md font-medium text-gray-400 m-2">Name</Text>
-          <TextInput
-            value={form.name}
-            onChangeText={v => onChange('name', v)}
-            placeholder="Enter your name"
-            placeholderTextColor="#6B7280"
-            className="h-16 border border-gray-500 rounded-2xl px-5 text-base text-black"
-          />
+      <Text className="text-md font-medium text-gray-400 m-2">Name</Text>
+<AppTextInput
+  value={form.name}
+  onChangeText={v => onChange('name', v)}
+  placeholder="Enter your name"
+/>
+
         </View>
 
         {/* PHONE */}
         <View>
-          <Text className="text-md font-medium text-gray-400 m-2">
-            Phone no.
-          </Text>
-          <View className="flex-row items-center h-14 border border-gray-500 rounded-2xl px-4">
-            <Text className="text-black mr-3 text-base">+44</Text>
-            <View className="w-px h-6 bg-gray-600 mr-3" />
-            <TextInput
-              value={form.phone}
-              onChangeText={v => onChange('phone', v)}
-              placeholder="Phone number"
-              placeholderTextColor="#6B7280"
-              keyboardType="phone-pad"
-              className="flex-1 text-base text-black"
-            />
-          </View>
+          <Text className="text-md font-medium text-gray-400 m-2">Phone no.</Text>
+
+<View className="flex-row items-center gap-3">
+   <AppTextInput
+         value={'+44'}
+         onChangeText={() => {}}
+/>
+
+  <View className="flex-1">
+    <AppTextInput
+      value={form.phone}
+      onChangeText={v => onChange('phone', v)}
+      placeholder="Phone number"
+      keyboardType="phone-pad"
+    />
+  </View>
+</View>
+
         </View>
 
         {/* EMAIL */}
         <View>
-          <Text className="text-md font-medium text-gray-400 m-2">Email</Text>
-          <TextInput
-            value={form.email}
-            onChangeText={v => onChange('email', v)}
-            placeholder="name@example.com"
-            placeholderTextColor="#6B7280"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            className="h-16 border border-gray-500 rounded-2xl px-5 text-base text-black"
-          />
+         <Text className="text-md font-medium text-gray-400 m-2">Email</Text>
+<AppTextInput
+  value={form.email}
+  onChangeText={v => onChange('email', v)}
+  placeholder="name@example.com"
+  keyboardType="email-address"
+/>
         </View>
 
         {/* PASSWORD */}
         <View>
-          <Text className="text-sm font-medium text-gray-400 m-2">
-            Password
-          </Text>
-          <View className="flex-row items-center h-16 border border-gray-500 rounded-2xl px-4">
-            <TextInput
-              value={form.password}
-              onChangeText={v => onChange('password', v)}
-              placeholder="********"
-              placeholderTextColor="#6B7280"
-              secureTextEntry={secure}
-              className="flex-1 text-base text-black"
-            />
-            <Pressable onPress={() => setSecure(!secure)}>
-              <Feather
-                name={secure ? 'eye-off' : 'eye'}
-                size={20}
-                color="#9CA3AF"
-              />
-            </Pressable>
+         <Text className="text-sm font-medium text-gray-400 m-2">Password</Text>
+
+<AppTextInput
+  value={form.password}
+  onChangeText={v => onChange('password', v)}
+  placeholder="********"
+  secureTextEntry={secure}
+  right={{
+    icon: secure ? 'eye-off' : 'eye',
+    onPress: () => setSecure(!secure),
+  }}
+/>
+
           </View>
         </View>
-      </View>
 
       {/* SIGN UP BUTTON */}
       <Button
@@ -194,7 +162,6 @@ export default function SignUpScreen() {
         disabled={loading}
         onPress={handleSignup}
       />
-    </View>
-   </KeyboardAwareScrollView>
+   </>
   );
 }

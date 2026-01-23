@@ -30,6 +30,7 @@ export default function CategoriesScreen() {
       try {
         const res = await getProductTypes();
         setCategories(res.data);
+        console.log(res)
       } catch (err) {
         console.log('Failed to load categories', err);
       } finally {

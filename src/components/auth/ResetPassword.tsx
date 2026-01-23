@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from 'react';
 import {
   View,
@@ -6,13 +7,11 @@ import {
   Pressable,
   Image
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Feather from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { confirmForgotPassword } from '../../api/auth';
-import { showMessage } from 'react-native-flash-message';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { showAndroidToast } from '../toast/androidToast';
 
 type RouteParams = {
   ResetPassword: {
@@ -35,38 +34,22 @@ export default function ResetPasswordScreen() {
 
   const handleSubmit = async () => {
     if (!password || !confirmPassword) {
-      showMessage({
-        type: 'danger',
-        message: 'Required',
-        description: 'Please fill all fields',
-      });
+     showAndroidToast('Please fill in all fields');
       return;
     }
 
     if (password !== confirmPassword) {
-      showMessage({
-        type: 'danger',
-        message: 'Mismatch',
-        description: 'Passwords do not match',
-      });
+      showAndroidToast('Passwords do not match');
       return;
     }
 
     if (password.length < 6) {
-      showMessage({
-        type: 'danger',
-        message: 'Weak password',
-        description: 'Password must be at least 6 characters',
-      });
+      showAndroidToast('Password must be at least 6 characters');
       return;
     }
 
     if (password.length < 6) {
-      showMessage({
-        type: 'danger',
-        message: 'Weak password',
-        description: 'Password must be at least 6 characters',
-      });
+     showAndroidToast('Password must be at least 6 characters');
       return;
     }
 
@@ -79,44 +62,26 @@ export default function ResetPasswordScreen() {
         newPassword: password,
       });
 
-      showMessage({
-        type: 'success',
-        message: 'Password updated',
-        description: 'You can now login',
-      });
-
+    showAndroidToast('Password reset successful');
       navigation.reset({
         index: 0,
         routes: [{ name: 'PasswordSuccess' }],
       });
     } catch (error: any) {
-      showMessage({
-        type: 'danger',
-        message: 'Failed',
-        description:
-          error?.response?.data?.message ||
-          'Unable to reset password',
-      });
+     showAndroidToast('Failed to reset password. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <KeyboardAwareScrollView
-      enableOnAndroid
-      keyboardShouldPersistTaps="handled"
-      extraScrollHeight={32}
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={{
-        padding: 18,
-      }}
-    >    <SafeAreaView className="flex-1 bg-white px-5">
+    <
+    >    
       {/* LOGO */}
       <View className="items-center">
         <Image
           source={require('../../assets/images/freeky-icon.png')}
-          className="w-72 h-52"
+          className="w-90 h-44"
           resizeMode="contain"
         />
       </View>
@@ -202,7 +167,6 @@ export default function ResetPasswordScreen() {
           </Text>
         </LinearGradient>
       </Pressable>
-    </SafeAreaView>
-      </KeyboardAwareScrollView>
+ </>
   );
 }

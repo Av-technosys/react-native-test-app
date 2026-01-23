@@ -62,7 +62,7 @@ const eventSlice = createSlice({
 
     addProduct(
       state,
-      action: PayloadAction<{ step: string; productId: string }>
+      action: PayloadAction<{ step: string; productId: any }>
     ) {
       const { step, productId } = action.payload;
 

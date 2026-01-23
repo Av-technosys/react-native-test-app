@@ -1,8 +1,8 @@
 /* eslint-disable react/self-closing-comp */
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ResetPassword from '../../components/auth/ResetPassword';
-import { StatusBar, View } from 'react-native';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { StatusBar } from 'react-native';
+import KeyboardWrapper from '../../components/common/KeyboardWrapper'
 import ScreenHeader from '../../components/common/ScreenHeader';
 
 export default function resetPassword() {
@@ -12,9 +12,10 @@ export default function resetPassword() {
                         barStyle={'dark-content'}
                         backgroundColor="#FFFFFF"
                         translucent              />
-<ScreenHeader title="Reset Password" rightType="menu" />
-
+<ScreenHeader title="Reset Password" rightType="menu" showBack={false} />
+<KeyboardWrapper>
     <ResetPassword />
+    </KeyboardWrapper>
     </SafeAreaView>
   );
 }

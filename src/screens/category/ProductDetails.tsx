@@ -179,6 +179,7 @@ export default function ProductDetails() {
     product.prices?.[0]?.salePrice ?? product.prices?.[0]?.listPrice ?? null;
 
   return (
+    <>
     <SafeAreaView className="flex-1 bg-white">
       <ScreenHeader title={product.title} showBack rightType="notification" />
 
@@ -245,17 +246,17 @@ export default function ProductDetails() {
           </View>
         </Pressable>
       </ScrollView>
+    </SafeAreaView>
 
-      <BaseBottomSheet ref={bottomSheetRef} snapPoints={['80%']}>
+          <BaseBottomSheet ref={bottomSheetRef} snapPoints={['80%']}>
         <AddToCartForm
           product={{
-            productId: product.productId,
+            ProductId: product.productId,
             title: product.title,
             price,
-            vendorId: product.vendorId,
           }}
         />
       </BaseBottomSheet>
-    </SafeAreaView>
+    </>
   );
 }
