@@ -128,21 +128,14 @@ export default function AddressSheetContent({ isOpen, onClose }: Props) {
 
       const res = await deleteAddress({ id: confirmDeleteId });
 
-
        showAndroidToast('Address deleted successfully');
 
-      // 🔔 Notify Header to refetch user + address
-      DeviceEventEmitter.emit('RELOAD_USER');
+       DeviceEventEmitter.emit('RELOAD_USER');
 
-      // Close menu & reload list
       setMenuOpenId(null);
       loadAddresses();
     } catch (error) {
-
-      
        showAndroidToast('Failed to delete address');
-
-
     } finally {
       setDeleting(false);
     }
@@ -151,15 +144,11 @@ export default function AddressSheetContent({ isOpen, onClose }: Props) {
   const handleSetCurrent = async (id: number) => {
     try {
       const res = await setCurrentAddress({ id });
-      console.log(res);
-
-          
+ 
       showAndroidToast('Current address updated');
 
-      // 🔔 Notify Header to refetch user + address
       DeviceEventEmitter.emit('RELOAD_USER');
 
-      // Close menu & reload list
       setMenuOpenId(null);
       loadAddresses();
     } catch (error: any) {
@@ -167,8 +156,6 @@ export default function AddressSheetContent({ isOpen, onClose }: Props) {
         error?.response?.data?.error ||
         error?.response?.data?.message ||
         'Failed to set current address';
-
-
 
       showAndroidToast(message);
     }
@@ -180,8 +167,10 @@ if (mode === 'form') {
       style={{ flex: 1 , paddingBottom:40}}
       entering={FadeInRight.duration(350)}
       exiting={FadeOutRight.duration(250)}
+      
     >
       {/* <KeyboardWrapper> */}
+      <View style={{ fontFamily: 'Inter-Regular', color: '#000' }}>
 
         <AddressForm
           initialData={selectedAddress}
@@ -195,6 +184,7 @@ if (mode === 'form') {
             setSelectedAddress(null);
           }}
         />
+        </View>
       {/* </KeyboardWrapper> */}
     </Animated.View>
   );

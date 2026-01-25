@@ -518,10 +518,10 @@ onAdd={() => {
     );
     setShowStartPicker(false);
   }}
+  
 />
 
 
-      {/* End Time */}
      {/* End Time */}
 <Text className="text-sm text-gray-500 mb-1">End Time</Text>
 
@@ -547,6 +547,7 @@ onAdd={() => {
     );
     setShowEndPicker(false);
   }}
+ 
 />
 
 
