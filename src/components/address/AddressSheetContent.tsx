@@ -28,7 +28,6 @@ import { getAddresses, deleteAddress, setCurrentAddress } from '../../api/user';
 import AddressForm from '../../components/common/forms/AddressForm';
 import { Modal } from 'react-native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import KeyboardWrapper from '../common/KeyboardWrapper';
 
 import Animated, {
   FadeInRight,

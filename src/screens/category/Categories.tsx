@@ -21,6 +21,7 @@ type ProductType = {
 
 export default function CategoriesScreen() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+const S3_BASE_URL = 'https://freaky-files.s3.ap-south-1.amazonaws.com';
 
   const [categories, setCategories] = useState<ProductType[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,7 +31,6 @@ export default function CategoriesScreen() {
       try {
         const res = await getProductTypes();
         setCategories(res.data);
-        console.log(res)
       } catch (err) {
         console.log('Failed to load categories', err);
       } finally {
@@ -125,7 +125,7 @@ export default function CategoriesScreen() {
               {/* ICON IMAGE */}
               <View className="w-16 h-16 mb-3 items-center justify-center">
                 <Image
-                  source={{ uri: item.mediaURL }}
+                  source={{ uri: `${S3_BASE_URL}/${item.mediaURL}` }}
                   className="w-12 h-12"
                   resizeMode="contain"
                 />

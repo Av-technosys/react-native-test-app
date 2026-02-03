@@ -4,10 +4,12 @@ import { View, Dimensions } from 'react-native';
 import Carousel from '../common/Carousel';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 
+const S3_BASE_URL = 'https://freaky-files.s3.ap-south-1.amazonaws.com';
+
 type Banner = {
   id: number;
   name: string;
-  mediaURL: string;
+  mediaURL: string;   // ← THIS matches API
   priority: number;
 };
 
@@ -19,11 +21,7 @@ type Props = {
 const { width } = Dimensions.get('window');
 const BANNER_HEIGHT = 180;
 
-// ✅ Default local banners (fallback)
 const DEFAULT_BANNERS = [
-  require('../../assets/images/banner.png'),
-  require('../../assets/images/banner.png'),
-  require('../../assets/images/banner.png'),
   require('../../assets/images/banner.png'),
 ];
 
@@ -31,13 +29,14 @@ export default function BannerCarousel({
   banners = [],
   loading = false,
 }: Props) {
-  // ✅ Prefer API banners, fallback to local
+
   const images =
     banners.length > 0
-      ? banners.map(item => ({ uri: item.mediaURL }))
+      ? banners.map(item => ({
+          uri: `${S3_BASE_URL}/${item.mediaURL}`,
+        }))
       : DEFAULT_BANNERS;
 
-  // ⏳ Loading state
   if (loading) {
     return (
       <View className="mt-5 px-4">
@@ -51,10 +50,7 @@ export default function BannerCarousel({
     );
   }
 
-  // ❌ No banners at all (should rarely happen)
-  if (!images.length) {
-    return null;
-  }
+  if (!images.length) return null;
 
   return (
     <View className="mt-5">

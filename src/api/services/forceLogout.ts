@@ -5,9 +5,9 @@ import { logout } from '../../store/slices/authSlice';
 
 export const forceLogout = async () => {
   await AsyncStorage.multiRemove([
+    'idToken',
     'accessToken',
     'refreshToken',
-    'idToken',
     'username',
   ]);
 

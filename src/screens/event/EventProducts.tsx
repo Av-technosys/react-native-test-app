@@ -33,7 +33,7 @@ const getPossessiveName = (fullName?: string) => {
 
   const eventType = useAppSelector(state => state.event.eventType);
   const event = useAppSelector(state => state.event);
-console.log(event);
+
   const eventName = eventType?.name || 'Event';
   const eventImage =
     eventType?.image || require('../../assets/images/image_not_found.jpg');

@@ -17,3 +17,17 @@ export const addItemToBooking = async (payload: any) => {
   );
   return response.data;
 };
+
+export const fetchBookings = async () => {
+  const response = await privateApi.get(
+    '/booking/'
+  );
+  return response.data;
+};
+
+export const fetchBookingbyId = async (id: string) => {
+  const response = await privateApi.get(
+    `/booking/${id}`
+  );
+  return response.data;
+};

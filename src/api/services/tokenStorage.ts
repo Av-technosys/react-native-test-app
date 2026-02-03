@@ -11,6 +11,7 @@ export const tokenStorage = {
   clear: () =>
     AsyncStorage.multiRemove([
       'idToken',
+      'accessToken',
       'refreshToken',
       'username',
     ]),

@@ -106,15 +106,14 @@ const { flow } = route.params ?? {};
        showAndroidToast('OTP verified successfully');
       if (flow === 'signup') {
 
-        const { accessToken, refreshToken, idToken } = data;
+        const { accessToken, refreshToken } = data;
         console.log('data', data)
         await AsyncStorage.multiSet([
           ['accessToken', accessToken],
           ['refreshToken', refreshToken],
-          ['idToken', idToken],
         ]);
 
-        const user = decodeIdToken(idToken);
+        const user = decodeIdToken(accessToken);
         dispatch(loginSuccess(user));
 
         navigation.reset({

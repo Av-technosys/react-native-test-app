@@ -1,221 +1,300 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React from 'react';
-import { View, Text, Pressable, ScrollView, Image } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { View, Text, Pressable, ScrollView, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Feather from 'react-native-vector-icons/Feather';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+
 import ScreenHeader from '../../components/common/ScreenHeader';
 import Button from '../../components/common/Button';
-import { useNavigation } from '@react-navigation/native';
+import { OrderCardSkeleton } from '../../screens/profile/ManageBookings';
+import { fetchBookingbyId } from '../../api/booking';
 
+/* ---------------- Navigation Types ---------------- */
 type OrderStackParamList = {
   OrderDetailsScreen: {
+    bookingId: string;
     status: string;
   };
 };
 
-type OrderDetailsRouteProp = RouteProp<
-  OrderStackParamList,
-  'OrderDetailsScreen'
->;
+type OrderDetailsRouteProp = RouteProp<OrderStackParamList, 'OrderDetailsScreen'>;
 
-const SERVICES = [
-  {
-    id: '1',
-    title: 'Food & Drink',
-    vendor: 'XYZ',
-    location: 'Malviya Nagar, Jaipur',
-    desc: '150 guests • Premium menu',
-    price: 150,
-  },
-  {
-    id: '2',
-    title: 'Decoration',
-    vendor: 'XYZ',
-    location: 'Malviya Nagar, Jaipur',
-    desc: 'Premium plan',
-    price: 150,
-  },
-  {
-    id: '3',
-    title: 'Venue',
-    vendor: 'XYZ',
-    location: 'Malviya Nagar, Jaipur',
-    desc: 'Hyatt Banquet Hall',
-    price: 150,
-  },
-];
-
+/* ---------------- Component ---------------- */
 export default function OrderDetailsScreen() {
   const route = useRoute<OrderDetailsRouteProp>();
-  const { status } = route.params;
   const navigation = useNavigation<any>();
+  const { bookingId } = route.params;
+
+  const [loading, setLoading] = useState(true);
+  const [bookingItems, setBookingItems] = useState<any[]>([]);
+
+  /* ---------------- Fetch Data ---------------- */
+  useEffect(() => {
+    const loadBookingDetails = async () => {
+      try {
+        setLoading(true);
+        const res = await fetchBookingbyId(bookingId);
+        console.log(res)
+        setBookingItems(res.data);
+      } catch (err) {
+        console.error('Failed to fetch booking details', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadBookingDetails();
+  }, [bookingId]);
+
+  /* ---------------- Derived Data ---------------- */
+  const booking = bookingItems[0];
 
 
+  const isPaid = booking?.paymentStatus === 'PAID';
+
+  /* ---------------- Loading State ---------------- */
+  if (loading) {
+    return (
+      <SafeAreaView className="flex-1 bg-gray-50">
+        <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+        <ScreenHeader title="Order Summary" showBack />
+        <View className="p-6 gap-4">
+          <OrderCardSkeleton />
+          <OrderCardSkeleton />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  /* ---------------- Render ---------------- */
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <ScreenHeader title="Order Summary" rightType="notification" showBack={true} />
+    <SafeAreaView className="flex-1 bg-gray-50">
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+
+      <ScreenHeader
+        title="Order Details"
+        rightType="notification"
+        showBack
+      />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ padding: 24, paddingBottom: 40 }}
+        contentContainerStyle={{ paddingBottom: 32 }}
       >
-        {/* EVENT CARD (MATCHED) */}
-        <View className="flex-row rounded-2xl mb-6">
-          <View className="w-36 h-36 bg-orange-400 rounded-xl items-center justify-center">
-            <Feather name="gift" size={60} color="white" />
-          </View>
+        {/* -------- HEADER CARD -------- */}
+        <View className="bg-white mx-5 mt-6 rounded-3xl shadow-sm border border-gray-100 p-6 mb-6">
+          <View className="flex-row items-start">
+            <View className="w-20 h-20 bg-orange-400 rounded-2xl items-center justify-center shadow-md">
+              <Feather name="gift" size={32} color="white" />
+            </View>
 
-          <View className="ml-4 flex-1">
-            <Text className="font-semibold text-2xl">Piyush’s Birthday</Text>
-            <Text className="text-md text-gray-500 mt-2">Jaipur</Text>
-            <Text className="text-md text-gray-500 mt-1">
-              Saturday, August 25, 2025
-            </Text>
-            <Text className="text-md text-gray-500 mt-1">
-              6:00 PM – 11:00 PM
-            </Text>
-          </View>
-        </View>
-        {/* ORDER ID + STATUS */}
-        <View className="flex-row justify-between items-center mb-8">
-          <Text className="text-sm text-gray-500">Order ID: #6598569</Text>
+            <View className="ml-4 flex-1">
+              <View className="flex-row justify-between items-start">
+                <Text className="font-bold text-2xl text-gray-900 flex-1" numberOfLines={2}>
+                  {booking?.contactName || 'N/A'}
+                </Text>
 
-          <Text
-            className={`px-3 py-1 rounded-full text-xs font-semibold ${
-              status === 'Paid'
-                ? 'bg-green-100 text-green-600'
-                : 'bg-red-100 text-red-600'
-            }`}
-          >
-            {status}
-          </Text>
-        </View>
-        {/* SERVICES (MATCHED STYLE) */}
-        <View className="gap-6 mb-8">
-          {SERVICES.map((item, index) => (
-            <View
-              key={index}
-              className="border border-gray-200 rounded-xl px-4 py-3"
-            >
-              <View className="flex-row justify-between">
-                <View className="flex-row gap-3">
-                  <View className="w-12 h-12 bg-blue-100 rounded-lg items-center justify-center">
-                    <Feather name="coffee" size={24} color="#2563EB" />
+                <View className={`px-4 py-1.5 rounded-full ${isPaid ? 'bg-green-100' : 'bg-amber-100'}`}>
+                  <Text className={`font-semibold ${isPaid ? 'text-green-700' : 'text-amber-700'}`}>
+                    {isPaid ? 'Paid' : 'Pending'}
+                  </Text>
+                </View>
+              </View>
+
+              <Text className="text-sm text-gray-500 mt-2">
+                Order #{bookingId}
+              </Text>
+
+              {booking?.startTime && (
+                <View className="mt-4">
+                  <View className="flex-row items-center">
+                    <Feather name="calendar" size={16} color="#6B7280" />
+                    <Text className="ml-2 text-gray-700 font-medium">
+                      {new Date(booking.startTime).toLocaleDateString('en-IN', {
+                        weekday: 'long',
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                      })}
+                    </Text>
                   </View>
 
-                  <View>
-                    <Text className="font-semibold">{item.vendor}</Text>
-                    <Text className="text-sm text-gray-500">
-                      {item.location}
+                  <View className="flex-row items-center mt-2">
+                    <Feather name="clock" size={16} color="#6B7280" />
+                    <Text className="ml-2 text-gray-700 font-medium">
+                      {new Date(booking.startTime).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })} - {new Date(booking.endTime).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </Text>
+                  </View>
+                </View>
+              )}
+            </View>
+          </View>
+        </View>
+
+        {/* -------- SERVICES SECTION -------- */}
+        <View className="mx-5 mb-6">
+          <View className="flex-row justify-between items-center mb-4">
+            <Text className="text-xl font-bold text-gray-900">
+              Services ({bookingItems.length})
+            </Text>
+          </View>
+
+          <View className="gap-3">
+            {bookingItems.map((item) => (
+              <View
+                key={item.id}
+                className="bg-white rounded-2xl p-4 border border-gray-100"
+              >
+                <View className="flex-row justify-between items-start mb-3">
+                  <View className="flex-row items-start flex-1">
+                    <View className="w-10 h-10 bg-blue-100 rounded-xl items-center justify-center mr-3">
+                      <Feather name="coffee" size={20} color="#2563EB" />
+                    </View>
+
+                    <View className="flex-1">
+                      <Text className="font-semibold text-gray-900 text-lg">
+                        {item.productName}
+                      </Text>
+                      {item.minGuestCount && (
+                        <Text className="text-sm text-gray-500 mt-1">
+                          Guests: {item.minGuestCount} - {item.maxGuestCount}
+                        </Text>
+                      )}
+                    </View>
+                  </View>
+
+                  <Text className="font-bold text-orange-500 text-lg">
+                    ₹{item.productPrice || '0.00'}
+                  </Text>
+                </View>
+
+                <View className="flex-row justify-between items-center pt-3 border-t border-gray-100">
+                  <View className="flex-row items-center">
+                    <View className="bg-gray-100 px-3 py-1.5 rounded-lg">
+                      <Text className="text-gray-700 font-medium">
+                        Qty: {item.quantity || 1}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View className="px-3 py-1.5 rounded-lg bg-amber-50">
+                    <Text className="text-amber-700 font-medium">
+                      {item.bookingStatus || 'HOLD'}
                     </Text>
                   </View>
                 </View>
               </View>
+            ))}
+          </View>
+        </View>
 
-              <View className="flex-row justify-between mt-4">
-                <View>
-                  <Text className="font-medium">{item.title}</Text>
-                  <Text className="text-sm text-gray-500">{item.desc}</Text>
-                </View>
+        {/* -------- PRICING BREAKDOWN -------- */}
+        <View className="mx-5 mb-6">
+          <Text className="text-xl font-bold text-gray-900 mb-4">
+            Pricing Breakdown
+          </Text>
 
-                <Text className="font-semibold text-lg text-orange-500">
-                  ₹{item.price}
-                </Text>
+          {/* <View className="bg-white rounded-2xl p-5 border border-gray-100">
+            <View className="gap-3">
+              <View className="flex-row justify-between">
+                <Text className="text-gray-600">Subtotal</Text>
+                <Text className="text-gray-900">₹{pricing.subtotal.toFixed(2)}</Text>
+              </View>
+
+              <View className="flex-row justify-between">
+                <Text className="text-gray-600">Service Fee</Text>
+                <Text className="text-gray-600">₹{pricing.serviceFee.toFixed(2)}</Text>
+              </View>
+
+              <View className="flex-row justify-between">
+                <Text className="text-gray-600">Tax</Text>
+                <Text className="text-gray-600">₹{pricing.tax.toFixed(2)}</Text>
               </View>
             </View>
-          ))}
+
+            <View className="h-[1px] bg-gray-200 my-4" />
+
+            <View className="flex-row justify-between items-center">
+              <Text className="font-bold text-lg text-gray-900">Total Amount</Text>
+              <Text className="font-bold text-2xl text-orange-500">
+                ₹{pricing.total.toFixed(2)}
+              </Text>
+            </View>
+
+            <View className="flex-row items-center mt-4">
+              <Feather name="info" size={16} color="#6B7280" />
+              <Text className="ml-2 text-sm text-gray-500">
+                Includes all taxes and service charges
+              </Text>
+            </View>
+          </View> */}
         </View>
 
-        <View className="mb-8">
-     
-  
+        {/* -------- REVIEWS CARD -------- */}
+        <View className="mx-5 mb-6">
+          <Text className="text-xl font-bold text-gray-900 mb-4">
+            Reviews & Feedback
+          </Text>
 
-<View className="mb-8">
-  <Text className="font-semibold mb-3 text-gray-900">
-    Reviews
-  </Text>
+          <Pressable
+            onPress={() =>
+              navigation.getParent()?.navigate('FlowStack', {
+                screen: 'AddReviewsScreen',
+                params: {
+                  eventId: bookingId,              // 👈 event identity
+                  productIds: bookingItems.map(b => b.productId), // 👈 product identities
+                },
+              })
+            }
+            className="bg-orange-50 rounded-2xl p-5 border border-orange-200"
+          >
+            <View className="flex-row items-center justify-between">
+              <View className="flex-1">
+                <View className="flex-row items-center mb-2">
+                  <Feather name="star" size={20} color="#f97316" />
+                  <Text className="ml-2 font-bold text-lg text-orange-600">
+                    Share Your Experience
+                  </Text>
+                </View>
+                <Text className="text-sm text-orange-700">
+                  Rate this event and help us improve our services
+                </Text>
+              </View>
 
-  <Pressable
-   onPress={() =>
-  navigation.getParent()?.navigate('FlowStack', {
-    screen: 'AddReviewsScreen',
-    params: {
-      eventId: 2,
-      eventTitle: "Piyush’s Birthday",
-      services: SERVICES.map(s => ({
-        productId: Number(s.id),
-        title: s.title,
-        price: s.price,
-      })),
-    },
-  })
-}
-
-    className="border border-dashed border-orange-400 rounded-2xl px-4 py-5 bg-orange-50"
-  >
-    <View className="flex-row items-center justify-between">
-      <View>
-        <Text className="font-semibold text-base text-orange-600">
-          Add Review
-        </Text>
-        <Text className="text-sm text-gray-600 mt-1">
-          Rate this event and services
-        </Text>
-      </View>
-
-      <Feather name="chevron-right" size={22} color="#EA580C" />
-    </View>
-  </Pressable>
-</View>
-
-
-        </View>
-        {/* PRICING (MATCHED SPACING) */}
-        <View className="mb-8">
-          <Text className="font-semibold text-lg mb-6">Pricing Breakdown</Text>
-
-          <View className="gap-4">
-            <Row label="Subtotal" value="₹10,300" />
-            <Row label="Service Fee (8%)" value="₹824" />
-            <Row label="Tax (10%)" value="₹1,030" />
-          </View>
-
-          <View className="flex-row justify-between mt-4 pt-3 border-t border-gray-200">
-            <Text className="font-semibold text-base">Total</Text>
-            <Text className="font-semibold text-base text-orange-500">
-              ₹12,154
-            </Text>
-          </View>
-        </View>
-        {/* CTA (SINGLE SOURCE OF TRUTH) */}
-
-        {status === 'Paid' ? (
-          <Pressable className="border border-gray-400 rounded-2xl py-3 items-center">
-            <Text className="font-semibold text-gray-800">
-              Download Invoice
-            </Text>
+              <View className="w-12 h-12 bg-white rounded-xl items-center justify-center">
+                <Feather name="chevron-right" size={24} color="#f97316" />
+              </View>
+            </View>
           </Pressable>
-        ) : (
-          <Button
-            label="Pay Now"
-            className="mt-4"
-            onPress={() => {
-              console.log('Pay Now');
-            }}
-          />
-        )}
+        </View>
+
+        {/* -------- ACTION BUTTONS -------- */}
+        <View className="mx-5">
+          {isPaid ? (
+            <Pressable className="flex-row items-center justify-center bg-white border border-gray-300 rounded-2xl py-4">
+              <Feather name="download" size={20} color="#374151" />
+              <Text className="ml-3 font-semibold text-gray-800 text-lg">
+                Download Invoice
+              </Text>
+            </Pressable>
+          ) : (
+            <Button
+              label="Pay Now"
+              variant="primary"
+              onPress={function (): void {
+                throw new Error('Function not implemented.');
+              }} />
+          )}
+
+          
+        </View>
       </ScrollView>
     </SafeAreaView>
-  );
-}
-
-/* --------- Helper Row --------- */
-function Row({ label, value }: { label: string; value: string }) {
-  return (
-    <View className="flex-row justify-between">
-      <Text className="text-gray-600">{label}</Text>
-      <Text>{value}</Text>
-    </View>
   );
 }

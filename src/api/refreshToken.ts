@@ -4,6 +4,8 @@ import { tokenStorage } from '../api/services/tokenStorage';
 const BASE_URL ='https://751ue73p4j.execute-api.ap-south-1.amazonaws.com/v1';
 
 export const refreshIdToken = async () => {
+
+  console.log('he is calling to refersh')
   const refreshToken = await tokenStorage.getRefreshToken();
   const username = await tokenStorage.getUsername();
 
@@ -16,7 +18,6 @@ export const refreshIdToken = async () => {
     `${BASE_URL}/auth/refresh_token`,
     { refreshToken, username },
   );
-
   const newIdToken =
     data?.response?.AuthenticationResult?.IdToken;
 

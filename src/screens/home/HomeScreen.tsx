@@ -32,7 +32,7 @@ export default function HomeScreen() {
   const fetchBanners = async () => {
     try {
       const res = await getBanners();
-
+ console.log(res)
       if (res?.success && Array.isArray(res?.data)) {
         // Sort banners by priority (ascending)
         const sortedBanners = [...res.data].sort(

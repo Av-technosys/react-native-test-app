@@ -91,10 +91,16 @@ export default function ServicesBlock() {
 
   return (
     <View className="mt-6">
-      {loading ? (
-        <ServiceCardSkeleton />
-      ) : (
-        sections.map((section) => (
+         {loading ? (
+      <ServiceCardSkeleton />
+    ) : (
+      sections
+        .filter(
+          (section) =>
+            Array.isArray(section.products) &&
+            section.products.length > 0
+        )
+        .map((section) => (
           <View key={section.id} className="mb-6">
             <SectionHeader
               left={
@@ -103,7 +109,6 @@ export default function ServicesBlock() {
                 </Text>
               }
             />
-
             <FlatList
               horizontal
               data={section.products}

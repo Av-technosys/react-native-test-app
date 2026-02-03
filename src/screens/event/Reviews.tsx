@@ -4,11 +4,13 @@ import { ScrollView, View, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ScreenHeader from '../../components/common/ScreenHeader';
 import ReviewCard from '../../components/common/cards/ReviewCard';
-import { getAllReviews } from '../../api/review';
+import { deleteReview, getAllReviews } from '../../api/review';
 import { getProductsByProductId } from '../../api/product';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import NotFound from '../../components/common/notFound/NotFound';
 import { useRoute, RouteProp } from '@react-navigation/native';
+import { showAndroidToast } from '../../components/toast/androidToast';
+
 
 type ReviewUIModel = {
   id: number;
@@ -38,9 +40,6 @@ export default function Reviews() {
   const route = useRoute<RouteProp<FlowStackParamList, 'reviews'>>();
   const passedReviews = route.params?.reviews;
 
-
-
-
   const mapPassedReviews = (data: any[]): ReviewUIModel[] => {
   return data.map(review => ({
     id: review.reviewId,
@@ -56,9 +55,17 @@ export default function Reviews() {
   }));
 };
 
+const handleDeleteReview = async (reviewId: number) => {
+  try {
+    await deleteReview(reviewId);   // 👈 API CALL IS HERE
+    setReviews(prev => prev.filter(r => r.id !== reviewId));
+    showAndroidToast('Review deleted successfully');
+  } catch (error) {
+    console.error('Failed to delete review', error);
+  }
+};
 
-
-    const formatDate = (isoDate?: string) => {
+  const formatDate = (isoDate?: string) => {
   if (!isoDate) return '';
 
   const date = new Date(isoDate);
@@ -69,7 +76,9 @@ export default function Reviews() {
     year: 'numeric',
   });
 };
-
+  useEffect( () => {
+   console.log("review" , reviews)
+  }, [reviews])
 
 useEffect(() => {
   if (passedReviews && passedReviews.length > 0) {
@@ -117,6 +126,8 @@ useEffect(() => {
       setLoading(false);
     }
   };
+
+
   return (
 <SafeAreaView className="flex-1 bg-white">
   <ScreenHeader title="Reviews" rightType="notification" showBack />
@@ -161,6 +172,7 @@ useEffect(() => {
       createdAt={item.daysAgo}
       images={images}
       videos={videos}
+       onDelete={() => handleDeleteReview(item.id)} 
     />
   );
 })}

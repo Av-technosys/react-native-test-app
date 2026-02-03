@@ -63,8 +63,8 @@ const selections = useAppSelector(
   const [tempEnabledSteps, setTempEnabledSteps] = useState<string[]>([]);
 const [showAddProductModal, setShowAddProductModal] = useState(false);
 const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
-const [startTime, setStartTime] = useState<Date | null>(null);
-const [endTime, setEndTime] = useState<Date | null>(null);
+const [startTime, setStartTime] = useState<any | null>(null);
+const [endTime, setEndTime] = useState<any | null>(null);
 
 const [showStartPicker, setShowStartPicker] = useState(false);
 const [showEndPicker, setShowEndPicker] = useState(false);
@@ -104,8 +104,8 @@ const handleConfirmAddProduct = async () => {
       eventId,
       productId: selectedProductId,
       quantity,
-      startTime,
-      endTime,
+      startTime: startTime?.toISOString(),
+      endTime: endTime?.toISOString(),
     });
 
     dispatch(
@@ -275,10 +275,7 @@ const bookingItems = allProductIds.map(productId => ({
   longitude: bookingDetails.longitude,
 }));
 
-console.log('sending payload to db', {
-  bookingId,
-  items: bookingItems,
-})
+
 await addItemToBooking({
   bookingId,
   items: bookingItems,
@@ -513,9 +510,9 @@ onAdd={() => {
   onDismiss={() => setShowStartPicker(false)}
   onConfirm={({ hours, minutes }) => {
     const base = dayjs();
-    setStartTime(
-      base.hour(hours).minute(minutes).second(0).toDate()
-    );
+ setStartTime(
+base.hour(hours).minute(minutes).second(0).toDate()
+);
     setShowStartPicker(false);
   }}
   
@@ -542,9 +539,9 @@ onAdd={() => {
   onDismiss={() => setShowEndPicker(false)}
   onConfirm={({ hours, minutes }) => {
     const base = dayjs();
-    setEndTime(
-      base.hour(hours).minute(minutes).second(0).toDate()
-    );
+   setEndTime(
+base.hour(hours).minute(minutes).second(0).toDate()
+);
     setShowEndPicker(false);
   }}
  

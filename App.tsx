@@ -13,7 +13,7 @@ import RootStack from './src/navigation/rockStack';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './src/store';
-import { Provider as PaperProvider } from 'react-native-paper';
+import { Provider as PaperProvider , MD3LightTheme } from 'react-native-paper';
 import './src/api/interceptors';
 
 function App() {
@@ -21,13 +21,8 @@ function App() {
   //   applyGlobalFont();
   // }, []);
 
-  const paperTheme = {
-  fonts: {
-    regular: { fontFamily: 'Inter-Regular' },
-    medium: { fontFamily: 'Inter-Medium' },
-    light: { fontFamily: 'Inter-Regular' },
-    thin: { fontFamily: 'Inter-Regular' },
-  },
+const theme = {
+...MD3LightTheme,
 };
 
   const isDarkMode = useColorScheme() === 'dark';
@@ -41,7 +36,7 @@ function App() {
           position="top"
           statusBarHeight={StatusBar.currentHeight ?? 40}
         />
-       <PaperProvider theme={paperTheme}>
+       <PaperProvider theme={theme}>
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
             <NavigationContainer>

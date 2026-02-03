@@ -6,7 +6,7 @@ import FloatingInput from '../FloatingInput';
 import Icon from 'react-native-vector-icons/Feather';
 import Button from '../Button';
 import { useAppDispatch } from '../../../store/hooks';
-import { setEventId, setEventType } from '../../../store/slices/eventSlice';
+import { resetEvent, setEventId, setEventType } from '../../../store/slices/eventSlice';
 import { fetchEventType } from '../../../api/event';
 import { createEvent } from '../../../api/event';
 import dayjs from 'dayjs';
@@ -14,10 +14,11 @@ import { Calendar } from 'react-native-calendars';
 
 import {TimePickerModal } from 'react-native-paper-dates';
 import { showAndroidToast } from '../../toast/androidToast';
-
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../store';
 
 type Props = {
-  onSubmit: (data: any, eventId: number) => void;
+  onSubmit: (data: any) => void;
   submitLabel?: string;
   isBottomSheet?: boolean;
 };
@@ -43,7 +44,9 @@ const [showTimePicker, setShowTimePicker] = useState(false);
   // EVENT TYPES
   const [eventTypes, setEventTypes] = useState<any[]>([]);
   const [selectedEventType, setSelectedEventType] = useState<any | null>(null);
-
+const bookingDetails = useSelector(
+(state: RootState) => state.event.bookingDetails
+);
   // UI STATES
   const [showGuestPicker, setShowGuestPicker] = useState(false);
   const [showEventModal, setShowEventModal] = useState(false);
@@ -81,6 +84,17 @@ const [showTimePicker, setShowTimePicker] = useState(false);
 
   /* ---------------- SUBMIT ---------------- */
 const submitWithEvent = async (eventTypeItem: any) => {
+
+      // ✅ reset only if booking already exists
+    const hasExistingBooking =
+    bookingDetails &&
+    (bookingDetails.startTime || bookingDetails.contactName);
+
+
+    if (hasExistingBooking) {
+    dispatch(resetEvent());
+    }
+
     if (!date || !time) return;
 
     const start = new Date(date);
@@ -103,7 +117,7 @@ const submitWithEvent = async (eventTypeItem: any) => {
       latitude: '38.45',
       longitude: '40.45',
     };
-
+ console.log("sending ", payload)
     try {
       dispatch(
         setEventType({
@@ -119,6 +133,7 @@ const submitWithEvent = async (eventTypeItem: any) => {
 
       dispatch(setEventId(res?.data?.eventId || res?.data?.data?.eventId));
 
+       
      showAndroidToast('Event created successfully');  
     } catch (error: any) {
       showAndroidToast('Failed to create event. Please try again.');
@@ -130,7 +145,7 @@ const submitWithEvent = async (eventTypeItem: any) => {
       {isBottomSheet && (
         <Text className="text-2xl font-bold text-black mb-6">Details</Text>
       )}
-
+<View className="mt-1">
       <FloatingInput
         label="Full Name"
         value={fullName}
@@ -167,15 +182,14 @@ const submitWithEvent = async (eventTypeItem: any) => {
 
 
 {/* TIME */}
-<Pressable onPress={() => setShowTimePicker(true)}>
-  <FloatingInput
-    label="Time"
-    value={time ? dayjs(time).format('hh:mm A') : ''}
-    placeholder="Select time"
-    icon="clock"
-    editable={false}
-  />
-</Pressable>
+<FloatingInput
+label="Time"
+value={time ? dayjs(time).format('hh:mm A') : ''}
+placeholder="Select time"
+icon="clock"
+editable={false}
+onPress={() => setShowTimePicker(true)}
+/>
 
 <TimePickerModal
   visible={showTimePicker}
@@ -215,6 +229,7 @@ const submitWithEvent = async (eventTypeItem: any) => {
         />
       </View>
 
+</View>
       {/* EVENT MODAL */}
       {!isBottomSheet && (
         <Modal

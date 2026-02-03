@@ -51,3 +51,9 @@ export const deleteEventItem = async (eventItemId: number) => {
   );
   return response.data;
 };
+
+
+export const getEventById = async (eventId: number) => {
+  const response = await privateApi.get(`/event/${eventId}`);
+  return response.data;
+};
