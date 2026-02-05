@@ -5,17 +5,17 @@ import Carousel from '../common/Carousel';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import Config from 'react-native-config';
 
-  const S3_BASE_URL = Config.AWS_IMAGE_URL
+const S3_BASE_URL = Config.AWS_IMAGE_URL;
 
 type Banner = {
   id: number;
   name: string;
-  mediaURL: string;   // ← THIS matches API
+  mediaURL: string;
   priority: number;
 };
 
 type Props = {
-  banners?: Banner[];
+  banners?: Banner[] | null;   // null = not fetched yet
   loading?: boolean;
 };
 
@@ -27,18 +27,12 @@ const DEFAULT_BANNERS = [
 ];
 
 export default function BannerCarousel({
-  banners = [],
-  loading = false,
+  banners = null,
+  loading,
 }: Props) {
 
-  const images =
-    banners.length > 0
-      ? banners.map(item => ({
-          uri: `${S3_BASE_URL}/${item.mediaURL}`,
-        }))
-      : DEFAULT_BANNERS;
-
-  if (loading) {
+ 
+  if (loading && banners === null) {
     return (
       <View className="mt-5 px-4">
         <SkeletonPlaceholder borderRadius={16}>
@@ -47,6 +41,23 @@ export default function BannerCarousel({
             height={BANNER_HEIGHT}
           />
         </SkeletonPlaceholder>
+      </View>
+    );
+  }
+
+
+  const images =
+    banners && banners.length > 0
+      ? banners.map(item => ({
+          uri: `${S3_BASE_URL}/${item.mediaURL}`,
+        }))
+      : [];
+
+
+  if (!loading && banners && images.length === 0) {
+    return (
+      <View className="mt-5">
+        <Carousel fullWidth images={DEFAULT_BANNERS} />
       </View>
     );
   }

@@ -21,7 +21,8 @@ export default function HomeScreen() {
 
   
   const bottomSheetRef = useRef<BottomSheet>(null);
-  const [banners, setBanners] = useState<any[]>([]);
+const [banners, setBanners] = useState<any[] | null>(null);
+const [loading, setLoading] = useState(true);
   const [isAddressSheetOpen, setIsAddressSheetOpen] = useState(false);
 
   useEffect(() => {
@@ -29,22 +30,31 @@ export default function HomeScreen() {
 
   }, []);
 
-  const fetchBanners = async () => {
-    try {
-      const res = await getBanners();
- console.log(res)
-      if (res?.success && Array.isArray(res?.data)) {
-        // Sort banners by priority (ascending)
-        const sortedBanners = [...res.data].sort(
-          (a, b) => a.priority - b.priority
-        );
+const fetchBanners = async () => {
+  try {
+    setLoading(true);
 
-        setBanners(sortedBanners);
-      }
-    } catch (error) {
-      console.log('Error fetching banners', error);
+    const res = await getBanners();
+    console.log(res);
+
+    if (res?.success && Array.isArray(res?.data)) {
+      const sortedBanners = [...res.data].sort(
+        (a, b) => a.priority - b.priority
+      );
+
+      setBanners(sortedBanners);
+    } else {
+      setBanners([]); // finished but empty
     }
-  };
+
+  } catch (error) {
+    console.log('Error fetching banners', error);
+    setBanners([]); // still finished
+  } finally {
+    setLoading(false); // critical
+  }
+};
+
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -64,7 +74,7 @@ export default function HomeScreen() {
 
         {/* Banner Carousel */}
         <View>
-          <BannerCarousel banners={banners} />
+<BannerCarousel banners={banners} loading={loading} />
         </View>
 
         {/* Categories */}
