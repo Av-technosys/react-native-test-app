@@ -33,6 +33,7 @@ import { addReview } from '../../api/review';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { ActivityIndicator } from 'react-native-paper';
 import Video from 'react-native-video';
+import Config from 'react-native-config';
 
 
 const ReviewSkeleton = () => (
@@ -235,7 +236,7 @@ const [servicesLoading, setServicesLoading] = useState(true);
     ]).start();
   }, []);
 
-  const S3_BASE_URL = 'https://freaky-files.s3.ap-south-1.amazonaws.com';
+  const S3_BASE_URL = Config.AWS_IMAGE_URL
 
 
   const handleEventRatingChange = (rating: number) => {

@@ -1,7 +1,8 @@
 
 import axios from 'axios';
+import Config from 'react-native-config';
 
-export const BASE_URL ='https://751ue73p4j.execute-api.ap-south-1.amazonaws.com/v1';
+const BASE_URL = Config.BACKEND_URL
 
 export const publicApi = axios.create({
   baseURL: BASE_URL,

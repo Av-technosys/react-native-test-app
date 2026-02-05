@@ -18,8 +18,9 @@ import { useRoute } from '@react-navigation/native';
 import { getProductsByProductId, fetchProductReview } from '../../api/product';
 import LinearGradient from 'react-native-linear-gradient';
 import { fetchVendorDetail } from '../../api/vendor';
+import Config from 'react-native-config';
 
-const S3_BASE_URL = 'https://freaky-files.s3.ap-south-1.amazonaws.com';
+  const S3_BASE_URL = Config.AWS_IMAGE_URL
 
 export default function ProductDetails() {
   const route = useRoute<any>();

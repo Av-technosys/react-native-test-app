@@ -10,6 +10,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import { useMemo, useState } from 'react';
 import Video from 'react-native-video';
 import Feather from 'react-native-vector-icons/Feather';
+import Config from 'react-native-config';
 
 type ReviewCardProps = {
   title: string;
@@ -30,7 +31,7 @@ export default function ReviewCard({
   videos,
   onDelete,
 }: ReviewCardProps) {
-  const S3_BASE_URL = 'https://freaky-files.s3.ap-south-1.amazonaws.com';
+  const S3_BASE_URL = Config.AWS_IMAGE_URL
   console.log(images);
   const WORD_LIMIT = 10;
   const [expanded, setExpanded] = useState(false);

@@ -3,8 +3,9 @@ import React from 'react';
 import { View, Dimensions } from 'react-native';
 import Carousel from '../common/Carousel';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import Config from 'react-native-config';
 
-const S3_BASE_URL = 'https://freaky-files.s3.ap-south-1.amazonaws.com';
+  const S3_BASE_URL = Config.AWS_IMAGE_URL
 
 type Banner = {
   id: number;

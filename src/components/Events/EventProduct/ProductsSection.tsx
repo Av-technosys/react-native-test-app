@@ -31,6 +31,7 @@ import  {addItemToBooking, createBooking}  from '../../../api/booking';
 import { TimePickerModal } from 'react-native-paper-dates';
 import dayjs from 'dayjs';
 import { showAndroidToast } from '../../toast/androidToast';
+import Config from 'react-native-config';
 type Step = {
   id: number;
   key: string;
@@ -302,7 +303,7 @@ await addItemToBooking({
     setActiveStep(next.key);
   };
 
-  const S3_BASE_URL = 'https://freaky-files.s3.ap-south-1.amazonaws.com';
+  const S3_BASE_URL = Config.AWS_IMAGE_URL
 
   return (
     <>

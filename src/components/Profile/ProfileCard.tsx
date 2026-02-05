@@ -1,6 +1,7 @@
 import { Image, Pressable, Text, View } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import Config from 'react-native-config';
 
 type Props = {
   name?: string;
@@ -19,7 +20,7 @@ export function ProfileInfoCard({
   onEdit,
   loading = false,
 }: Props) {
-  const S3_BASE_URL = 'https://freaky-files.s3.ap-south-1.amazonaws.com';
+  const S3_BASE_URL = Config.AWS_IMAGE_URL
 
   /* ---------------- SKELETON ---------------- */
   if (loading) {

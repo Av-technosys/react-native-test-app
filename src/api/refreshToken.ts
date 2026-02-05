@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { tokenStorage } from '../api/services/tokenStorage';
+import Config from 'react-native-config';
 
-const BASE_URL ='https://751ue73p4j.execute-api.ap-south-1.amazonaws.com/v1';
+
+const BASE_URL = Config.BACKEND_URL
 
 export const refreshIdToken = async () => {
 

@@ -4,10 +4,11 @@ import ServiceCard from '../common/cards/ServiceCard';
 import SectionHeader from '../common/SectionHeader';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { getAllFeaturedProducts } from '../../api/product';
+import Config from 'react-native-config';
 
 // S3 base URL
-const S3_BASE_URL =
-  'https://freaky-files.s3.ap-south-1.amazonaws.com';
+  const S3_BASE_URL = Config.AWS_IMAGE_URL
+
 
 // fallback image
 const FALLBACK_IMAGE = require('../../assets/images/service1.png');

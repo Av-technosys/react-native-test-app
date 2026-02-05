@@ -7,6 +7,7 @@ import { useNavigation, NavigationProp } from '@react-navigation/native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { getProductTypes } from '../../api/product';
 import NotFound from '../../components/common/notFound/NotFound';
+import Config from 'react-native-config';
 
 type RootStackParamList = {
   CategoryProducts: { categoryId: number; title: string };
@@ -21,7 +22,7 @@ type ProductType = {
 
 export default function CategoriesScreen() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-const S3_BASE_URL = 'https://freaky-files.s3.ap-south-1.amazonaws.com';
+  const S3_BASE_URL = Config.AWS_IMAGE_URL
 
   const [categories, setCategories] = useState<ProductType[]>([]);
   const [loading, setLoading] = useState(true);

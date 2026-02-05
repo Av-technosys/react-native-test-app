@@ -1,6 +1,7 @@
 import { View, Text, Pressable } from 'react-native';
 import ReviewCard from '../common/cards/ReviewCard';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
+import Config from 'react-native-config';
 
 type RootStackParamList = {
   CategoryProducts: undefined;
@@ -22,8 +23,7 @@ type ReviewSectionProps = {
   loading: boolean;
 };
 
-const S3_BASE_URL =
-  'https://freaky-files.s3.ap-south-1.amazonaws.com';
+  const S3_BASE_URL = Config.AWS_IMAGE_URL
 
 export default function CustomerReviewsSection({
   reviews,
