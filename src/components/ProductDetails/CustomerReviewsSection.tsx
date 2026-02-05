@@ -1,6 +1,7 @@
 import { View, Text, Pressable } from 'react-native';
 import ReviewCard from '../common/cards/ReviewCard';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
+import Config from 'react-native-config';
 
 type RootStackParamList = {
   CategoryProducts: undefined;
@@ -22,8 +23,7 @@ type ReviewSectionProps = {
   loading: boolean;
 };
 
-const S3_BASE_URL =
-  'https://freaky-files.s3.ap-south-1.amazonaws.com';
+  const S3_BASE_URL = Config.AWS_IMAGE_URL
 
 export default function CustomerReviewsSection({
   reviews,
@@ -52,19 +52,20 @@ export default function CustomerReviewsSection({
           </Text>
         </View>
 
-        <Pressable
-          onPress={() =>
-            navigation.getParent()?.navigate('FlowStack', {
-              screen: 'reviews',
-            })
-          }
-        >
+<Pressable
+  onPress={() =>
+    navigation.getParent()?.navigate('FlowStack', {
+      screen: 'reviews',
+      params: { reviews },
+    })
+  }
+>
           <Text className="text-lg text-gray-500">See All</Text>
         </Pressable>
       </View>
 
       {/* REVIEWS */}
-{reviews.map((review) => {
+{reviews?.slice(0, 2).map((review) => {
   const images =
     review.reviewMedia
       ?.filter(m => m.mediaType === 'image')

@@ -7,6 +7,7 @@ import { useNavigation, NavigationProp } from '@react-navigation/native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { getProductTypes } from '../../api/product';
 import NotFound from '../../components/common/notFound/NotFound';
+import Config from 'react-native-config';
 
 type RootStackParamList = {
   CategoryProducts: { categoryId: number; title: string };
@@ -21,6 +22,7 @@ type ProductType = {
 
 export default function CategoriesScreen() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const S3_BASE_URL = Config.AWS_IMAGE_URL
 
   const [categories, setCategories] = useState<ProductType[]>([]);
   const [loading, setLoading] = useState(true);
@@ -124,7 +126,7 @@ export default function CategoriesScreen() {
               {/* ICON IMAGE */}
               <View className="w-16 h-16 mb-3 items-center justify-center">
                 <Image
-                  source={{ uri: item.mediaURL }}
+                  source={{ uri: `${S3_BASE_URL}/${item.mediaURL}` }}
                   className="w-12 h-12"
                   resizeMode="contain"
                 />

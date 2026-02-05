@@ -8,10 +8,10 @@ import ProductCard from '../../components/common/cards/ProductsCard';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { getProductsByCategoryId, getProductsByProductTypeId } from '../../api/product';
 import NotFound from '../../components/common/notFound/NotFound';
+import Config from 'react-native-config';
 
 
-const S3_BASE_URL =
-  'https://freaky-files.s3.ap-south-1.amazonaws.com';
+  const S3_BASE_URL = Config.AWS_IMAGE_URL
 
 export default function CategoryProducts() {
   const route = useRoute<any>();

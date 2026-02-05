@@ -11,6 +11,7 @@ import {
   Text,
   View,
 } from 'react-native';
+
 import LinearGradient from 'react-native-linear-gradient';
 import Feather from 'react-native-vector-icons/Feather';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -25,9 +26,12 @@ import {
   getProductTypes,
 } from '../../../api/product';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import { saveInBookingDraft } from '../../../api/event';
-import { showMessage } from 'react-native-flash-message';
+import { deleteEventItem, saveInBookingDraft } from '../../../api/event';
 import  {addItemToBooking, createBooking}  from '../../../api/booking';
+import { TimePickerModal } from 'react-native-paper-dates';
+import dayjs from 'dayjs';
+import { showAndroidToast } from '../../toast/androidToast';
+import Config from 'react-native-config';
 type Step = {
   id: number;
   key: string;
@@ -58,25 +62,68 @@ const selections = useAppSelector(
   const PAGE_SIZE = 10;
   const [enabledSteps, setEnabledSteps] = useState<string[]>([]);
   const [tempEnabledSteps, setTempEnabledSteps] = useState<string[]>([]);
+const [showAddProductModal, setShowAddProductModal] = useState(false);
+const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
+const [startTime, setStartTime] = useState<any | null>(null);
+const [endTime, setEndTime] = useState<any | null>(null);
+
+const [showStartPicker, setShowStartPicker] = useState(false);
+const [showEndPicker, setShowEndPicker] = useState(false);
+
+const [quantity, setQuantity] = useState(1);
 
   const activeProductTypeId = steps.find(step => step.key === activeStep)?.id;
 
-  const saveProductToDraft = async (productId: number) => {
-    if (!eventId) {
-      console.warn('eventId missing, skipping draft save');
-      return;
-    }
 
-    try {
-      await saveInBookingDraft({
-        eventId,
-        productId,
-        quantity: 1,
-      })
-    } catch (error) {
-      console.error('Failed to save booking draft', error);
-    }
-  };
+  const removeProductFromDraft = async (eventItemId: number) => {
+  if (!eventItemId) {
+    console.warn('eventItemId missing, skipping draft delete');
+    return;
+  }
+
+  try {
+    await deleteEventItem(eventItemId);
+  } catch (error) {
+    console.error('Failed to remove booking draft', error);
+  }
+};
+
+
+const handleConfirmAddProduct = async () => {
+  if (!eventId || !selectedProductId) {
+   showAndroidToast('Missing event or product information.');
+    return;
+  }
+
+  if (!startTime || !endTime) {
+    showAndroidToast('Please select start and end times.');
+    return;
+  }
+
+  try {
+    await saveInBookingDraft({
+      eventId,
+      productId: selectedProductId,
+      quantity,
+      startTime: startTime?.toISOString(),
+      endTime: endTime?.toISOString(),
+    });
+
+    dispatch(
+      addProduct({
+        step: activeStep,
+        productId: selectedProductId,
+      }),
+    );
+
+    setShowAddProductModal(false);
+  } catch (error) {
+    console.error(error);
+   showAndroidToast('Failed to add product. Please try again.');
+  }
+};
+
+
 
   const fetchProducts = useCallback(
     async (productTypeId: number, pageNumber: number) => {
@@ -97,6 +144,7 @@ const selections = useAppSelector(
         setProducts(prev =>
           pageNumber === 1 ? newProducts : [...prev, ...newProducts],
         );
+
 
         setHasMore(pageNumber < res.pagination.total_pages);
         setPage(pageNumber);
@@ -137,10 +185,8 @@ const selections = useAppSelector(
 
         setSteps(apiSteps);
 
-        // ✅ dynamic enabled steps
         const keys = apiSteps.map(s => s.key);
 
-        // ✅ only first 4 enabled
         const initialEnabled = keys.slice(0, 4);
 
         setEnabledSteps(initialEnabled);
@@ -178,9 +224,6 @@ const selections = useAppSelector(
   );
   const isLastStep = activeIndex === STEPS.length - 1;
 
-  useEffect(() => {
-    console.log('is last step ', isLastStep);
-  }, [isLastStep]);
 
   const handleContinue = async () => {
   const currentSelections = selections[activeStep] ?? [];
@@ -191,19 +234,17 @@ const selections = useAppSelector(
     [activeStep]: hasItems ? 'green' : 'red',
   }));
 
-  // 🟢 NOT LAST STEP → NORMAL FLOW
   if (!isLastStep) {
     setActiveStep(STEPS[activeIndex + 1].key);
     return;
   }
 
-  // 🔴 LAST STEP → CREATE BOOKING
   try {
     if (!bookingDetails) {
       throw new Error('Booking details missing');
     }
 
-    // 1️⃣ CREATE BOOKING
+
     const bookingRes = await createBooking({
       eventTypeId: bookingDetails.eventTypeId,
       source: 'EVENT',
@@ -220,25 +261,26 @@ const selections = useAppSelector(
 
     const bookingId = bookingRes.data.bookingId;
 
-    // 2️⃣ FLATTEN ALL SELECTED PRODUCTS
-    const allProductIds = Object.values(selections).flat();
+const allProductIds = Object.values(selections).flat();
 
-    // 3️⃣ ADD EACH PRODUCT TO BOOKING
-    for (const productId of allProductIds) {
-      await addItemToBooking({
-        bookingId,
-        productId,
-        contactName: bookingDetails.contactName,
-        contactNumber: bookingDetails.contactNumber,
-        startTime: bookingDetails.startTime,
-        endTime: bookingDetails.endTime,
-        minGuestCount: bookingDetails.minGuestCount,
-        maxGuestCount: bookingDetails.maxGuestCount,
-        quantity: 1,
-        latitude: bookingDetails.latitude,
-        longitude: bookingDetails.longitude,
-      });
-    }
+const bookingItems = allProductIds.map(productId => ({
+  productId,
+  quantity: 1,
+  contactName: bookingDetails.contactName,
+  contactNumber: bookingDetails.contactNumber,
+  startTime: bookingDetails.startTime,
+  endTime: bookingDetails.endTime,
+  minGuestCount: bookingDetails.minGuestCount,
+  maxGuestCount: bookingDetails.maxGuestCount,
+  latitude: bookingDetails.latitude,
+  longitude: bookingDetails.longitude,
+}));
+
+
+await addItemToBooking({
+  bookingId,
+  items: bookingItems,
+});
 
     // 4️⃣ NAVIGATE
     navigation.getParent()?.navigate('FlowStack', {
@@ -246,14 +288,7 @@ const selections = useAppSelector(
 
     });
   } catch (error: any) {
-    showMessage({
-      message: 'Booking failed',
-      description:
-        error?.response?.data?.message ||
-        error?.message ||
-        'Something went wrong',
-      type: 'danger',
-    });
+   showAndroidToast('Failed to create booking. Please try again.');
   }
 };
 
@@ -268,9 +303,10 @@ const selections = useAppSelector(
     setActiveStep(next.key);
   };
 
-  const S3_BASE_URL = 'https://freaky-files.s3.ap-south-1.amazonaws.com';
+  const S3_BASE_URL = Config.AWS_IMAGE_URL
 
   return (
+    <>
     <View className="flex-1 bg-white">
       {/* HEADER SECTION */}
       <View className="flex-row items-center justify-between gap-2 mx-3 pt-2">
@@ -352,7 +388,7 @@ const selections = useAppSelector(
             onEndReachedThreshold={0.5}
             renderItem={({ item }) => (
               <EventProductCard
-                id={item.id}
+                id={item?.productId}
                 title={item.title}
                 guests={`${item.minQuantity ?? 1} - ${item.maxQuantity ?? '∞'}`}
                 menuType={item.pricingType}
@@ -365,24 +401,25 @@ const selections = useAppSelector(
                 }
                 added={(selections[activeStep] ?? []).includes(item.productId)}
                 disabled={!item.isAvailable}
-                onAdd={() => {
-                  saveProductToDraft(item.productId); 
+onAdd={() => {
+  setSelectedProductId(item.productId);
+  setStartTime('');
+  setEndTime('');
+  setQuantity(1);
+  setShowAddProductModal(true);
+}}
 
-                  dispatch(
-                    addProduct({
-                      step: activeStep,
-                      productId: item.productId,
-                    }),
-                  );
-                }}
                 onRemove={() =>
+                {
+                  removeProductFromDraft(item.eventItemId);
+
                   dispatch(
                     removeProduct({
                       step: activeStep,
                       productId: item.productId,
                     }),
                   )
-                }
+                }}
               />
             )}
             ListFooterComponent={
@@ -434,6 +471,118 @@ const selections = useAppSelector(
           </View>
         </View>
       </View>
+
+
+<Modal
+  visible={showAddProductModal}
+  transparent
+  animationType="fade"
+  onRequestClose={() => setShowAddProductModal(false)}
+>
+  <View className="flex-1 items-center justify-center bg-black/40">
+    <View className="w-[90%] bg-white rounded-2xl p-5">
+      {/* Header */}
+      <View className="flex-row justify-between items-center mb-4">
+        <Text className="text-lg font-semibold text-black">
+          Add Product Details
+        </Text>
+        <Pressable onPress={() => setShowAddProductModal(false)}>
+          <Text className="text-xl">✕</Text>
+        </Pressable>
+      </View>
+
+{/* Start Time */}
+<Text className="text-sm text-gray-500 mb-1">Start Time</Text>
+
+<Pressable
+  className="border border-gray-300 rounded-xl p-3 mb-3"
+  onPress={() => setShowStartPicker(true)}
+>
+  <Text>
+    {startTime
+      ? dayjs(startTime).format('hh:mm A')
+      : 'Select start time'}
+  </Text>
+</Pressable>
+
+<TimePickerModal
+  visible={showStartPicker}
+  use24HourClock={false}
+  onDismiss={() => setShowStartPicker(false)}
+  onConfirm={({ hours, minutes }) => {
+    const base = dayjs();
+ setStartTime(
+base.hour(hours).minute(minutes).second(0).toDate()
+);
+    setShowStartPicker(false);
+  }}
+  
+/>
+
+
+     {/* End Time */}
+<Text className="text-sm text-gray-500 mb-1">End Time</Text>
+
+<Pressable
+  className="border border-gray-300 rounded-xl p-3 mb-3"
+  onPress={() => setShowEndPicker(true)}
+>
+  <Text>
+    {endTime
+      ? dayjs(endTime).format('hh:mm A')
+      : 'Select end time'}
+  </Text>
+</Pressable>
+
+<TimePickerModal
+  visible={showEndPicker}
+  use24HourClock={false}
+  onDismiss={() => setShowEndPicker(false)}
+  onConfirm={({ hours, minutes }) => {
+    const base = dayjs();
+   setEndTime(
+base.hour(hours).minute(minutes).second(0).toDate()
+);
+    setShowEndPicker(false);
+  }}
+ 
+/>
+
+
+      {/* Quantity */}
+      <Text className="text-sm text-gray-500 mb-1">Quantity</Text>
+      <View className="flex-row items-center gap-4 mb-5">
+        <Pressable
+          onPress={() => setQuantity(q => Math.max(1, q - 1))}
+          className="w-10 h-10 rounded-full bg-gray-200 items-center justify-center"
+        >
+          <Text className="text-lg">−</Text>
+        </Pressable>
+
+        <Text className="text-lg font-semibold">{quantity}</Text>
+
+        <Pressable
+          onPress={() => setQuantity(q => q + 1)}
+          className="w-10 h-10 rounded-full bg-gray-200 items-center justify-center"
+        >
+          <Text className="text-lg">+</Text>
+        </Pressable>
+      </View>
+
+      {/* Confirm */}
+      <Pressable onPress={handleConfirmAddProduct}>
+        <LinearGradient
+          colors={['#F97316', '#FACC15']}
+          style={{ height: 48, borderRadius: 14, justifyContent: 'center' }}
+        >
+          <Text className="text-white text-center font-bold">
+            Add Product
+          </Text>
+        </LinearGradient>
+      </Pressable>
+    </View>
+  </View>
+</Modal>
 
       {/* MODALS AND SHEETS */}
       <Modal
@@ -528,8 +677,11 @@ const selections = useAppSelector(
         </View>
       </Modal>
 
-      <FilterBottomSheet ref={filterSheetRef} />
     </View>
+
+      <FilterBottomSheet ref={filterSheetRef} />
+
+      </>
   );
 }
 
@@ -637,3 +789,5 @@ const EmptyProductsState = ({
     </View>
   );
 };
+
+

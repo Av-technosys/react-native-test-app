@@ -1,20 +1,32 @@
 import React, { ReactNode } from 'react';
-import { KeyboardAvoidingView, Platform, StyleProp, ViewStyle } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleProp, TouchableWithoutFeedback, ViewStyle } from 'react-native';
 
 interface KeyboardWrapperProps {
   children: ReactNode;
   style?: StyleProp<ViewStyle>;
 }
 
-const keyboardVerticalOffset: number = Platform.OS === 'ios' ? 40 : 64;
 
 const KeyboardWrapper: React.FC<KeyboardWrapperProps> = ({
   children
 }) => {
   return (
-      <KeyboardAvoidingView behavior='position' keyboardVerticalOffset={keyboardVerticalOffset}>
-
+  <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+          className='px-4 pt-14'
+          style={{ flex: 1 }}
+        >
       {children}
+
+      </ScrollView>
+      </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
 };

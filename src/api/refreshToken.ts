@@ -1,0 +1,32 @@
+import axios from 'axios';
+import { tokenStorage } from '../api/services/tokenStorage';
+import Config from 'react-native-config';
+
+
+const BASE_URL = Config.BACKEND_URL
+
+export const refreshIdToken = async () => {
+
+  console.log('he is calling to refersh')
+  const refreshToken = await tokenStorage.getRefreshToken();
+  const username = await tokenStorage.getUsername();
+
+
+  if (!refreshToken || !username) {
+    throw new Error('Missing refresh credentials');
+  }
+
+  const { data } = await axios.post(
+    `${BASE_URL}/auth/refresh_token`,
+    { refreshToken, username },
+  );
+  const newIdToken =
+    data?.response?.AuthenticationResult?.IdToken;
+
+  if (!newIdToken) {
+    throw new Error('Invalid refresh response');
+  }
+
+  await tokenStorage.setIdToken(newIdToken);
+  return newIdToken;
+};

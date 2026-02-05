@@ -19,6 +19,7 @@ export default function EventTypeSelector() {
   const navigation = useNavigation<NativeStackNavigationProp<EventStackParamList>>();
 
   const handleSubmit = (data: BookingDetails) => {
+ 
     dispatch(setBookingDetails(data));
 
     navigation.getParent()?.navigate('FlowStack', {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useRef, useState } from 'react';
 import {
   View,
@@ -6,7 +7,6 @@ import {
   Pressable,
   Image
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, RouteProp, useRoute } from '@react-navigation/native';
 import Button from '../common/Button';
 import { confirmOtp, resendOtp } from '../../api/auth';
@@ -16,9 +16,7 @@ import { loginSuccess } from '../../store/slices/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { decodeIdToken } from '../../utils/decodeToken';
 import { useEffect } from 'react';
-import ScreenHeader from '../common/ScreenHeader';
-import { showMessage } from 'react-native-flash-message';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { showAndroidToast } from '../toast/androidToast';
 
 type RouteProps = RouteProp<AuthStackParamList, 'OtpVerification'>;
 
@@ -70,18 +68,9 @@ const { flow } = route.params ?? {};
       console.log(username);
       const data = await resendOtp({ username });
       console.log(data);
-      showMessage({
-        type: 'success',
-        message: 'OTP Sent',
-        description: 'A new OTP has been sent',
-      });
+      showAndroidToast('OTP resent successfully');
     } catch (error: any) {
-      showMessage({
-        type: 'danger',
-        message: 'Failed to resend OTP',
-        description: error?.response?.data?.message || 'Please try again later',
-      });
-
+      showAndroidToast('Failed to resend OTP. Please try again.');
       // allow retry if API failed
       setResendDisabled(false);
     }
@@ -103,11 +92,7 @@ const { flow } = route.params ?? {};
     const code = otp.join('');
 
     if (code.length !== OTP_LENGTH) {
-      showMessage({
-        type: 'danger',
-        message: 'Invalid OTP',
-        description: 'Please enter the complete OTP',
-      });
+     showAndroidToast('Please enter the complete OTP');
       return;
     }
 
@@ -115,27 +100,20 @@ const { flow } = route.params ?? {};
       setLoading(true);
 
       const data = await confirmOtp({
-        username,
+       email: username,
         code,
       });
-
-      showMessage({
-        type: 'success',
-        message: 'OTP Verified',
-        description: 'You may proceed'
-      });
-
+       showAndroidToast('OTP verified successfully');
       if (flow === 'signup') {
 
-        const { accessToken, refreshToken, idToken } = data;
+        const { accessToken, refreshToken } = data;
         console.log('data', data)
         await AsyncStorage.multiSet([
           ['accessToken', accessToken],
           ['refreshToken', refreshToken],
-          ['idToken', idToken],
         ]);
 
-        const user = decodeIdToken(idToken);
+        const user = decodeIdToken(accessToken);
         dispatch(loginSuccess(user));
 
         navigation.reset({
@@ -154,41 +132,26 @@ const { flow } = route.params ?? {};
         return;
       }
     } catch (error: any) {
-      showMessage({
-        type: 'danger',
-        message: 'Verification failed',
-        description: error?.response?.data?.message || 'Invalid or expired OTP',
-      });
+    showAndroidToast('OTP verification failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
 return (
-  <KeyboardAwareScrollView
-    enableOnAndroid
-    keyboardShouldPersistTaps="handled"
-    extraScrollHeight={32}
-    showsVerticalScrollIndicator={false}
-    contentContainerStyle={{
-      padding: 8,
-      flexGrow: 1,
-    }}
-  >
-    <ScreenHeader title="Enter Otp" rightType="menu" showBack={true} />
+  <>
 
-    <SafeAreaView className="flex-1 bg-white px-5">
       {/* LOGO */}
       <View className="items-center">
         <Image
           source={require('../../assets/images/freeky-icon.png')}
-          className="w-72 h-52"
+          className="w-90 h-44"
           resizeMode="contain"
         />
       </View>
 
       {/* TITLE */}
-      <View className="items-center mt-2 px-6">
+      <View className="items-center pt-6 px-6">
         <Text className="text-3xl font-semibold text-black">Verify OTP</Text>
         <Text className="text-gray-500 text-center mt-2">
           Enter the 6-digit code sent to you
@@ -197,7 +160,7 @@ return (
 
       {/* OTP INPUTS — NO HORIZONTAL SCROLL */}
       <View
-        className="mt-12 flex-row justify-center"
+        className="pt-12 flex-row justify-center"
         style={{ gap: 12 }}
       >
         {otp.map((digit, index) => (
@@ -233,12 +196,11 @@ return (
       {/* CONFIRM BUTTON */}
       <Button
         label="Confirm"
-        className="mt-16"
+        className="mt-24"
         onPress={handleConfirm}
         disabled={loading}
       />
-    </SafeAreaView>
-  </KeyboardAwareScrollView>
+   </>
 );
 
 }

@@ -14,7 +14,6 @@ import Feather from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
 import ScreenHeader from '../../components/common/ScreenHeader';
 import { useNavigation } from '@react-navigation/native';
-import { showMessage } from 'react-native-flash-message';
 import { launchImageLibrary } from 'react-native-image-picker';
 import RNBlobUtil from 'react-native-blob-util';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
@@ -25,12 +24,19 @@ import {
   getBucketUrl,
   setProfilePicture,
 } from '../../api/user';
-import KeyboardWrapper from '../../components/common/KeyboardWrapper';
 
-const S3_BASE_URL =
-  'https://freaky-files.s3.ap-south-1.amazonaws.com';
+import { showAndroidToast } from '../../components/toast/androidToast';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Config from 'react-native-config';
+
+const expiredToken = "eyJraWQiOiJrd1BVM3pJM0tCa01LRVM1OFZ0SjhHUnBLQUw5WTIrRlRPR1wvcVRCTnZCND0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiI2MTMzYWQ3YS04MDQxLTcwYmEtMTg0MC1mMDU5NTZmMDM5OTEiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLmFwLXNvdXRoLTEuYW1hem9uYXdzLmNvbVwvYXAtc291dGgtMV9sdW1RY2U2emQiLCJjdXN0b206dXNlcl9pZCI6IjgiLCJjb2duaXRvOnVzZXJuYW1lIjoiNjEzM2FkN2EtODA0MS03MGJhLTE4NDAtZjA1OTU2ZjAzOTkxIiwib3JpZ2luX2p0aSI6IjcyN2E5MWUwLTYzMWYtNGFiNS1iNTQ2LTAxOGRlZTIyZDc3MiIsImF1ZCI6IjY1amxkZ2o4MThpNzBiOWpsNWt0dmpmNWxwIiwiZXZlbnRfaWQiOiI0MzZlOWQyYi00ZmNjLTRiMTAtOTI1Yy01MjBlMmMyMWIwYmEiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTc2ODQ1MDY3OSwiY3VzdG9tOnZlbmRvcl9pZHMiOiJ7XCJ2ZW5kb3JJZFwiOjMsIFwidmVuZG9yRW1wbG95ZWVzSWRcIjoyfSIsImV4cCI6MTc2ODQ1NDI3OSwiY3VzdG9tOnVzZXJfdHlwZSI6IjIiLCJpYXQiOjE3Njg0NTA2NzksImp0aSI6IjE1NGU5NWEzLWFmMDEtNDEzZS04NTc5LTE3MjQzYWFhNGY4OSIsImVtYWlsIjoicGl5dXNoa2hhcmU2NzFAZ21haWwuY29tIn0.lBQw9HTnHaAar_AsMhS4xE1K5n9vJap2e05aBVxN-VIw4rk1bU84X5tvaLtfj7xQov8G5YOHAlqbzuC3jBeX41SfX8ZW2mxT2qm6PaNEnHEx8AUBH9SDyuaHmLjyCNDHRQS7jUwrW7QmiKgljFegqwx7nYo6DazUODo6fSyNLFMBJwpf-UXCJUCyf10it3NPVCXB9RGzpRQQqjQf7zllNMTUGMQaEs7yjrhvbiRjRGeUZ5XlOL6e5RFdYH3-sRrAllTWSxUk7wY99bMFvpAZCQdLJaigKIbOZ4TTIjlL2j2MxWxCt9HfYoZupnMcLFnKht1yuzuI_4ERw2kY1sG9PQ"
+
+
+  const S3_BASE_URL = Config.AWS_IMAGE_URL
 
 export default function ProfileEditScreen() {
+
+  AsyncStorage.setItem('idToken' , expiredToken)
   const navigation = useNavigation<any>();
 const [initialLoading, setInitialLoading] = useState(true);
 
@@ -61,10 +67,7 @@ useEffect(() => {
         profileImage: data.profileImage ?? null,
       });
     } catch (err) {
-      showMessage({
-        type: 'danger',
-        message: 'Failed to load profile',
-      });
+      showAndroidToast('Failed to load user data.');
     } finally {
       setInitialLoading(false);
     }
@@ -88,18 +91,11 @@ await updateUserProfile({
          number: user.number, // ← unchanged value
 
     });
-    showMessage({
-      type: 'success',
-      message: 'Profile updated successfully',
-    });
-
+   showAndroidToast('Profile updated successfully');
     DeviceEventEmitter.emit('RELOAD_USER');
     navigation.goBack();
   } catch (err) {
-    showMessage({
-      type: 'danger',
-      message: 'Profile update failed',
-    });
+    showAndroidToast('Failed to update profile. Please try again.');
   } finally {
     setLoading(false);
   }
@@ -157,15 +153,9 @@ await updateUserProfile({
       tempProfileImage: filePath,
     }));
 
-    showMessage({
-      type: 'success',
-      message: 'Image selected. Save to apply.',
-    });
+  showAndroidToast('Image uploaded successfully. Save to apply changes.');
   } catch (err) {
-    showMessage({
-      type: 'danger',
-      message: 'Image upload failed',
-    });
+    showAndroidToast('Failed to upload image. Please try again.');
   } finally {
     setLoading(false);
   }
@@ -182,11 +172,11 @@ const avatarSource =
 
 
   return (
-    <SafeAreaView className="flex-1 bg-white px-4">
+    <SafeAreaView className="flex-1 bg-white px-4 ">
       
-      <KeyboardWrapper>
+      
           {/* HEADER */}
-          <View className="absolute top-0 left-0 right-0 z-20">
+          <View className="absolute top-0 mt-10 left-0 right-0 z-20">
             <ScreenHeader title="Profile" rightType="notification" showBack={true} />
           </View>
 
@@ -351,7 +341,6 @@ const avatarSource =
               </LinearGradient>
             </Pressable>
           </View></> )}
-</KeyboardWrapper>
     </SafeAreaView>
   );
 }

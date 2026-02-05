@@ -18,8 +18,9 @@ import { useRoute } from '@react-navigation/native';
 import { getProductsByProductId, fetchProductReview } from '../../api/product';
 import LinearGradient from 'react-native-linear-gradient';
 import { fetchVendorDetail } from '../../api/vendor';
+import Config from 'react-native-config';
 
-const S3_BASE_URL = 'https://freaky-files.s3.ap-south-1.amazonaws.com';
+  const S3_BASE_URL = Config.AWS_IMAGE_URL
 
 export default function ProductDetails() {
   const route = useRoute<any>();
@@ -179,6 +180,7 @@ export default function ProductDetails() {
     product.prices?.[0]?.salePrice ?? product.prices?.[0]?.listPrice ?? null;
 
   return (
+    <>
     <SafeAreaView className="flex-1 bg-white">
       <ScreenHeader title={product.title} showBack rightType="notification" />
 
@@ -245,17 +247,17 @@ export default function ProductDetails() {
           </View>
         </Pressable>
       </ScrollView>
+    </SafeAreaView>
 
-      <BaseBottomSheet ref={bottomSheetRef} snapPoints={['80%']}>
+          <BaseBottomSheet ref={bottomSheetRef} snapPoints={['80%']}>
         <AddToCartForm
           product={{
-            productId: product.productId,
+            ProductId: product.productId,
             title: product.title,
             price,
-            vendorId: product.vendorId,
           }}
         />
       </BaseBottomSheet>
-    </SafeAreaView>
+    </>
   );
 }

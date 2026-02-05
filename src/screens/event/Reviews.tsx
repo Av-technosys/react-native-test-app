@@ -4,10 +4,13 @@ import { ScrollView, View, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ScreenHeader from '../../components/common/ScreenHeader';
 import ReviewCard from '../../components/common/cards/ReviewCard';
-import { getAllReviews } from '../../api/review';
+import { deleteReview, getAllReviews } from '../../api/review';
 import { getProductsByProductId } from '../../api/product';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import NotFound from '@/src/components/common/notFound/NotFound';
+import NotFound from '../../components/common/notFound/NotFound';
+import { useRoute, RouteProp } from '@react-navigation/native';
+import { showAndroidToast } from '../../components/toast/androidToast';
+
 
 type ReviewUIModel = {
   id: number;
@@ -21,14 +24,48 @@ type ReviewUIModel = {
   }[];
 };
 
+type FlowStackParamList = {
+  reviews?: {
+    reviews?: ReviewUIModel[];
+  };
+};
+
+
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 export default function Reviews() {
   const [reviews, setReviews] = useState<ReviewUIModel[]>([]);
   const [loading, setLoading] = useState(true);
   const hasReviews = reviews.length > 0;
+  const route = useRoute<RouteProp<FlowStackParamList, 'reviews'>>();
+  const passedReviews = route.params?.reviews;
 
-    const formatDate = (isoDate?: string) => {
+  const mapPassedReviews = (data: any[]): ReviewUIModel[] => {
+  return data.map(review => ({
+    id: review.reviewId,
+    productTitle: 'Event Review', // or pass product title if available
+    rating: review.rating,
+    comment: review.description,
+    daysAgo: formatDate(review.createdAt),
+    media:
+      review.reviewMedia?.map((m: any) => ({
+        url: m.mediaUrl,
+        type: m.mediaType,
+      })) ?? [],
+  }));
+};
+
+const handleDeleteReview = async (reviewId: number) => {
+  try {
+    await deleteReview(reviewId);   // 👈 API CALL IS HERE
+    setReviews(prev => prev.filter(r => r.id !== reviewId));
+    showAndroidToast('Review deleted successfully');
+  } catch (error) {
+    console.error('Failed to delete review', error);
+  }
+};
+
+  const formatDate = (isoDate?: string) => {
   if (!isoDate) return '';
 
   const date = new Date(isoDate);
@@ -39,11 +76,20 @@ export default function Reviews() {
     year: 'numeric',
   });
 };
+  useEffect( () => {
+   console.log("review" , reviews)
+  }, [reviews])
 
-
-  useEffect(() => {
+useEffect(() => {
+  if (passedReviews && passedReviews.length > 0) {
+    const mapped = mapPassedReviews(passedReviews);
+    setReviews(mapped);
+    setLoading(false);
+  } else {
     loadReviews();
-  }, []);
+  }
+}, []);
+
 
   const loadReviews = async () => {
     try {
@@ -80,6 +126,8 @@ export default function Reviews() {
       setLoading(false);
     }
   };
+
+
   return (
 <SafeAreaView className="flex-1 bg-white">
   <ScreenHeader title="Reviews" rightType="notification" showBack />
@@ -124,6 +172,7 @@ export default function Reviews() {
       createdAt={item.daysAgo}
       images={images}
       videos={videos}
+       onDelete={() => handleDeleteReview(item.id)} 
     />
   );
 })}

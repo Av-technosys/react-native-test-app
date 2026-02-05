@@ -37,8 +37,23 @@ export const fetchEventType = async () => {
 export const saveInBookingDraft = async (payload: {
   eventId: any;
   productId: any;
-  quantity: 1;
+  quantity: any;
+  startTime : any;
+  endTime : any;
 }) => {
   const response = await privateApi.post('/event/create_eventitem', payload);
+  return response.data;
+};
+
+export const deleteEventItem = async (eventItemId: number) => {
+  const response = await privateApi.delete(
+    `/event/delete_eventitem/${eventItemId}`
+  );
+  return response.data;
+};
+
+
+export const getEventById = async (eventId: number) => {
+  const response = await privateApi.get(`/event/${eventId}`);
   return response.data;
 };

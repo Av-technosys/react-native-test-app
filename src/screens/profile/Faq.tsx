@@ -111,7 +111,6 @@ useEffect(() => {
   );
 }
 
-/* ------------------ DATA ------------------ */
 
 type FAQItem = {
   id: number;

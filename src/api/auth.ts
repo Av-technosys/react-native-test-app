@@ -1,13 +1,13 @@
 import { publicApi } from './axios';
 
 type LoginPayload = {
-  username: string;
+  email: string;
   password: string;
 };
 
 
 type ConfirmOtpPayload = {
-  username: string;
+  email: string;
   code: string;
 };
 
@@ -16,7 +16,7 @@ type ResendOtpPayload = {
 };
 
 type ForgotPasswordPayload = {
-  username: string;
+  email: string;
 };
 
 type ConfirmForgotPasswordPayload = {

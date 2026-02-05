@@ -10,10 +10,10 @@ import Button from '../../components/common/Button';
 import { useDispatch } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { logout } from '../../store/slices/authSlice';
-import { showMessage } from 'react-native-flash-message';
 import { userDetails } from '../../api/user';
 import { useEffect, useState } from 'react';
 import {DeviceEventEmitter} from 'react-native'
+import { showAndroidToast } from '../../components/toast/androidToast';
 
 type RootStackParamList = {
   FAQ: undefined;
@@ -58,17 +58,9 @@ useEffect(() => {
       // 🔥 Reset redux auth state
       dispatch(logout());
 
-      showMessage({
-        type: 'success',
-        message: 'Logged out',
-        description: 'You have been logged out successfully',
-      });
+      showAndroidToast('Logged out successfully');
     } catch (error) {
-      showMessage({
-        type: 'danger',
-        message: 'Logout failed',
-        description: 'Please try again',
-      });
+     showAndroidToast('Error logging out. Please try again.');
     }
   };
 
@@ -94,7 +86,7 @@ useEffect(() => {
           title: 'Frequently Asked Question',
           navigate: 'FAQ',
         },
-        { icon: 'message-square', title: 'Share Feedback' },
+        // { icon: 'message-square', title: 'Share Feedback' },
       ],
     },
     {

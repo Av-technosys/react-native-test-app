@@ -29,6 +29,6 @@ export const deleteCartItem = async (bookingDraftId : number) => {
 };
 
 export const addCartItem = async (payload: AddCartItemPayload) => {
-  const res = await privateApi.post('/cart/items', payload);
+  const res = await privateApi.post('user/cart/item', payload);
   return res.data;
 };

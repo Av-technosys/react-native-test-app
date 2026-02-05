@@ -8,7 +8,8 @@ import {
   PermissionsAndroid,
   DeviceEventEmitter,
   BackHandler,
-  Dimensions
+  Dimensions,
+  KeyboardAvoidingView
 } from 'react-native';
 import {
   Search,
@@ -25,15 +26,14 @@ import Geolocation from 'react-native-geolocation-service';
 import { useCallback, useEffect, useState } from 'react';
 import { getAddresses, deleteAddress, setCurrentAddress } from '../../api/user';
 import AddressForm from '../../components/common/forms/AddressForm';
-import { showMessage } from 'react-native-flash-message';
 import { Modal } from 'react-native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import KeyboardWrapper from '../common/KeyboardWrapper';
 
 import Animated, {
   FadeInRight,
   FadeOutRight,
 } from 'react-native-reanimated';
+import { showAndroidToast } from '../toast/androidToast';
 
 type Address = {
   id: number;
@@ -90,9 +90,6 @@ export default function AddressSheetContent({ isOpen, onClose }: Props) {
   }, []);
 
 
-  useEffect(() => {
-  console.log('🟡 isOpen changed:', isOpen);
-}, [isOpen]);
    const handleUserBack = useCallback(() => {
     // FORM → go back to list
     if (mode === 'form') {
@@ -130,21 +127,14 @@ export default function AddressSheetContent({ isOpen, onClose }: Props) {
 
       const res = await deleteAddress({ id: confirmDeleteId });
 
-      showMessage({
-        type: 'success',
-        message: 'Address deleted successfully',
-      });
-      // 🔔 Notify Header to refetch user + address
-      DeviceEventEmitter.emit('RELOAD_USER');
+       showAndroidToast('Address deleted successfully');
 
-      // Close menu & reload list
+       DeviceEventEmitter.emit('RELOAD_USER');
+
       setMenuOpenId(null);
       loadAddresses();
     } catch (error) {
-      showMessage({
-        type: 'danger',
-        message: 'Failed to delete address',
-      });
+       showAndroidToast('Failed to delete address');
     } finally {
       setDeleting(false);
     }
@@ -153,17 +143,11 @@ export default function AddressSheetContent({ isOpen, onClose }: Props) {
   const handleSetCurrent = async (id: number) => {
     try {
       const res = await setCurrentAddress({ id });
-      console.log(res);
+ 
+      showAndroidToast('Current address updated');
 
-      showMessage({
-        type: 'success',
-        message: 'Current address updated',
-      });
+      DeviceEventEmitter.emit('RELOAD_USER');
 
-      // 🔔 Notify Header to refetch user + address
-      DeviceEventEmitter.emit('ADDRESS_UPDATED');
-
-      // Close menu & reload list
       setMenuOpenId(null);
       loadAddresses();
     } catch (error: any) {
@@ -172,21 +156,21 @@ export default function AddressSheetContent({ isOpen, onClose }: Props) {
         error?.response?.data?.message ||
         'Failed to set current address';
 
-      showMessage({
-        type: 'danger',
-        message,
-      });
+      showAndroidToast(message);
     }
   };
 
 if (mode === 'form') {
   return (
     <Animated.View
-      style={{ flex: 1 }}
+      style={{ flex: 1 , paddingBottom:40}}
       entering={FadeInRight.duration(350)}
       exiting={FadeOutRight.duration(250)}
+      
     >
-      <KeyboardWrapper>
+      {/* <KeyboardWrapper> */}
+      <View style={{ fontFamily: 'Inter-Regular', color: '#000' }}>
+
         <AddressForm
           initialData={selectedAddress}
           onSuccess={() => {
@@ -199,7 +183,8 @@ if (mode === 'form') {
             setSelectedAddress(null);
           }}
         />
-      </KeyboardWrapper>
+        </View>
+      {/* </KeyboardWrapper> */}
     </Animated.View>
   );
 }
@@ -266,7 +251,7 @@ if (mode === 'form') {
 
   return (
     <>
-      <KeyboardWrapper>
+      {/* <KeyboardWrapper> */}
         <View style={{ flex: 1 }}>
           {/* HEADER */}
           <View className="flex-row items-center gap-2 mb-6">
@@ -449,7 +434,7 @@ if (mode === 'form') {
 
           <View style={{ height: Platform.OS === 'ios' ? 34 : 20 }} />
         </View>
-      </KeyboardWrapper>
+      {/* </KeyboardWrapper> */}
       <Modal
         visible={confirmDeleteId !== null}
         transparent
