@@ -1,9 +1,8 @@
-import { View, ScrollView, Pressable, Text } from 'react-native';
+import { View, ScrollView, Pressable, Text, Modal, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ScreenHeader from '../../components/common/ScreenHeader';
 //import LinearGradient from 'react-native-linear-gradient';
-import BottomSheet from '@gorhom/bottom-sheet';
-import BaseBottomSheet from '../../components/common/BaseBottomSheet';
+
 import VendorHeaderCard from '../../components/ProductDetails/Header';
 import Details from '../../components/ProductDetails/Details';
 import VendorDetailsCard from '../../components/ProductDetails/VendorDetails';
@@ -12,7 +11,7 @@ import ReviewSection from '../../components/ProductDetails/CustomerReviewsSectio
 import AddToCartForm from '../../components/common/AddToCartForm';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRoute } from '@react-navigation/native';
 //import { useAppSelector } from '../../store/hooks';
 import { getProductsByProductId, fetchProductReview } from '../../api/product';
@@ -26,13 +25,13 @@ export default function ProductDetails() {
   const route = useRoute<any>();
   const { productId } = route.params ?? {};
   console.log(productId);
-  const bottomSheetRef = useRef<BottomSheet>(null);
   //const cartItems = useAppSelector(state => state.cart.items);
   const [vendor, setVendor] = useState<any>(null);
   const [reviews, setReviews] = useState<any[]>([]);
   const [reviewsLoading, setReviewsLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [product, setProduct] = useState<any>(null);
+const [showBooking, setShowBooking] = useState(false);
 
   const vendorLogo = vendor?.logoUrl
     ? { uri: `${S3_BASE_URL}/${vendor.logoUrl}` }
@@ -229,7 +228,7 @@ export default function ProductDetails() {
         {/* ADD TO CART */}
         <Pressable
           className="w-full items-center mt-6"
-          onPress={() => bottomSheetRef.current?.snapToIndex(0)}
+         onPress={() => setShowBooking(true)}
         >
           <View style={{ borderRadius: 18, overflow: 'hidden', width: '92%' }}>
             <LinearGradient
@@ -249,15 +248,51 @@ export default function ProductDetails() {
       </ScrollView>
     </SafeAreaView>
 
-          <BaseBottomSheet ref={bottomSheetRef} snapPoints={['80%']}>
-        <AddToCartForm
-          product={{
-            ProductId: product.productId,
-            title: product.title,
-            price,
-          }}
+<Modal
+  visible={showBooking}
+  animationType="fade"
+  transparent
+  onRequestClose={() => setShowBooking(false)}
+>
+  <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' }}>
+    
+    {/* Tap outside to close */}
+    <Pressable style={{ flex: 1 }} onPress={() => setShowBooking(false)} />
+
+    {/* SHEET */}
+    <View
+      style={{
+        height: '80%',
+        backgroundColor: 'white',
+        borderTopLeftRadius: 24,
+        borderTopRightRadius: 24,
+        paddingTop: 10,
+      }}
+    >
+      <SafeAreaView style={{ flex: 1 }}>
+
+        <ScreenHeader
+          title="Booking Details"
+          showBack
+          onBackPress={() => setShowBooking(false)}
         />
-      </BaseBottomSheet>
+
+        <ScrollView contentContainerStyle={{ padding: 12 }}>
+          <AddToCartForm
+            product={{
+              ProductId: product.productId,
+              title: product.title,
+              vendorName: vendor?.businessName,
+              price,
+            }}
+          />
+        </ScrollView>
+
+      </SafeAreaView>
+    </View>
+  </View>
+</Modal>
+
     </>
   );
 }

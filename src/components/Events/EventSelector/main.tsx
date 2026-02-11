@@ -3,7 +3,6 @@ import { View, Text, Pressable, Image, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import ScreenHeader from '../../common/ScreenHeader';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -51,11 +50,7 @@ export default function EventTypeSelector() {
       <ScreenHeader
         title="Events"
         showBack={false}
-        rightType={
-          <View className="relative">
-            <MaterialIcons name="more-vert" size={22} color="#000" />
-          </View>
-        }
+     
       />
       <ScrollView
         className="flex-1"

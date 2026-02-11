@@ -18,11 +18,34 @@ export default function CartScreen() {
     loadCart();
   }, []);
 
+  const mapCartItem = (item: any) => {
+  const start = new Date(item.startTime);
+  const expired = new Date(item.expiredAt) < new Date();
+
+  return {
+    id: item.bookingDraftId,
+
+    title: item.contactName || `Product #${item.productId}`, 
+    subtitle: `${start.toLocaleDateString()} • ${start.toLocaleTimeString()}`,
+
+    guests:
+      item.maxGuestCount > 0
+        ? `${item.minGuestCount} - ${item.maxGuestCount} guests`
+        : "Guests not specified",
+
+    status: expired ? "Expired" : item.bookingStatus,
+
+    raw: item,
+  };
+};
+
   const loadCart = async () => {
     try {
       setLoading(true);
       const res = await fetchCartItems();
-      setItems(res.items ?? []);
+      const mapped = (res.items ?? []).map(mapCartItem);
+
+      setItems(mapped);
     } catch (err) {
       Toast.show({
         type: 'error',
@@ -35,9 +58,8 @@ export default function CartScreen() {
 
 const handleDelete = async (bookingDraftId: number) => {
   try {
-    setItems(prev =>
-      prev.filter(i => i.bookingDraftId !== bookingDraftId)
-    );
+setItems(prev => prev.filter(i => i.id !== bookingDraftId));
+
 
     await deleteCartItem(bookingDraftId);
 

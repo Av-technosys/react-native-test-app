@@ -25,6 +25,8 @@ import {
   setProfilePicture,
 } from '../../api/user';
 
+import FloatingInput from '../../components/common/FloatingInput';
+import Button from '../../components/common/Button';
 import { showAndroidToast } from '../../components/toast/androidToast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Config from 'react-native-config';
@@ -176,7 +178,7 @@ const avatarSource =
       
       
           {/* HEADER */}
-          <View className="absolute top-0 mt-10 left-0 right-0 z-20">
+          <View className="absolute top-0  left-0 right-0 z-20">
             <ScreenHeader title="Profile" rightType="notification" showBack={true} />
           </View>
 
@@ -267,79 +269,71 @@ const avatarSource =
             </Pressable>
           </View>
 
-          {/* FULL NAME */}
-          <View className="mb-4">
-            <Text className="text-sm font-medium text-gray-700 mb-1">
-              Full Name
-            </Text>
-            <TextInput
-              value={user.fullName}
-              onChangeText={text =>
-                setUser((prev: any) => ({ ...prev, fullName: text }))
-              }
-              className="h-12 w-[99%] border border-gray-300 rounded-xl px-4 text-black"
-            />
-          </View>
+{/* FORM SECTION */}
+<View className="space-y-5 px-1">
+  <View>
+    <Text className="text-sm font-semibold text-gray-700 ml-1 mb-1.5">
+      Full Name
+    </Text>
+    <FloatingInput
+      size="small"
+      placeholder="Enter your name"
+      value={user.fullName}
+      onChangeText={(text: any) =>
+        setUser((prev: any) => ({ ...prev, fullName: text }))
+      }
+    />
+  </View>
 
-          {/* EMAIL */}
-<View className="mb-4">
-  <Text className="text-sm font-medium text-gray-700 mb-1">
-    Email
-  </Text>
-  <TextInput
-    value={user.email}
-    editable={false}
-    keyboardType="email-address"
-    autoCapitalize="none"
-    onChangeText={text =>
-      setUser((prev: any) => ({ ...prev, email: text }))
-    }
-    className="h-12 border w-[99%] border-gray-300 rounded-xl px-4 text-black"
-  />
+  <View>
+    <Text className="text-sm font-semibold text-gray-700 ml-1 mb-1.5">
+      Email Address
+    </Text>
+    <FloatingInput
+      size="small"
+      value={user.email}
+      editable={false}
+      keyboardType="email-address"
+      autoCapitalize="none"
+      // Stylize non-editable fields if your FloatingInput supports it
+      style={{ backgroundColor: '#F9FAFB' }} 
+    />
+  </View>
+
+  <View>
+    <Text className="text-sm font-semibold text-gray-700 ml-1 mb-1.5">
+      Contact Number
+    </Text>
+    <FloatingInput
+      size="small"
+      value={user.number}
+      editable={false}
+      keyboardType="phone-pad"
+      style={{ backgroundColor: '#F9FAFB' }}
+    />
+  </View>
 </View>
 
+{/* ACTIONS */}
+<View className="flex-row gap-4 mt-10 mb-10 px-1">
+  <View className="flex-1">
+    <Button
+      label="Cancel"
+      variant="outline"
+      size="medium"
+      onPress={() => navigation.goBack()}
+    />
+  </View>
 
-          {/* PHONE */}
-<View className="mb-4">
-  <Text className="text-sm font-medium text-gray-700 mb-1">
-    Contact No.
-  </Text>
-  <TextInput
-    value={user.number}
-    editable={false}
-    keyboardType="phone-pad"
-    onChangeText={text =>
-      setUser((prev: any) => ({ ...prev, number: text }))
-    }
-    className="h-12 border w-[99%] border-gray-300 rounded-xl px-4  text-black"
-  />
-</View>
-
-          {/* ACTIONS */}
-          <View className="flex-row gap-4 mt-6">
-            <Pressable
-              onPress={() => navigation.goBack()}
-              className="flex-1 h-12 rounded-xl border border-orange-500 items-center justify-center"
-            >
-              <Text className="text-orange-500 font-semibold">
-                Cancel
-              </Text>
-            </Pressable>
-
-            <Pressable
-              onPress={handleSave}
-              disabled={loading}
-              className="flex-1 h-12 rounded-xl overflow-hidden"
-            >
-              <LinearGradient
-                colors={['#F97316', '#FACC15']}
-                className="flex-1 items-center justify-center"
-              >
-                <Text className="text-white font-semibold">
-                  {loading ? 'Saving...' : 'Save'}
-                </Text>
-              </LinearGradient>
-            </Pressable>
+  <View className="flex-1">
+    <Button
+      label={loading ? "Saving..." : "Save Changes"}
+      variant="primary"
+      size="medium"
+      onPress={handleSave}
+      disabled={loading}
+    />
+  </View>
           </View></> )}
     </SafeAreaView>
   );

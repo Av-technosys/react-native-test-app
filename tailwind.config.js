@@ -174,15 +174,10 @@ module.exports = {
           error: 'rgb(var(--color-indicator-error)/<alpha-value>)',
         },
       },
-      fontFamily: {
-        heading: undefined,
-        body: undefined,
-        mono: undefined,
-        jakarta: ['var(--font-plus-jakarta-sans)'],
-        roboto: ['var(--font-roboto)'],
-        code: ['var(--font-source-code-pro)'],
-        inter: ['var(--font-inter)'],
-        'space-mono': ['var(--font-space-mono)'],
+     fontFamily: {
+        // The value MUST match the exact filename of your font (without extension)
+        'inter': ['Inter-Bold'], 
+        'space-mono': ['SpaceMono-Regular'],
       },
       fontWeight: {
         extrablack: '950',

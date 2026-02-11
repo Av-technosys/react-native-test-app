@@ -32,6 +32,7 @@ import { TimePickerModal } from 'react-native-paper-dates';
 import dayjs from 'dayjs';
 import { showAndroidToast } from '../../toast/androidToast';
 import Config from 'react-native-config';
+import FilterModal from '../../common/forms/FilterForm';
 type Step = {
   id: number;
   key: string;
@@ -51,7 +52,7 @@ const selections = useAppSelector(
 );
 
   const [steps, setSteps] = useState<Step[]>([]);
-  const filterSheetRef = useRef<BottomSheet>(null);
+const [showFilterModal, setShowFilterModal] = useState(false);
   const [activeStep, setActiveStep] = useState<string>('');
   const insets = useSafeAreaInsets();
   const [stepStatus, setStepStatus] = useState<Record<string, StepStatus>>({});
@@ -349,7 +350,8 @@ await addItemToBooking({
           </ScrollView>
           {/* FILTER ICON */}
           <Pressable
-            onPress={() => filterSheetRef.current?.expand()}
+         onPress={() => setShowFilterModal(true)}
+
             className="ml-3"
           >
             <Feather name="sliders" size={20} color="#00000" />
@@ -433,7 +435,7 @@ onAdd={() => {
         )}
         <View
           style={{
-            paddingBottom: insets.bottom + 20 || 16,
+            paddingBottom: insets.bottom + 50 || 50,
             backgroundColor: 'white',
             borderTopWidth: 1,
             borderTopColor: '#e5e5e5',
@@ -679,7 +681,11 @@ base.hour(hours).minute(minutes).second(0).toDate()
 
     </View>
 
-      <FilterBottomSheet ref={filterSheetRef} />
+  <FilterModal
+  visible={showFilterModal}
+  onClose={() => setShowFilterModal(false)}
+/>
+
 
       </>
   );

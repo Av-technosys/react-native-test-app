@@ -8,8 +8,6 @@ import {
   PermissionsAndroid,
   DeviceEventEmitter,
   BackHandler,
-  Dimensions,
-  KeyboardAvoidingView
 } from 'react-native';
 import {
   Search,
@@ -34,6 +32,8 @@ import Animated, {
   FadeOutRight,
 } from 'react-native-reanimated';
 import { showAndroidToast } from '../toast/androidToast';
+import { useNavigation } from '@react-navigation/native';
+
 
 type Address = {
   id: number;
@@ -69,6 +69,7 @@ export default function AddressSheetContent({ isOpen, onClose }: Props) {
   const [deleting, setDeleting] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [loadingAddresses, setLoadingAddresses] = useState(true);
+  const navigation = useNavigation<any>();
 
   
 
@@ -160,34 +161,49 @@ export default function AddressSheetContent({ isOpen, onClose }: Props) {
     }
   };
 
-if (mode === 'form') {
-  return (
-    <Animated.View
-      style={{ flex: 1 , paddingBottom:40}}
-      entering={FadeInRight.duration(350)}
-      exiting={FadeOutRight.duration(250)}
-      
-    >
-      {/* <KeyboardWrapper> */}
-      <View style={{ fontFamily: 'Inter-Regular', color: '#000' }}>
 
-        <AddressForm
-          initialData={selectedAddress}
-          onSuccess={() => {
-            setMode('list');
-            setSelectedAddress(null);
-            loadAddresses();
-          }}
-          onCancel={() => {
-            setMode('list');
-            setSelectedAddress(null);
-          }}
-        />
-        </View>
-      {/* </KeyboardWrapper> */}
-    </Animated.View>
-  );
-}
+
+const openAddressForm = (address?: Address | null) => {
+  onClose(); // close bottom sheet first
+
+  requestAnimationFrame(() => {
+ navigation.getParent()?.navigate('FlowStack', {
+  screen: 'AddressFormScreen',
+  params: {
+    initialData: address ?? null,
+  },
+});
+
+  });
+};
+
+
+// if (mode === 'form') {
+//   return (
+
+//       <Animated.View
+//         style={{ flex: 1, paddingBottom: 40 }}
+//         entering={FadeInRight.duration(350)}
+//         exiting={FadeOutRight.duration(250)}
+//       >
+        
+//           <AddressForm
+//             initialData={selectedAddress}
+//             onSuccess={() => {
+//               setMode('list');
+//               setSelectedAddress(null);
+//               loadAddresses();
+//             }}
+//             onCancel={() => {
+//               setMode('list');
+//               setSelectedAddress(null);
+//             }}
+//           />
+      
+//       </Animated.View>
+//   );
+// }
+
 
 
   const requestLocationPermission = async () => {
@@ -284,10 +300,8 @@ if (mode === 'form') {
           {/* Add New */}
           <TouchableOpacity
             className="flex-row items-center mt-2 pb-[15px] border-b border-gray-300"
-            onPress={() => {
-              setSelectedAddress(null);
-              setMode('form');
-            }}
+        onPress={() => openAddressForm(null)}
+
           >
             <Plus size={18} color="#2b6ef2" />
             <Text className="ml-2 text-blue-500 text-base">
@@ -389,10 +403,8 @@ if (mode === 'form') {
                   <View className="flex-row items-center gap-4">
                     {/* EDIT */}
                     <TouchableOpacity
-                      onPress={() => {
-                        setSelectedAddress(item);
-                        setMode('form');
-                      }}
+                     onPress={() => openAddressForm(item)}
+
                     >
                       <Edit size={20} color="#f97316" />
                     </TouchableOpacity>

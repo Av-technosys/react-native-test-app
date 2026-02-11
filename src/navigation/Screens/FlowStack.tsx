@@ -19,7 +19,7 @@ import CartProductDetail from '../../screens/cart/CartProductDetail';
 import FlowStackBackHandler from '../../utils/FlowStackBackHandler';
 import AddReview from '../../screens/profile/AddReviews';
 import TestingPayment from '../../screens/event/TestingPayment'
-
+import AddressFormScreen from '../../screens/home/AddressFormScreen';
 const Stack = createStackNavigator();
 
 const openConfig = {
@@ -44,18 +44,22 @@ export default function FlowStack() {
     <FlowStackBackHandler/>
    
     <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-        gestureDirection: 'horizontal',
-        transitionSpec: {
-          open: openConfig,
-          close: closeConfig,
-        },
-        cardStyleInterpolator:
-          TransitionPresets.SlideFromRightIOS.cardStyleInterpolator,
-      }}
+       screenOptions={{
+    headerShown: false,
+    gestureDirection: 'horizontal',
+    transitionSpec: {
+      open: openConfig,
+      close: closeConfig,
+    },
+    cardStyleInterpolator: TransitionPresets.SlideFromRightIOS.cardStyleInterpolator,
+
+    // ⭐ THE IMPORTANT LINE
+    cardStyle: { backgroundColor: '#FFFFFF' },
+    
+  }}
     >
       <Stack.Screen name="NotificationsScreen" component={NotificationsScreen} />
+      <Stack.Screen name="AddressFormScreen" component={AddressFormScreen} />
       {/* Categories Stack Screens */}
       {/* Defined in Tab Navigation   <Stack.Screen name="Categories" component={CategoriesScreen} /> */}
       <Stack.Screen name="CategoryProducts" component={CategoryProducts} />

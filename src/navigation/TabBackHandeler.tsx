@@ -1,36 +1,4 @@
-// import { useEffect } from 'react';
-// import { BackHandler } from 'react-native';
-// import { useNavigation, useRoute } from '@react-navigation/native';
 
-// export default function TabsBackHandler() {
-//   const navigation = useNavigation<any>();
-//   const route = useRoute();
-
-//   useEffect(() => {
-//     const onBackPress = () => {
-//       // If NOT on Home tab → go to Home
-//       if (route.name !== 'Home') {
-//         navigation.navigate('Home');
-//         return true; // handled
-//       }
-
-//       // If on Home tab → allow app to close
-//       return false; // ✅ THIS lets Android exit
-//     };
-
-//     const sub = BackHandler.addEventListener(
-//       'hardwareBackPress',
-//       onBackPress
-//     );
-
-//     return () => sub.remove();
-//   }, [route.name, navigation]);
-
-//   return null;
-// }
-
-
-// TabsBackHandler.tsx
 import { useEffect, useState } from 'react';
 import { BackHandler, DeviceEventEmitter } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';

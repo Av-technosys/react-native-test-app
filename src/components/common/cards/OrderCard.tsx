@@ -20,61 +20,58 @@ export default function OrderCard({
   title,
   venue,
   price,
-  status,
   onPress,
   onDelete,
 
 }: OrderCardProps) {
 
   return (
-    <Pressable
-      onPress={onPress}
-      className="flex-row rounded-2xl mt-6 bg-white border border-gray-200 overflow-hidden"
+   <Pressable
+  onPress={onPress}
+className="flex-row min-h-[92px] rounded-2xl mt-3 bg-white border border-gray-200 overflow-hidden"
+>
+  {/* LEFT ICON */}
+<View className="w-16 items-center justify-center bg-orange-300">
+    <Feather name="gift" size={28} color="white" />
+  </View>
+
+  {/* CONTENT */}
+<View className="flex-1 px-4 py-4 justify-center">
+    <Text className="font-semibold text-xl text-gray-900">
+      {title}
+    </Text>
+
+    {venue && (
+      <Text className="text-md text-gray-500 mt-1">
+        {venue}
+      </Text>
+    )}
+
+    {price && (
+      <Text className="text-lg text-gray-800 mt-1 font-medium">
+        $ {price}
+      </Text>
+    )}
+  </View>
+
+
+  {/* delete STRIP */}
+  {onDelete && (
+    <View
+      className={`w-14 items-center justify-center bg-red-200`}
     >
-      {/* LEFT ICON */}
-      <View className="w-16 items-center justify-center bg-orange-300">
-        <Feather name="gift" size={28} color="white" />
-      </View>
-
-      {/* CONTENT */}
-      <View className="flex-1 px-4 py-3">
-        <Text className="font-semibold text-md text-gray-900">
-          {title}
-        </Text>
-
-        {venue && (
-          <Text className="text-md text-gray-500 mt-1">
-            {venue}
-          </Text>
-        )}
-
-        {price && (
-          <Text className="text-md text-gray-800 mt-1 font-medium">
-            $ {price}
-          </Text>
-        )}
-      </View>
-
-      {/* STATUS STRIP */}
-      {status && (
-        <View
-          className={`w-14 items-center justify-center ${
-            status === 'Paid'
-              ? 'bg-green-100'
-              : 'bg-red-300'
-          }`}
-        >
-          <Text
-            className={`text-xs font-semibold rotate-90 ${
-              status === 'Paid'
-                ? 'text-green-600'
-                : 'text-black'
-            }`}
-          >
-            {status}
-          </Text>
-        </View>
-      )}
+        <Pressable
+      onPress={(e) => {
+        e.stopPropagation(); // prevent navigation
+        onDelete();
+      }}
+      className="px-4 justify-center items-center"
+      hitSlop={10}
+    >
+      <Feather name="trash-2" size={20} color="#ef4444" />
     </Pressable>
+    </View>
+  )}
+</Pressable>
   );
 }
