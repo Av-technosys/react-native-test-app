@@ -1,4 +1,4 @@
-import { View, ScrollView, StatusBar } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useEffect, useRef, useState } from 'react';
 import BottomSheet from '@gorhom/bottom-sheet';
@@ -20,14 +20,13 @@ export default function HomeScreen() {
 
 
   
-  const bottomSheetRef = useRef<BottomSheet>(null);
+const bottomSheetRef = useRef<BottomSheet>(null);
 const [banners, setBanners] = useState<any[] | null>(null);
 const [loading, setLoading] = useState(true);
-  const [isAddressSheetOpen, setIsAddressSheetOpen] = useState(false);
+const [isAddressSheetOpen, setIsAddressSheetOpen] = useState(false);
 
   useEffect(() => {
     fetchBanners();
-
   }, []);
 
 const fetchBanners = async () => {
@@ -58,11 +57,6 @@ const fetchBanners = async () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <StatusBar
-        translucent={false}
-        backgroundColor="#FFFFFF"
-        barStyle="dark-content"
-      />
 
       <ScrollView
         className="flex-1"

@@ -2,21 +2,15 @@ import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
-type ButtonVariant =
-  | 'primary'
-  | 'outline'
-  | 'text'
-  | 'inline';
+type ButtonVariant = 'primary' | 'outline' | 'text' | 'inline';
+type ButtonSize = 'small' | 'medium' | 'large';
 
 type ButtonProps = {
   label: string;
   onPress: () => void;
   variant?: ButtonVariant;
-
-  /** inline-only */
+  size?: ButtonSize; // New size prop
   prefix?: string;
-
-  /** style overrides */
   className?: string;
   disabled?: boolean;
 };
@@ -25,15 +19,27 @@ export default function Button({
   label,
   onPress,
   variant = 'primary',
+  size = 'medium', // Defaulting to medium
   prefix,
   className = '',
   disabled = false,
 }: ButtonProps) {
+  
+  // Configuration for height and font sizing
+  const sizeConfig = {
+    small: { height: 36, fontSize: 'text-sm', padding: 'py-1' },
+    medium: { height: 48, fontSize: 'text-lg', padding: 'py-2' },
+    large: { height: 56, fontSize: 'text-base', padding: 'py-3' },
+  };
+
+  const currentSize = sizeConfig[size];
+  const baseTextStyles = `text-center font-semibold ${currentSize.fontSize}`;
+
   /* ---------------- TEXT BUTTON ---------------- */
   if (variant === 'text') {
     return (
-      <Pressable onPress={onPress} disabled={disabled}>
-        <Text className="text-orange-500 font-semibold">
+      <Pressable onPress={onPress} disabled={disabled} className={currentSize.padding}>
+        <Text className={`text-orange-500 font-semibold ${currentSize.fontSize}`}>
           {label}
         </Text>
       </Pressable>
@@ -45,12 +51,12 @@ export default function Button({
     return (
       <View className={`flex-row justify-center items-center ${className}`}>
         {prefix && (
-          <Text className="text-gray-700 mr-1">
+          <Text className={`text-gray-700 mr-1 ${currentSize.fontSize}`}>
             {prefix}
           </Text>
         )}
         <Pressable onPress={onPress} disabled={disabled}>
-          <Text className="text-blue-500 font-semibold">
+          <Text className={`text-orange-500 font-semibold ${currentSize.fontSize}`}>
             {label}
           </Text>
         </Pressable>
@@ -64,9 +70,10 @@ export default function Button({
       <Pressable
         onPress={onPress}
         disabled={disabled}
-        className={`h-14 rounded-full border border-gray-300 justify-center ${className}`}
+        style={{ height: currentSize.height }}
+        className={`rounded-xl border border-orange-400 justify-center ${className} ${disabled ? 'opacity-50' : ''}`}
       >
-        <Text className="text-center font-semibold text-lg text-black">
+        <Text className={`${baseTextStyles} text-orange-500`}>
           {label}
         </Text>
       </Pressable>
@@ -78,7 +85,8 @@ export default function Button({
     <Pressable
       onPress={onPress}
       disabled={disabled}
-      className={`h-14 rounded-full overflow-hidden ${className}`}
+      style={{ height: currentSize.height }}
+      className={`rounded-xl overflow-hidden ${className} ${disabled ? 'opacity-50' : ''}`}
     >
       <LinearGradient
         colors={['#FACC15', '#F97316']}
@@ -86,7 +94,7 @@ export default function Button({
         end={{ x: 1, y: 0.5 }}
         className="flex-1 justify-center"
       >
-        <Text className="text-center font-bold text-lg text-white">
+        <Text className={`${baseTextStyles} text-white`}>
           {label}
         </Text>
       </LinearGradient>

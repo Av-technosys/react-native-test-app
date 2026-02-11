@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, Pressable, ScrollView, StatusBar } from 'react-native';
+import { View, Text, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Feather from 'react-native-vector-icons/Feather';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
@@ -56,7 +56,7 @@ export default function OrderDetailsScreen() {
   if (loading) {
     return (
       <SafeAreaView className="flex-1 bg-gray-50">
-        <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+        
         <ScreenHeader title="Order Summary" showBack />
         <View className="p-6 gap-4">
           <OrderCardSkeleton />
@@ -69,7 +69,6 @@ export default function OrderDetailsScreen() {
   /* ---------------- Render ---------------- */
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
 
       <ScreenHeader
         title="Order Details"

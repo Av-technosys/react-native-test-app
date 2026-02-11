@@ -1,17 +1,24 @@
 <resources>
 
-  <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
 
-    <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
+        <!-- solid white status bar -->
+        <item name="android:statusBarColor">@color/white</item>
 
-    <!-- Explicit status bar control -->
-<item name="android:statusBarColor">@android:color/transparent</item>
-    <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-</style>
+        <!-- dark icons -->
+        <item name="android:windowLightStatusBar">true</item>
 
-    <style name="SplashTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
-    <item name="android:windowBackground">@color/white</item>
-</style>
+        <!-- prevent android from auto contrast switching -->
+        <item name="android:forceDarkAllowed">false</item>
 
+        <!-- allow RN to draw normally -->
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+
+    </style>
+
+    <style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@color/white</item>
+    </style>
 
 </resources>
+

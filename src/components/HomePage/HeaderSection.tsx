@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Pressable } from 'react-native';
 import { ChevronDown, MapPin, Bell, Search } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
@@ -106,7 +106,9 @@ if (loading) {
         </View>
 
         <View className="flex-row items-center gap-3">
-          <TouchableOpacity
+          <Pressable 
+                          onPress={() => navigation.getParent()?.navigate('FlowStack', { screen: 'KeyboardTestScreen' })}
+
             className="w-12 h-12 rounded-full bg-white items-center justify-center"
             style={{
               shadowColor: '#000',
@@ -117,7 +119,7 @@ if (loading) {
             }}
           >
             <Search size={22} color="#5e5e5e" />
-          </TouchableOpacity>
+          </Pressable>
 
           {/* Bell Button */}
           <TouchableOpacity

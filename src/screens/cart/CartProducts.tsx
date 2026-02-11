@@ -34,6 +34,8 @@ export default function CartProductsScreen({
   loading,
   onDelete,
 }: Props) {
+
+
   const navigation = useNavigation();
 
   const [confirmDeleteId, setConfirmDeleteId] =
@@ -52,6 +54,8 @@ export default function CartProductsScreen({
     }
   };
 
+  
+
   return (
     <>
       <ScrollView
@@ -64,24 +68,40 @@ export default function CartProductsScreen({
       >
         <View className="gap-4">
           {loading
-            ? [1, 2, 3].map(i => <OrderCardSkeleton key={i} />)
-            : orders.map(order => (
-                <OrderCard
-                  key={order.bookingDraftId}
-                  title={order.contactName}
-                  location={`${order.latitude}, ${order.longitude}`}
-                  date={new Date(order.startTime).toDateString()}
-                  variant="compact"
-                  onPress={() =>
-                    navigation.getParent()?.navigate('FlowStack', {
-                      screen: 'CartProductDetail',
-                    })
-                  }
-                  onDelete={() =>
-                    setConfirmDeleteId(order.bookingDraftId)
-                  }
-                />
-              ))}
+            ? [1, 2, 3 , 4].map(i => <OrderCardSkeleton key={i} />)
+          :orders.map(order => {
+  const start = new Date(order.raw?.startTime ?? order.startTime);
+
+  const datePart = new Intl.DateTimeFormat('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(start);
+
+  const timePart = new Intl.DateTimeFormat('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+  }).format(start);
+
+  return (
+    <OrderCard
+      key={order.id}
+      title={order.title}
+      venue={`${datePart} • ${timePart}`}
+      status={order.status}
+      variant="compact"
+      onPress={() =>
+        navigation.getParent()?.navigate('FlowStack', {
+          screen: 'CartProductDetail',
+          params: { bookingDraftId: order.id }
+        })
+      }
+      onDelete={() => setConfirmDeleteId(order.id)}
+    />
+  );
+})
+}
         </View>
       </ScrollView>
 
